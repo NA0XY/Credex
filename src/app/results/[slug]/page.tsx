@@ -1,0 +1,160 @@
+﻿import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import { AnimatedCounter } from "@/components/animated-counter";
+import { Logo } from "@/components/logo";
+import { EmailCaptureForm } from "@/components/results/email-capture-form";
+import { ResultActions } from "@/components/results/result-actions";
+import { getAuditBySlug } from "@/lib/audit-store";
+import { formatCurrency } from "@/lib/format";
+import { generateFallbackSummary } from "@/lib/summary";
+
+interface ResultPageProps {
+  params: Promise<{ slug: string }>;
+}
+
+function cardTone(monthlySavings: number): string {
+  if (monthlySavings > 100) {
+    return "border-l-4 border-l-brand-danger";
+  }
+
+  if (monthlySavings > 0) {
+    return "border-l-4 border-l-brand-warning";
+  }
+
+  return "border-l-4 border-l-brand-accent";
+}
+
+export async function generateMetadata({ params }: ResultPageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const audit = await getAuditBySlug(slug);
+
+  if (!audit) {
+    return {
+      title: "Audit not found | SpendLens",
+      description: "This audit may have expired.",
+    };
+  }
+
+  return {
+    title: `AI Spend Audit - Save $${audit.totalAnnualSavings}/yr | SpendLens`,
+    description: `Found $${audit.totalMonthlySavings}/mo in optimization opportunities across ${audit.auditResult.tools.length} tools.`,
+    openGraph: {
+      title: `I could save $${audit.totalAnnualSavings}/year on AI tools`,
+      description: `SpendLens audited my stack and found $${audit.totalMonthlySavings}/mo in savings opportunities.`,
+      images: ["/og-image.svg"],
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `AI Spend Audit - $${audit.totalAnnualSavings}/yr savings found`,
+      description: `SpendLens found $${audit.totalMonthlySavings}/mo in optimization opportunities.`,
+      images: ["/og-image.svg"],
+    },
+  };
+}
+
+export default async function ResultPage({ params }: ResultPageProps) {
+  const { slug } = await params;
+  const audit = await getAuditBySlug(slug);
+
+  if (!audit) {
+    notFound();
+  }
+
+  const summary =
+    audit.aiSummary ||
+    generateFallbackSummary(
+      {
+        ...audit.auditResult,
+      },
+      {
+        teamSize: audit.teamSize,
+        primaryUseCase: audit.primaryUseCase,
+        tools: audit.tools,
+      }
+    );
+
+  return (
+    <main className="mx-auto max-w-6xl px-6 py-10">
+      <header className="mb-8 rounded-2xl border border-brand-border bg-brand-surface p-6">
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <Logo />
+            <p className="mt-2 text-xs text-brand-textSub">Powered by Credex</p>
+          </div>
+          <ResultActions slug={slug} />
+        </div>
+
+        <p className="mt-8 text-sm uppercase tracking-widest text-brand-textSub">You could save</p>
+        <AnimatedCounter
+          value={audit.totalAnnualSavings}
+          prefix="$"
+          suffix="/year"
+          className="mt-2 block font-heading text-5xl text-brand-accent md:text-6xl"
+        />
+        <p className="mt-3 text-sm text-brand-textSub">
+          Based on your current AI spend of {formatCurrency(audit.auditResult.totalCurrentMonthlyCost)}/month across{" "}
+          {audit.auditResult.tools.length} tools.
+        </p>
+      </header>
+
+      <section className="space-y-4">
+        {audit.auditResult.tools.map((tool) => (
+          <article key={`${tool.toolId}-${tool.currentPlan}`} className={`rounded-xl border border-brand-border bg-brand-surface p-5 ${cardTone(tool.bestRecommendation.monthlySavings)}`}>
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div>
+                <h2 className="text-lg font-semibold">{tool.toolName}</h2>
+                <p className="text-sm text-brand-textSub">
+                  {tool.currentPlan} · {tool.seats} seats
+                </p>
+              </div>
+              <p className="text-sm text-brand-textSub">{formatCurrency(tool.currentMonthlyCost)}/mo</p>
+            </div>
+
+            <div className="mt-4 rounded-lg border border-brand-border bg-brand-bg p-4">
+              <p className="text-sm text-brand-textSub">Recommendation</p>
+              <p className="mt-1 text-sm">{tool.bestRecommendation.reason}</p>
+              <p className="mt-2 text-sm text-brand-accent">
+                Potential savings: {formatCurrency(tool.bestRecommendation.monthlySavings)}/mo
+              </p>
+            </div>
+          </article>
+        ))}
+      </section>
+
+      <section className="mt-8 rounded-xl border border-brand-border bg-brand-surface p-5">
+        <h3 className="text-lg font-semibold">Your personalized analysis</h3>
+        <p className="mt-3 text-sm text-brand-textSub">{summary}</p>
+        <p className="mt-2 text-xs text-brand-textSub">Generated by Claude · may contain estimates.</p>
+      </section>
+
+      {audit.auditResult.totalMonthlySavings > 500 && (
+        <section className="mt-8 rounded-xl border border-brand-accent/40 bg-brand-surface p-5">
+          <h3 className="text-lg font-semibold text-brand-accent">Capture more savings with Credex</h3>
+          <p className="mt-2 text-sm text-brand-textSub">
+            You&apos;re spending {formatCurrency(audit.auditResult.totalCurrentMonthlyCost)}/mo on AI tools. Credex can often source
+            discounted credits 20-40% below retail for qualifying teams.
+          </p>
+          <a
+            href="https://credex.rocks"
+            className="mt-4 inline-flex rounded-lg bg-brand-accent px-4 py-2 text-sm font-semibold text-brand-bg"
+          >
+            Book a free 20-min consultation
+          </a>
+        </section>
+      )}
+
+      {audit.auditResult.savingsTier === "optimal" && (
+        <section className="mt-8 rounded-xl border border-brand-accent/40 bg-brand-surface p-5">
+          <h3 className="text-lg font-semibold text-brand-accent">Your stack looks optimized</h3>
+          <p className="mt-2 text-sm text-brand-textSub">
+            No material savings opportunities were identified right now. Re-run this audit as your team or tool usage changes.
+          </p>
+        </section>
+      )}
+
+      <EmailCaptureForm auditSlug={slug} />
+    </main>
+  );
+}
+

@@ -1,0 +1,17 @@
+﻿<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1200" y2="630" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0A0A0F"/>
+      <stop offset="1" stop-color="#111827"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#g)"/>
+  <rect x="80" y="72" width="1040" height="486" rx="24" fill="#13131A" stroke="#1E1E2E"/>
+  <text x="140" y="180" fill="#00FF88" font-family="Inter, Arial" font-size="48" font-weight="700">SpendLens</text>
+  <text x="140" y="260" fill="#F8F8F8" font-family="Inter, Arial" font-size="62" font-weight="700">Find out how much you are</text>
+  <text x="140" y="332" fill="#F8F8F8" font-family="Inter, Arial" font-size="62" font-weight="700">overpaying for AI tools</text>
+  <text x="140" y="415" fill="#9CA3AF" font-family="Inter, Arial" font-size="30">Free 2-minute audit for startup teams</text>
+  <rect x="140" y="460" width="296" height="62" rx="12" fill="#00FF88"/>
+  <text x="168" y="500" fill="#0A0A0F" font-family="Inter, Arial" font-size="30" font-weight="700">Audit my AI spend</text>
+</svg>
+
