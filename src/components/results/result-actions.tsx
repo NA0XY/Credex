@@ -1,5 +1,6 @@
 ﻿"use client";
 
+import Link from "next/link";
 import { useState } from "react";
 
 interface ResultActionsProps {
@@ -17,20 +18,25 @@ export function ResultActions({ slug }: ResultActionsProps) {
   };
 
   return (
-    <div className="flex flex-wrap items-center gap-2">
+    <div className="result-actions-bar flex flex-wrap items-center gap-2">
       <button
         onClick={copy}
-        className="rounded-lg border border-brand-border px-3 py-2 text-sm hover:border-brand-accent"
+        className="inline-flex items-center gap-1.5 rounded-xl border border-brand-border bg-brand-surface px-3 py-2 text-xs font-medium text-brand-textSub transition hover:border-brand-accent/50 hover:text-brand-accent"
       >
-        Share
+        {status === "Share link copied." ? "✓ Copied!" : "🔗 Share"}
       </button>
       <button
         onClick={() => window.print()}
-        className="rounded-lg border border-brand-border px-3 py-2 text-sm hover:border-brand-accent"
+        className="inline-flex items-center gap-1.5 rounded-xl border border-brand-border bg-brand-surface px-3 py-2 text-xs font-medium text-brand-textSub transition hover:border-brand-accent/50 hover:text-brand-accent"
       >
-        Download PDF
+        ⬇ Save PDF
       </button>
-      {status && <span className="text-xs text-brand-textSub">{status}</span>}
+      <Link
+        href="/audit"
+        className="inline-flex items-center gap-1.5 rounded-xl border border-brand-border bg-brand-surface px-3 py-2 text-xs font-medium text-brand-textSub transition hover:border-brand-accent/50 hover:text-brand-accent"
+      >
+        + New audit
+      </Link>
     </div>
   );
 }
