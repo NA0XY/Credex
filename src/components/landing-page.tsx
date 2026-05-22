@@ -1,457 +1,484 @@
-﻿"use client";
+"use client";
 
+import Image from "next/image";
 import Link from "next/link";
-import { motion, useInView, type Variants } from "framer-motion";
-import { useRef } from "react";
-import { ArrowRight, TrendingDown, Zap, Share2, CheckCircle2, AlertCircle, Minus } from "lucide-react";
+import {
+  AnimatePresence,
+  motion,
+  useScroll,
+  useTransform,
+  type MotionValue,
+  type Variants,
+} from "framer-motion";
+import { ArrowRight, ArrowUpRight } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import { AnimatedCounter } from "@/components/animated-counter";
 import { Logo } from "@/components/logo";
 
-/* ─── DATA ─── */
-const TOOLS = [
-  { name: "Cursor", cat: "coding" },
-  { name: "GitHub Copilot", cat: "coding" },
-  { name: "Claude", cat: "chat" },
-  { name: "ChatGPT", cat: "chat" },
-  { name: "Anthropic API", cat: "api" },
-  { name: "OpenAI API", cat: "api" },
-  { name: "Gemini", cat: "chat" },
-  { name: "Windsurf", cat: "coding" },
+const NAV_ITEMS = [
+  { href: "#services", label: "Services" },
+  { href: "#work", label: "Work" },
+  { href: "#contact", label: "Contact" },
 ];
 
-const CAT_COLOR: Record<string, string> = {
-  coding: "border-blue-500/30 text-blue-400 bg-blue-500/10",
-  chat:   "border-purple-500/30 text-purple-400 bg-purple-500/10",
-  api:    "border-amber-500/30 text-amber-400 bg-amber-500/10",
-};
-
-const STATS = [
-  { value: 340, prefix: "$", suffix: "/mo", label: "Avg. monthly savings found" },
-  { value: 82, prefix: "", suffix: "%", label: "Teams with overlapping tools" },
-  { value: 1200, prefix: "", suffix: "+", label: "Audits completed (mocked)" },
+const HERO_LINES = [
+  "The finance-first",
+  "spend agency for",
+  "AI-native teams.",
 ];
 
-const STEPS = [
-  {
-    num: "01",
-    icon: "📋",
-    title: "Tell us what you pay",
-    desc: "Enter your AI tools, plans, seat count, and monthly spend. Takes under 2 minutes. No account needed.",
-  },
-  {
-    num: "02",
-    icon: "🔍",
-    title: "We run the audit",
-    desc: "Our engine checks for duplicate coverage, over-seating, wrong-plan fits, and credit arbitrage opportunities.",
-  },
-  {
-    num: "03",
-    icon: "💰",
-    title: "See your savings",
-    desc: "Get a per-tool breakdown with specific action items. Share the report. Book a Credex call if savings are significant.",
-  },
+const INTRO_PARAGRAPH =
+  "AI spend is where budgets leak silently. SpendLens maps tools, seats, and direct API usage into one clear story so founders can reduce waste without slowing execution.";
+
+const AWARDS = [
+  "2026 Startup Ops Tool - Finalist",
+  "2026 FinOps Workflow - High Performer",
+  "2025 Operator Stack - Top Product",
+  "2025 Procurement Toolkit - Editor Pick",
+  "2025 Workflow Automation - Shortlist",
 ];
 
-const DEMO_RESULTS = [
-  { tool: "GitHub Copilot", issue: "Duplicate coverage with Cursor", saving: 50, type: "switch" },
-  { tool: "ChatGPT Team", issue: "2 users on a 5-seat min plan", saving: 60, type: "downgrade" },
-  { tool: "Cursor Pro", issue: "Right-sized for your team", saving: 0, type: "ok" },
-];
-
-const FAQS = [
+const SERVICE_ROWS = [
   {
-    q: "Is this actually free?",
-    a: "Yes. No credit card, no trial, no catch. The audit runs entirely in your browser and results are saved to a public link.",
+    id: "01",
+    title: "Audit Architecture",
+    description:
+      "We map every paid AI seat, direct API contract, and hidden team upgrade so finance and ops can see the full exposure.",
   },
   {
-    q: "Do you store my spend data?",
-    a: "We store audit inputs and results to power reports and future benchmarks. Your email is only captured if you choose to share it.",
+    id: "02",
+    title: "Savings Strategy",
+    description:
+      "Each recommendation is ranked by confidence and impact, so your first 30 days focus on high-return decisions.",
   },
   {
-    q: "How accurate are the recommendations?",
-    a: "Pricing data is verified weekly from official vendor pages. Audit logic is explicit rule-based — no AI hallucinations in the math.",
+    id: "03",
+    title: "Renewal Intelligence",
+    description:
+      "Before annual renewals, SpendLens highlights pricing mismatches, over-seating, and consolidation opportunities.",
   },
   {
-    q: "What is Credex?",
-    a: "Credex sources discounted AI infrastructure credits from companies that over-forecast usage. For high-savings teams, Credex is the next step.",
-  },
-  {
-    q: "Will I get spammed?",
-    a: "No. One confirmation email. Credex reaches out only for high-savings cases and you can opt out instantly.",
+    id: "04",
+    title: "Execution Sequence",
+    description:
+      "From quick downgrades to deeper vendor renegotiations, you get an action order designed for real teams.",
   },
 ];
 
-/* ─── ANIMATIONS ─── */
-const fadeUp: Variants = {
-  hidden: { opacity: 0, y: 24 },
-  visible: {
+const CASE_STUDIES = [
+  {
+    title: "From Tool Chaos to A Single Spend Narrative",
+    label: "Seed SaaS - 9 tools - 16 seats",
+    result: "$2,640 saved annually",
+    image: "/images/spendlens-case-1.svg",
+  },
+  {
+    title: "Rebalancing Team Plans Before Renewal Week",
+    label: "Series A fintech - 7 tools - 31 seats",
+    result: "$5,880 saved annually",
+    image: "/images/spendlens-case-2.svg",
+  },
+  {
+    title: "Cleaning Up API Fragmentation Across Teams",
+    label: "Product studio - 11 tools - 22 seats",
+    result: "$8,220 saved annually",
+    image: "/images/spendlens-case-3.svg",
+  },
+];
+
+const PROOF_NUMBERS = [
+  { value: 82, suffix: "%", label: "audits with overlap found" },
+  { value: 340, prefix: "$", suffix: "/mo", label: "average monthly savings surfaced" },
+  { value: 12, suffix: " min", label: "to complete audit and receive report" },
+];
+
+const revealUp: Variants = {
+  hidden: { opacity: 0, y: 28 },
+  show: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] },
+    transition: { duration: 0.7, ease: [0.13, 0.875, 0.455, 0.97] as [number, number, number, number] },
   },
 };
 
-/* ─── SUBCOMPONENTS ─── */
-function RecommendationBadge({ type }: { type: string }) {
-  const map: Record<string, { label: string; icon: React.ReactNode; cls: string }> = {
-    switch:    { label: "Switch tool", icon: <Zap size={10} />, cls: "badge-switch" },
-    downgrade: { label: "Downgrade", icon: <TrendingDown size={10} />, cls: "badge-downgrade" },
-    ok:        { label: "Optimized", icon: <CheckCircle2 size={10} />, cls: "badge-ok" },
-    credits:   { label: "Credits deal", icon: <AlertCircle size={10} />, cls: "badge-credits" },
-    righsize:  { label: "Right-size", icon: <Minus size={10} />, cls: "badge-righsize" },
-  };
-  const m = map[type] ?? map.ok;
+const staggerGroup: Variants = {
+  hidden: {},
+  show: {
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.08,
+    },
+  },
+};
+
+function SplitLine({ text, delay = 0 }: { text: string; delay?: number }) {
   return (
-    <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold ${m.cls}`}>
-      {m.icon}{m.label}
+    <span className="block overflow-hidden">
+      <motion.span
+        initial={{ y: "120%", opacity: 0 }}
+        animate={{ y: "0%", opacity: 1 }}
+        transition={{ duration: 0.82, delay, ease: [0.13, 0.875, 0.455, 0.97] }}
+        className="block"
+      >
+        {text}
+      </motion.span>
     </span>
   );
 }
 
-/* ─── MAIN PAGE ─── */
+function GiantWordmark({ y, scale }: { y: MotionValue<number>; scale: MotionValue<number> }) {
+  return (
+    <motion.div style={{ y, scale }} className="pointer-events-none absolute inset-x-0 bottom-0 z-0">
+      <div className="relative h-[52vh] min-h-[380px] w-full overflow-hidden">
+        <span className="absolute -left-[3%] bottom-[2%] font-heading text-[clamp(11rem,31vw,31rem)] leading-[0.76] text-brand-text">
+          S
+        </span>
+        <span className="absolute left-[16%] bottom-[6%] font-heading text-[clamp(11rem,31vw,31rem)] leading-[0.76] text-brand-text">
+          P
+        </span>
+        <span className="absolute left-[34%] bottom-[1%] font-heading text-[clamp(11rem,31vw,31rem)] leading-[0.76] text-brand-text">
+          E
+        </span>
+        <span className="absolute left-[49%] bottom-[8%] font-heading text-[clamp(11rem,31vw,31rem)] leading-[0.76] text-brand-text">
+          N
+        </span>
+        <span className="absolute left-[67%] bottom-[3%] font-heading text-[clamp(11rem,31vw,31rem)] leading-[0.76] text-brand-text">
+          D
+        </span>
+      </div>
+    </motion.div>
+  );
+}
+
+function LoaderOverlay({ show }: { show: boolean }) {
+  return (
+    <AnimatePresence>
+      {show ? (
+        <motion.div
+          className="pointer-events-none fixed inset-0 z-[120] bg-[#1b1715]"
+          initial={{ opacity: 1 }}
+          exit={{ opacity: 0, transition: { duration: 0.35, delay: 0.12 } }}
+        >
+          <motion.span
+            className="absolute left-1/2 top-1/2 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-brand-surface"
+            animate={{ opacity: [0.25, 1, 0.25], scale: [0.9, 1.15, 0.9] }}
+            transition={{ duration: 0.8, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" }}
+          />
+          <motion.div
+            className="absolute inset-x-0 top-0 bg-brand-bg"
+            initial={{ height: "0%" }}
+            animate={{ height: "100%" }}
+            transition={{ duration: 0.78, delay: 0.52, ease: [0.84, 0, 0.16, 1] }}
+          />
+        </motion.div>
+      ) : null}
+    </AnimatePresence>
+  );
+}
+
 export function LandingPage() {
-  const statsRef = useRef(null);
-  const statsInView = useInView(statsRef, { once: true });
+  const [booting, setBooting] = useState(true);
+  const heroRef = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setBooting(false), 1450);
+    return () => clearTimeout(timer);
+  }, []);
+
+  const { scrollYProgress } = useScroll({
+    target: heroRef,
+    offset: ["start start", "end start"],
+  });
+
+  const glyphY = useTransform(scrollYProgress, [0, 1], [0, -210]);
+  const glyphScale = useTransform(scrollYProgress, [0, 1], [1, 0.88]);
+  const heroTextY = useTransform(scrollYProgress, [0, 1], [0, -36]);
+  const heroTextOpacity = useTransform(scrollYProgress, [0, 1], [1, 0.65]);
 
   return (
-    <main className="relative bg-brand-bg text-brand-text overflow-x-hidden">
-      {/* Atmospheric grid */}
-      <div className="pointer-events-none absolute inset-0 bg-grid opacity-100" />
-      {/* Radial glow behind hero */}
-      <div className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-brand-accent/5 rounded-full blur-[120px]" />
+    <>
+      <LoaderOverlay show={booting} />
 
-      {/* ── NAV ── */}
-      <nav className="relative z-10 mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
-        <Logo />
-        <div className="hidden items-center gap-8 text-sm text-brand-textSub md:flex">
-          <a href="#how" className="transition hover:text-brand-text">How it works</a>
-          <a href="#faq" className="transition hover:text-brand-text">FAQ</a>
-          <Link
-            href="/audit"
-            className="inline-flex items-center gap-1.5 rounded-lg bg-brand-accent px-4 py-2 text-sm font-semibold text-brand-bg transition hover:bg-brand-accentDim glow-accent-sm"
-          >
-            Start free audit <ArrowRight size={14} />
-          </Link>
-        </div>
-        {/* Mobile CTA */}
-        <Link href="/audit" className="flex md:hidden items-center gap-1 rounded-lg bg-brand-accent px-3 py-1.5 text-xs font-semibold text-brand-bg">
-          Audit <ArrowRight size={12} />
-        </Link>
-      </nav>
+      <main className="relative overflow-x-hidden bg-brand-bg text-brand-text">
+        <div className="pointer-events-none absolute inset-0 bg-grid opacity-20" />
 
-      {/* ── HERO ── */}
-      <section className="relative z-10 mx-auto max-w-6xl px-6 pb-24 pt-12">
-        <div className="grid gap-12 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
+        <motion.header
+          className="fixed inset-x-0 top-0 z-40"
+          initial={{ y: -24, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.8, delay: 1.05, ease: [0.49, 0.62, 0.17, 1] }}
+        >
+          <div className="mx-auto mt-3 flex max-w-7xl items-center justify-between rounded-xl border border-brand-border bg-brand-bg/85 px-6 py-4 backdrop-blur-sm">
+            <Logo />
+            <nav className="hidden items-center gap-8 text-xs uppercase tracking-[0.14em] text-brand-textSub md:flex">
+              {NAV_ITEMS.map((item) => (
+                <a key={item.href} href={item.href} className="transition-colors hover:text-brand-text">
+                  {item.label}
+                </a>
+              ))}
+            </nav>
+            <Link
+              href="/audit"
+              className="inline-flex items-center gap-2 rounded-[0.62rem] border border-brand-text bg-brand-text px-4 py-2 text-xs font-medium uppercase tracking-[0.14em] text-brand-bg transition hover:bg-brand-accent hover:text-brand-surface"
+            >
+              Start audit <ArrowUpRight size={13} />
+            </Link>
+          </div>
+        </motion.header>
 
-          {/* LEFT: copy */}
+        <section ref={heroRef} className="relative z-10 min-h-screen border-b border-brand-border pt-28">
+          <GiantWordmark y={glyphY} scale={glyphScale} />
+
           <motion.div
-            initial="hidden"
-            animate="visible"
-            variants={{ visible: { transition: { staggerChildren: 0.1 } } }}
+            style={{ y: heroTextY, opacity: heroTextOpacity }}
+            className="relative z-10 mx-auto grid min-h-[72vh] max-w-7xl items-start gap-8 px-6 pt-16 lg:grid-cols-[1fr_1.1fr]"
           >
-            <motion.p
-              variants={fadeUp}
-              className="mb-5 inline-flex items-center gap-2 rounded-full border border-brand-border bg-brand-surface px-3 py-1.5 text-xs font-medium text-brand-textSub"
-            >
-              <span className="inline-block h-1.5 w-1.5 rounded-full bg-brand-accent animate-pulse" />
-              Free AI spend audit · No account required
-            </motion.p>
+            <div className="hidden lg:block" />
 
-            <motion.h1
-              variants={fadeUp}
-              className="font-heading text-5xl font-bold leading-[1.05] tracking-tight sm:text-6xl lg:text-7xl"
-            >
-              You&apos;re probably<br />
-              <span className="text-brand-accent">overpaying</span><br />
-              for AI tools.
-            </motion.h1>
-
-            <motion.p
-              variants={fadeUp}
-              className="mt-6 max-w-lg text-lg leading-relaxed text-brand-textSub"
-            >
-              Free 2-minute audit. See exactly where your team&apos;s AI budget leaks
-              and what to do about it — with specific, defensible recommendations.
-            </motion.p>
-
-            <motion.div variants={fadeUp} className="mt-8 flex flex-wrap items-center gap-3">
-              <Link
-                href="/audit"
-                className="group inline-flex h-12 items-center gap-2 rounded-xl bg-brand-accent px-6 text-base font-semibold text-brand-bg transition-all glow-accent hover:bg-brand-accentDim hover:gap-3"
+            <div className="max-w-xl lg:pt-12">
+              <motion.p
+                initial={{ opacity: 0, y: 18 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.7, delay: 1.18, ease: [0.13, 0.875, 0.455, 0.97] }}
+                className="mb-5 text-xs uppercase tracking-[0.24em] text-brand-muted"
               >
-                Audit my AI spend
-                <ArrowRight size={16} className="transition-transform group-hover:translate-x-0.5" />
-              </Link>
-              <Link
-                href="/results/demo"
-                className="inline-flex h-12 items-center gap-1.5 rounded-xl border border-brand-border px-6 text-sm text-brand-textSub transition hover:border-brand-accent/50 hover:text-brand-text"
+                (WE AUDIT)
+              </motion.p>
+
+              <h1 className="font-heading text-[clamp(3.2rem,7vw,6.2rem)] leading-[0.98] tracking-tight">
+                {HERO_LINES.map((line, idx) => (
+                  <SplitLine key={line} text={line} delay={1.16 + idx * 0.08} />
+                ))}
+              </h1>
+
+              <motion.p
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.75, delay: 1.44, ease: [0.13, 0.875, 0.455, 0.97] }}
+                className="mt-8 max-w-lg text-base leading-relaxed text-brand-textSub sm:text-lg"
               >
-                <Share2 size={14} />
-                See a sample report
-              </Link>
-            </motion.div>
+                SpendLens turns scattered AI subscriptions and API contracts into one precise savings roadmap your leadership team can execute.
+              </motion.p>
 
-            {/* Social proof — properly marked as mocked */}
-            <motion.div
-              variants={fadeUp}
-              className="mt-8 flex items-center gap-3 rounded-xl border border-brand-border bg-brand-surface/60 p-3 backdrop-blur-sm"
-            >
-              <div className="flex -space-x-2">
-                {["#7C3AED","#2563EB","#059669"].map((color, i) => (
-                  <div
-                    key={i}
-                    className="h-8 w-8 rounded-full border-2 border-brand-bg flex items-center justify-center text-[10px] font-bold text-white"
-                    style={{ backgroundColor: color }}
-                  >
-                    {["JD","SM","AT"][i]}
-                  </div>
-                ))}
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-brand-text">
-                  Founders at 200+ startups have audited their AI spend
-                </p>
-                <p className="text-[10px] text-brand-muted">★★★★★ · Illustrative — updated with real data post-launch</p>
-              </div>
-            </motion.div>
-          </motion.div>
-
-          {/* RIGHT: demo preview card */}
-          <motion.div
-            initial={{ opacity: 0, x: 30, scale: 0.97 }}
-            animate={{ opacity: 1, x: 0, scale: 1 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="relative"
-          >
-            {/* Glow behind card */}
-            <div className="absolute -inset-px rounded-2xl bg-gradient-to-br from-brand-accent/20 via-transparent to-transparent blur-sm" />
-
-            <div className="relative rounded-2xl border border-brand-border/80 bg-brand-surface p-6 shadow-2xl">
-              {/* Card header */}
-              <div className="mb-4 flex items-center justify-between">
-                <div>
-                  <p className="text-[11px] font-mono uppercase tracking-widest text-brand-muted">Projected annual savings</p>
-                </div>
-                <span className="rounded-full border border-brand-accent/30 bg-brand-accent/10 px-2.5 py-1 text-[10px] font-semibold text-brand-accent">
-                  LIVE ESTIMATE
-                </span>
-              </div>
-
-              {/* Big number */}
-              <div className="scanline mb-6">
-                <AnimatedCounter
-                  value={8400}
-                  prefix="$"
-                  suffix=""
-                  className="block font-mono text-6xl font-bold text-brand-accent tabular-nums"
-                />
-                <p className="mt-1 text-sm text-brand-muted">per year · across 4 tools</p>
-              </div>
-
-              {/* Per-tool lines */}
-              <div className="space-y-2">
-                {DEMO_RESULTS.map((item) => (
-                  <div
-                    key={item.tool}
-                    className="flex items-center justify-between rounded-lg border border-brand-border bg-brand-bg px-3 py-2.5"
-                  >
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-medium text-brand-text truncate">{item.tool}</span>
-                        <RecommendationBadge type={item.type} />
-                      </div>
-                      <p className="mt-0.5 text-[11px] text-brand-muted truncate">{item.issue}</p>
-                    </div>
-                    <span className={`ml-3 font-mono text-sm font-semibold tabular-nums ${item.saving > 0 ? "text-brand-accent" : "text-brand-muted"}`}>
-                      {item.saving > 0 ? `+$${item.saving}/mo` : "✓"}
-                    </span>
-                  </div>
-                ))}
-              </div>
-
-              {/* Footer */}
-              <p className="mt-4 text-center text-[11px] text-brand-muted">
-                Results powered by rule-based audit engine · not AI guesses
-              </p>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.75, delay: 1.56, ease: [0.13, 0.875, 0.455, 0.97] }}
+                className="mt-9 flex flex-wrap items-center gap-3"
+              >
+                <Link
+                  href="/audit"
+                  className="inline-flex items-center gap-2 rounded-[0.7rem] bg-brand-text px-6 py-3 text-sm font-medium uppercase tracking-[0.14em] text-brand-bg transition hover:bg-brand-accent hover:text-brand-surface"
+                >
+                  Run your audit <ArrowRight size={16} />
+                </Link>
+                <Link
+                  href="/results/demo"
+                  className="inline-flex items-center gap-2 rounded-[0.7rem] border border-brand-text px-6 py-3 text-sm font-medium uppercase tracking-[0.14em] text-brand-text transition hover:bg-brand-text hover:text-brand-bg"
+                >
+                  See sample report <ArrowUpRight size={16} />
+                </Link>
+              </motion.div>
             </div>
           </motion.div>
-        </div>
-      </section>
+        </section>
 
-      {/* ── STATS BAR ── */}
-      <motion.section
-        ref={statsRef}
-        className="relative z-10 border-y border-brand-border bg-brand-surface/50"
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true }}
-        variants={{ visible: { transition: { staggerChildren: 0.12 } } }}
-      >
-        <div className="mx-auto grid max-w-6xl grid-cols-3 divide-x divide-brand-border px-6">
-          {STATS.map((stat) => (
-            <motion.div
-              key={stat.label}
-              variants={fadeUp}
-              className="py-8 px-6 text-center"
-            >
-              <p className="font-mono text-3xl font-bold text-brand-accent sm:text-4xl">
-                {statsInView ? (
-                  <AnimatedCounter value={stat.value} prefix={stat.prefix} suffix={stat.suffix} durationMs={1400} />
-                ) : (
-                  <span>{stat.prefix}0{stat.suffix}</span>
-                )}
-              </p>
-              <p className="mt-1.5 text-xs text-brand-muted">{stat.label}</p>
-            </motion.div>
-          ))}
-        </div>
-      </motion.section>
-
-      {/* ── HOW IT WORKS ── */}
-      <section id="how" className="relative z-10 mx-auto max-w-6xl px-6 py-24">
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          variants={fadeUp}
-          className="mb-12 text-center"
-        >
-          <p className="mb-3 font-mono text-xs uppercase tracking-[0.2em] text-brand-accent">How it works</p>
-          <h2 className="font-heading text-3xl font-bold sm:text-4xl">From zero to audit in 2 minutes</h2>
-        </motion.div>
-
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          variants={{ visible: { transition: { staggerChildren: 0.15 } } }}
-          className="grid gap-6 md:grid-cols-3"
-        >
-          {STEPS.map((step, i) => (
-            <motion.article
-              key={step.num}
-              variants={fadeUp}
-              className="group relative rounded-xl border border-brand-border bg-brand-surface p-6 transition-all hover:border-brand-accent/40 hover:-translate-y-0.5"
-            >
-              {/* Step connector line */}
-              {i < 2 && (
-                <div className="absolute -right-3 top-1/2 hidden h-px w-6 bg-gradient-to-r from-brand-border to-transparent md:block" />
-              )}
-              <div className="mb-4 flex items-center justify-between">
-                <span className="text-3xl">{step.icon}</span>
-                <span className="font-mono text-4xl font-bold text-brand-border group-hover:text-brand-accent/30 transition-colors">{step.num}</span>
-              </div>
-              <h3 className="mb-2 font-heading text-lg font-semibold">{step.title}</h3>
-              <p className="text-sm leading-relaxed text-brand-textSub">{step.desc}</p>
-            </motion.article>
-          ))}
-        </motion.div>
-      </section>
-
-      {/* ── TOOLS SUPPORTED ── */}
-      <motion.section
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true }}
-        variants={fadeUp}
-        className="relative z-10 mx-auto max-w-6xl px-6 pb-24"
-      >
-        <p className="mb-5 text-center font-mono text-xs uppercase tracking-[0.2em] text-brand-muted">
-          Supports these tools
-        </p>
-        <div className="flex flex-wrap justify-center gap-2">
-          {TOOLS.map((tool) => (
-            <span
-              key={tool.name}
-              className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition hover:scale-105 ${CAT_COLOR[tool.cat]}`}
-            >
-              {tool.name}
-            </span>
-          ))}
-        </div>
-        <p className="mt-4 text-center text-[11px] text-brand-muted">
-          Coding assistants · Chat subscriptions · API direct spend
-        </p>
-      </motion.section>
-
-      {/* ── FAQ ── */}
-      <section id="faq" className="relative z-10 border-t border-brand-border bg-brand-surface/30">
-        <div className="mx-auto max-w-3xl px-6 py-24">
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={fadeUp}
-            className="mb-12 text-center"
-          >
-            <p className="mb-3 font-mono text-xs uppercase tracking-[0.2em] text-brand-accent">FAQ</p>
-            <h2 className="font-heading text-3xl font-bold">Common questions</h2>
-          </motion.div>
-
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={{ visible: { transition: { staggerChildren: 0.08 } } }}
-            className="space-y-3"
-          >
-            {FAQS.map((faq) => (
-              <motion.div
-                key={faq.q}
-                variants={fadeUp}
-                className="rounded-xl border border-brand-border bg-brand-surface p-5 transition hover:border-brand-accent/30"
+        <section className="relative z-10 border-b border-brand-border">
+          <div className="mx-auto max-w-7xl px-6 py-16 lg:py-24">
+            <motion.div initial="hidden" whileInView="show" viewport={{ once: true, margin: "-120px" }} variants={staggerGroup}>
+              <motion.a
+                href="#contact"
+                variants={revealUp}
+                className="mb-9 inline-flex items-center gap-3 text-xl uppercase tracking-[0.07em] text-brand-text transition-colors hover:text-brand-accent"
               >
-                <p className="font-semibold text-brand-text">{faq.q}</p>
-                <p className="mt-2 text-sm leading-relaxed text-brand-textSub">{faq.a}</p>
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
-      </section>
+                About us <ArrowRight size={20} />
+              </motion.a>
 
-      {/* ── FINAL CTA ── */}
-      <section className="relative z-10 border-t border-brand-border">
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-brand-accent/5 via-transparent to-transparent" />
-        <div className="relative mx-auto max-w-3xl px-6 py-24 text-center">
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={{ visible: { transition: { staggerChildren: 0.1 } } }}
-          >
-            <motion.h2 variants={fadeUp} className="font-heading text-4xl font-bold sm:text-5xl">
-              Find out what you&apos;re<br />
-              <span className="text-brand-accent">actually</span> paying for.
-            </motion.h2>
-            <motion.p variants={fadeUp} className="mt-4 text-brand-textSub">
-              Free · No account · Results in 2 minutes
+              <div className="max-w-5xl">
+                {INTRO_PARAGRAPH.split(". ").map((line, idx, arr) => (
+                  <SplitLine
+                    key={`${line}-${idx}`}
+                    text={idx === arr.length - 1 ? line : `${line}.`}
+                    delay={0.05 + idx * 0.06}
+                  />
+                ))}
+              </div>
+            </motion.div>
+          </div>
+        </section>
+
+        <section className="relative z-10 border-b border-brand-border">
+          <div className="mx-auto max-w-7xl px-6 py-20 lg:py-24">
+            <motion.div
+              initial="hidden"
+              whileInView="show"
+              viewport={{ once: true, margin: "-120px" }}
+              variants={staggerGroup}
+              className="mb-14 text-center"
+            >
+              <motion.p variants={revealUp} className="text-xs uppercase tracking-[0.24em] text-brand-muted">
+                Award winning work
+              </motion.p>
+            </motion.div>
+
+            <motion.div
+              initial="hidden"
+              whileInView="show"
+              viewport={{ once: true, margin: "-140px" }}
+              variants={staggerGroup}
+              className="grid gap-6 border-t border-brand-border pt-12 sm:grid-cols-2 lg:grid-cols-5"
+            >
+              {AWARDS.map((award) => (
+                <motion.article key={award} variants={revealUp} className="text-center">
+                  <p className="text-sm font-medium uppercase tracking-[0.08em] text-brand-textSub">{award}</p>
+                </motion.article>
+              ))}
+            </motion.div>
+          </div>
+        </section>
+
+        <motion.section
+          id="services"
+          className="relative z-10 border-b border-brand-border bg-brand-surface/65"
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: "-100px" }}
+          variants={staggerGroup}
+        >
+          <div className="mx-auto max-w-7xl px-6 py-20">
+            <motion.p variants={revealUp} className="mb-3 text-xs uppercase tracking-[0.24em] text-brand-muted">
+              What we do
             </motion.p>
-            <motion.div variants={fadeUp} className="mt-8">
+            <motion.h2 variants={revealUp} className="max-w-3xl font-heading text-3xl leading-tight sm:text-4xl">
+              Financial-first AI spend programs designed to move your team forward.
+            </motion.h2>
+
+            <div className="mt-12 divide-y divide-brand-border">
+              {SERVICE_ROWS.map((row) => (
+                <motion.article
+                  key={row.id}
+                  variants={revealUp}
+                  className="grid gap-4 py-7 md:grid-cols-[110px_270px_1fr]"
+                >
+                  <p className="font-mono text-xs uppercase tracking-[0.22em] text-brand-muted">({row.id})</p>
+                  <h3 className="font-heading text-2xl leading-tight">{row.title}</h3>
+                  <p className="text-sm leading-relaxed text-brand-textSub sm:text-base">{row.description}</p>
+                </motion.article>
+              ))}
+            </div>
+          </div>
+        </motion.section>
+
+        <motion.section
+          id="work"
+          className="relative z-10 mx-auto max-w-7xl px-6 py-20"
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: "-90px" }}
+          variants={staggerGroup}
+        >
+          <motion.p variants={revealUp} className="mb-3 text-xs uppercase tracking-[0.24em] text-brand-muted">
+            Case studies
+          </motion.p>
+          <motion.h2 variants={revealUp} className="max-w-3xl font-heading text-3xl leading-tight sm:text-4xl">
+            Spend stories that move from monthly guesswork to clear annual savings.
+          </motion.h2>
+
+          <div className="mt-11 grid gap-6 lg:grid-cols-3">
+            {CASE_STUDIES.map((item) => (
+              <motion.article
+                key={item.title}
+                variants={revealUp}
+                className="group overflow-hidden rounded-2xl border border-brand-border bg-brand-surface"
+              >
+                <div className="overflow-hidden">
+                  <Image
+                    src={item.image}
+                    alt={item.title}
+                    width={1200}
+                    height={860}
+                    className="h-auto w-full transition duration-700 group-hover:scale-[1.03]"
+                  />
+                </div>
+                <div className="p-5">
+                  <p className="mb-2 text-[0.65rem] uppercase tracking-[0.22em] text-brand-muted">{item.label}</p>
+                  <h3 className="font-heading text-xl leading-tight">{item.title}</h3>
+                  <p className="mt-3 font-mono text-sm text-brand-accent">{item.result}</p>
+                </div>
+              </motion.article>
+            ))}
+          </div>
+        </motion.section>
+
+        <motion.section
+          className="relative z-10 border-y border-brand-border bg-brand-surface/65"
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: "-100px" }}
+          variants={staggerGroup}
+        >
+          <div className="mx-auto grid max-w-7xl gap-9 px-6 py-16 lg:grid-cols-[0.95fr_1.05fr]">
+            <motion.div variants={revealUp}>
+              <p className="mb-3 text-xs uppercase tracking-[0.24em] text-brand-muted">By the numbers</p>
+              <h2 className="max-w-md font-heading text-3xl leading-tight sm:text-4xl">
+                Built for teams that need precision before renewals.
+              </h2>
+            </motion.div>
+            <div className="grid gap-4 sm:grid-cols-3">
+              {PROOF_NUMBERS.map((item) => (
+                <motion.div
+                  key={item.label}
+                  variants={revealUp}
+                  className="rounded-xl border border-brand-border bg-brand-surface p-5"
+                >
+                  <p className="font-mono text-3xl leading-none text-brand-text">
+                    <AnimatedCounter value={item.value} prefix={item.prefix ?? ""} suffix={item.suffix ?? ""} />
+                  </p>
+                  <p className="mt-2 text-xs uppercase tracking-[0.14em] text-brand-muted">{item.label}</p>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </motion.section>
+
+        <section id="contact" className="relative z-10 mx-auto max-w-7xl px-6 py-20">
+          <div className="rounded-2xl border border-brand-border bg-brand-surface p-8 sm:p-10">
+            <p className="mb-3 text-xs uppercase tracking-[0.24em] text-brand-muted">Get in touch</p>
+            <h2 className="max-w-2xl font-heading text-3xl leading-tight sm:text-5xl">
+              Your finance-first partner for AI spend clarity. Start the audit in two minutes.
+            </h2>
+            <div className="mt-8 flex flex-wrap items-center gap-3">
               <Link
                 href="/audit"
-                className="group inline-flex h-14 items-center gap-2 rounded-xl bg-brand-accent px-8 text-lg font-semibold text-brand-bg transition-all glow-accent hover:bg-brand-accentDim"
+                className="inline-flex items-center gap-2 rounded-[0.7rem] bg-brand-text px-6 py-3 text-sm font-medium uppercase tracking-[0.14em] text-brand-bg transition hover:bg-brand-accent hover:text-brand-surface"
               >
-                Audit my AI spend — it&apos;s free
-                <ArrowRight size={18} className="transition-transform group-hover:translate-x-1" />
+                Start free audit <ArrowRight size={16} />
               </Link>
-            </motion.div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* ── FOOTER ── */}
-      <footer className="border-t border-brand-border">
-        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-6 py-6">
-          <Logo compact />
-          <p className="text-xs text-brand-muted">
-            SpendLens by <a href="https://credex.rocks" className="underline underline-offset-2 hover:text-brand-text transition-colors">Credex</a> · Free tool for startup AI spend visibility
-          </p>
-          <div className="flex gap-4 text-xs text-brand-muted">
-            <a href="#" className="hover:text-brand-text transition-colors">Privacy</a>
-            <a href="#" className="hover:text-brand-text transition-colors">Terms</a>
+              <a
+                href="mailto:hello@credex.rocks"
+                className="inline-flex items-center gap-2 rounded-[0.7rem] border border-brand-text px-6 py-3 text-sm font-medium uppercase tracking-[0.14em] text-brand-text transition hover:bg-brand-text hover:text-brand-bg"
+              >
+                hello@credex.rocks <ArrowUpRight size={16} />
+              </a>
+            </div>
           </div>
-        </div>
-      </footer>
-    </main>
+        </section>
+
+        <footer className="relative z-10 border-t border-brand-border">
+          <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-6 py-6">
+            <Logo compact />
+            <p className="text-xs uppercase tracking-[0.14em] text-brand-muted">SpendLens by Credex - NYC / BLR</p>
+            <div className="flex items-center gap-4 text-xs uppercase tracking-[0.14em] text-brand-muted">
+              <a href="#" className="transition-colors hover:text-brand-text">
+                Privacy
+              </a>
+              <a href="#" className="transition-colors hover:text-brand-text">
+                Terms
+              </a>
+            </div>
+          </div>
+        </footer>
+      </main>
+    </>
   );
 }
