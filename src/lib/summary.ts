@@ -1,10 +1,16 @@
-﻿import Anthropic from "@anthropic-ai/sdk";
 import { updateAuditSummary } from "@/lib/audit-store";
 import { buildSummaryPrompt } from "@/lib/prompts";
 import type { AuditInput, AuditResult } from "@/types/audit";
 
-type MessageWithContent = {
-  content: Array<{ type: string; text?: string }>;
+const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
+const DEFAULT_GROQ_MODEL = "llama-3.1-8b-instant";
+
+type GroqChatCompletionResponse = {
+  choices?: Array<{
+    message?: {
+      content?: string | Array<{ type?: string; text?: string }>;
+    };
+  }>;
 };
 
 export function generateFallbackSummary(result: AuditResult, input: AuditInput): string {
@@ -27,42 +33,61 @@ export function generateFallbackSummary(result: AuditResult, input: AuditInput):
   }`;
 }
 
-function extractTextFromAnthropicResponse(response: Awaited<ReturnType<Anthropic["messages"]["create"]>>): string {
-  if (!response || typeof response !== "object" || !("content" in response)) {
-    return "";
+function extractTextFromGroqResponse(response: GroqChatCompletionResponse): string {
+  const messageContent = response.choices?.[0]?.message?.content;
+
+  if (typeof messageContent === "string") {
+    return messageContent.trim();
   }
 
-  const content = (response as MessageWithContent).content;
-  const block = content.find((item) => item.type === "text");
-  return block?.text?.trim() ?? "";
+  if (Array.isArray(messageContent)) {
+    return messageContent
+      .map((item) => item.text ?? "")
+      .join(" ")
+      .trim();
+  }
+
+  return "";
 }
 
 export async function generateAiSummary(input: AuditInput, result: AuditResult): Promise<string> {
-  const apiKey = process.env.ANTHROPIC_API_KEY;
+  const apiKey = process.env.GROQ_API_KEY;
+  const model = process.env.GROQ_MODEL || DEFAULT_GROQ_MODEL;
+
   if (!apiKey) {
     return generateFallbackSummary(result, input);
   }
 
-  try {
-    const anthropic = new Anthropic({ apiKey });
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 8_000);
 
-    const timeoutPromise = new Promise<never>((_, reject) => {
-      setTimeout(() => reject(new Error("Anthropic request timed out")), 8_000);
+  try {
+    const response = await fetch(GROQ_API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        model,
+        messages: [{ role: "user", content: buildSummaryPrompt(input, result) }],
+        max_tokens: 240,
+        temperature: 0.2,
+      }),
+      signal: controller.signal,
     });
 
-    const response = await Promise.race([
-      anthropic.messages.create({
-        model: "claude-sonnet-4-20250514",
-        max_tokens: 240,
-        messages: [{ role: "user", content: buildSummaryPrompt(input, result) }],
-      }),
-      timeoutPromise,
-    ]);
+    if (!response.ok) {
+      return generateFallbackSummary(result, input);
+    }
 
-    const summary = extractTextFromAnthropicResponse(response);
+    const payload = (await response.json()) as GroqChatCompletionResponse;
+    const summary = extractTextFromGroqResponse(payload);
     return summary || generateFallbackSummary(result, input);
   } catch {
     return generateFallbackSummary(result, input);
+  } finally {
+    clearTimeout(timeout);
   }
 }
 
