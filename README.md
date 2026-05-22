@@ -7,7 +7,7 @@ SpendLens is a production-ready AI spend audit tool for startup teams. It audits
 - Next.js App Router + TypeScript
 - Tailwind CSS + shadcn/ui
 - Supabase Postgres (with local in-memory fallback)
-- Anthropic Claude API (optional, fallback summary supported)
+- Groq API (optional, fallback summary supported)
 - Resend (lead follow-up emails)
 - Vitest + GitHub Actions CI
 
@@ -50,4 +50,4 @@ npm run build
 
 - SQL schema is in `supabase/schema.sql`.
 - Assignment documentation artifacts are at repo root (`ARCHITECTURE.md`, `DEVLOG.md`, `PRICING_DATA.md`, etc.).
-- `ANTHROPIC_API_KEY` is optional; fallback summaries are generated when absent.
+- `GROQ_API_KEY` is optional; fallback summaries are generated when absent.
