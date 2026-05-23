@@ -1,0 +1,29 @@
+<svg width="1920" height="1080" viewBox="0 0 1920 1080" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="g1" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(1280 230) rotate(160) scale(690 390)">
+      <stop stop-color="white" stop-opacity="0.35"/>
+      <stop offset="1" stop-color="white" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="g2" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(420 160) rotate(31) scale(530 260)">
+      <stop stop-color="white" stop-opacity="0.22"/>
+      <stop offset="1" stop-color="white" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="g3" x1="960" y1="140" x2="960" y2="1080" gradientUnits="userSpaceOnUse">
+      <stop stop-color="white" stop-opacity="0.22"/>
+      <stop offset="1" stop-color="white" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="blurA" x="0" y="0" width="1920" height="1080" filterUnits="userSpaceOnUse">
+      <feGaussianBlur stdDeviation="22"/>
+    </filter>
+  </defs>
+
+  <g filter="url(#blurA)">
+    <ellipse cx="1270" cy="240" rx="620" ry="280" fill="url(#g1)"/>
+    <ellipse cx="460" cy="170" rx="430" ry="220" fill="url(#g2)"/>
+    <path d="M-120 610C210 420 460 560 730 490C1000 420 1180 290 1490 390C1640 440 1810 540 2020 620V980H-120V610Z" fill="url(#g3)" fill-opacity="0.6"/>
+  </g>
+
+  <path d="M140 160C260 100 420 108 540 176" stroke="white" stroke-opacity="0.26" stroke-width="2"/>
+  <path d="M1240 182C1380 120 1600 132 1780 210" stroke="white" stroke-opacity="0.18" stroke-width="1.8"/>
+  <path d="M640 340C760 280 940 290 1080 360" stroke="white" stroke-opacity="0.12" stroke-width="1.6"/>
+</svg>
