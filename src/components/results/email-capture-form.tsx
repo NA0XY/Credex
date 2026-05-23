@@ -1,6 +1,7 @@
 ﻿"use client";
 
 import { useState } from "react";
+import { Mail, Send } from "lucide-react";
 
 interface EmailCaptureFormProps {
   auditSlug: string;
@@ -45,13 +46,15 @@ export function EmailCaptureForm({ auditSlug }: EmailCaptureFormProps) {
   };
 
   return (
-    <div className="email-capture rounded-2xl border border-brand-border bg-brand-surface p-6 sm:p-8">
+    <div className="email-capture liquid-glass rounded-2xl border border-brand-border bg-brand-surface/72 p-6 sm:p-8">
       <div className="mb-5 flex items-start gap-3">
-        <span className="text-2xl">📬</span>
+        <span className="flex h-10 w-10 items-center justify-center rounded-xl border border-brand-accent/40 bg-brand-accent/12 text-brand-accent">
+          <Mail className="h-4 w-4" />
+        </span>
         <div>
           <h3 className="font-heading text-lg font-semibold text-brand-text">Get this report in your inbox</h3>
           <p className="mt-0.5 text-sm text-brand-textSub">
-            Plus alerts when better options launch for your stack. No spam — Credex may reach out if you qualify for significant credit savings.
+            Plus alerts when better options launch for your stack. No spam, Credex may reach out if you qualify for significant credit savings.
           </p>
         </div>
       </div>
@@ -92,7 +95,12 @@ export function EmailCaptureForm({ auditSlug }: EmailCaptureFormProps) {
                 <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-brand-bg/30 border-t-brand-bg" />
                 Sending...
               </>
-            ) : "Get my report →"}
+            ) : (
+              <>
+                <Send className="h-4 w-4" />
+                Get my report
+              </>
+            )}
           </button>
           {status && !submitted && (
             <p className="text-center text-sm text-brand-danger">{status}</p>
@@ -103,8 +111,7 @@ export function EmailCaptureForm({ auditSlug }: EmailCaptureFormProps) {
         </form>
       ) : (
         <div className="py-4 text-center">
-          <p className="text-4xl">🎉</p>
-          <p className="mt-3 font-semibold text-brand-text">Report sent!</p>
+          <p className="mt-3 font-semibold text-brand-text">Report sent</p>
           <p className="mt-1 text-sm text-brand-textSub">Check your inbox. The full report link is included.</p>
         </div>
       )}

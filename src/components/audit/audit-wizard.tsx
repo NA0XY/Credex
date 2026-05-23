@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useFieldArray, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { z } from "zod";
+import { CircleAlert, Search, Users } from "lucide-react";
 import { TOOLS, getPlanById } from "@/data/pricing";
 import { formatCurrency, roundCurrency } from "@/lib/format";
 import { auditFormSchema } from "@/lib/validation";
@@ -174,14 +175,14 @@ export function AuditWizard() {
   });
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-10">
+    <div className="mx-auto max-w-4xl px-4 pb-14 pt-6 sm:px-6">
 
       {/* ─── HEADER ─── */}
       <div className="mb-10">
-        <h1 className="font-heading text-3xl font-bold sm:text-4xl">
+        <h1 className="font-heading text-3xl font-bold text-white sm:text-4xl">
           Audit your AI spend
         </h1>
-        <p className="mt-2 text-sm text-brand-textSub">
+        <p className="mt-2 text-sm text-white/72">
           Answer a few questions. Get an instant, defensible breakdown of where you&apos;re overspending.
         </p>
       </div>
@@ -200,12 +201,12 @@ export function AuditWizard() {
                     ? "border-brand-accent bg-brand-accent text-brand-bg"
                     : isActive
                       ? "border-brand-accent bg-brand-accent/10 text-brand-accent"
-                      : "border-brand-border bg-brand-surface text-brand-muted"
+                    : "border-white/20 bg-black/25 text-white/55"
                   }`}
                 >
                   {isDone ? "✓" : stepNum}
                 </div>
-                <span className={`hidden text-xs font-medium sm:block ${isActive ? "text-brand-text" : "text-brand-muted"}`}>
+                <span className={`hidden text-xs font-medium sm:block ${isActive ? "text-white" : "text-white/72"}`}>
                   {label}
                 </span>
                 {i < 2 && <div className="mx-2 h-px w-8 bg-brand-border" />}
@@ -213,7 +214,7 @@ export function AuditWizard() {
             );
           })}
         </div>
-        <div className="h-1 w-full overflow-hidden rounded-full bg-brand-surface">
+        <div className="h-1 w-full overflow-hidden rounded-full bg-white/25">
           <div
             className="h-full rounded-full bg-brand-accent transition-all duration-500 ease-out"
             style={{ width: `${(step / 3) * 100}%` }}
@@ -223,16 +224,16 @@ export function AuditWizard() {
 
       {/* ─── DRAFT RESTORED TOAST ─── */}
       {initialDraft.restored && (
-        <div className="mb-6 flex items-center gap-2 rounded-xl border border-brand-accent/30 bg-brand-accent/5 px-4 py-3 text-sm">
+        <div className="liquid-glass mb-6 flex items-center gap-2 rounded-xl border border-brand-accent/30 bg-brand-accent/10 px-4 py-3 text-sm">
           <span className="text-brand-accent">↩</span>
-          <span className="text-brand-text">Draft restored from your last session.</span>
+          <span className="text-white/88">Draft restored from your last session.</span>
           <button
             type="button"
             onClick={() => {
               localStorage.removeItem(STORAGE_KEY);
               window.location.reload();
             }}
-            className="ml-auto text-xs text-brand-muted underline underline-offset-2 hover:text-brand-text"
+            className="ml-auto text-xs text-white/70 underline underline-offset-2 hover:text-white"
           >
             Start fresh
           </button>
@@ -245,15 +246,15 @@ export function AuditWizard() {
         {/* ─── STEP 1: Team Context ─── */}
         {step === 1 && (
           <div className="space-y-6">
-            <div className="rounded-2xl border border-brand-border bg-brand-surface p-6">
+            <div className="liquid-glass rounded-2xl border border-brand-border bg-brand-surface/72 p-6">
               <h2 className="mb-1 font-heading text-xl font-semibold">Tell us about your team</h2>
-              <p className="mb-6 text-xs text-brand-muted">This helps calibrate per-seat pricing and plan recommendations.</p>
+              <p className="mb-6 text-xs text-white/72">This helps calibrate per-seat pricing and plan recommendations.</p>
 
               <div className="grid gap-6 sm:grid-cols-2">
                 {/* Team size */}
                 <div>
-                  <label className="mb-2 block text-sm font-medium text-brand-text">
-                    Team size <span className="text-brand-muted">(people using AI tools)</span>
+                  <label className="mb-2 block text-sm font-medium text-white">
+                    Team size <span className="text-white/72">(people using AI tools)</span>
                   </label>
                   <input
                     type="number"
@@ -263,12 +264,12 @@ export function AuditWizard() {
                     className="input-field font-mono"
                     placeholder="e.g. 8"
                   />
-                  <p className="mt-1.5 text-[11px] text-brand-muted">Include devs, PMs, writers, researchers — anyone with a paid seat.</p>
+                  <p className="mt-1.5 text-[11px] text-white/50">Include devs, PMs, writers, researchers — anyone with a paid seat.</p>
                 </div>
 
                 {/* Primary use case */}
                 <div>
-                  <label className="mb-2 block text-sm font-medium text-brand-text">Primary use case</label>
+                  <label className="mb-2 block text-sm font-medium text-white">Primary use case</label>
                   <div className="grid grid-cols-1 gap-2">
                     {Object.entries(USE_CASE_LABELS).map(([value, label]) => {
                       const isSelected = primaryUseCase === value;
@@ -277,8 +278,8 @@ export function AuditWizard() {
                           key={value}
                           className={`flex cursor-pointer items-center gap-2 rounded-lg border px-3 py-2.5 text-sm transition-all
                             ${isSelected
-                              ? "border-brand-accent bg-brand-accent/10 text-brand-text"
-                              : "border-brand-border bg-brand-bg text-brand-textSub hover:border-brand-accent/40"
+                              ? "border-brand-accent bg-brand-accent/12 text-white"
+                              : "border-white/20 bg-black/25 text-white/78 hover:border-brand-accent/40"
                             }`}
                         >
                           <input
@@ -305,10 +306,10 @@ export function AuditWizard() {
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="font-heading text-xl font-semibold">Which AI tools does your team pay for?</h2>
-                <p className="mt-0.5 text-xs text-brand-muted">Add every tool. Overlap detection only works when all tools are present.</p>
+                <p className="mt-0.5 text-xs text-white/72">Add every tool. Overlap detection only works when all tools are present.</p>
               </div>
               <div className="text-right">
-                <p className="text-xs text-brand-muted">Total monthly spend</p>
+                <p className="text-xs text-white/72">Total monthly spend</p>
                 <p className="font-mono text-xl font-bold text-brand-accent">{formatCurrency(totalSpend)}</p>
               </div>
             </div>
@@ -317,7 +318,7 @@ export function AuditWizard() {
             <div className="space-y-3">
               {fields.fields.map((field, index) => {
                 const toolId = watchedTools[index]?.toolId;
-                const meta = TOOL_META[toolId ?? ""] ?? { emoji: "🔧", cat: "other", catLabel: "Tool" };
+                const meta = TOOL_META[toolId ?? ""] ?? { emoji: "AI", cat: "other", catLabel: "Tool" };
                 const plans = TOOLS.find((tool) => tool.id === toolId)?.plans ?? [];
                 const planId = watchedTools[index]?.planId;
                 const seats = Number(watchedTools[index]?.seats ?? 0);
@@ -329,16 +330,18 @@ export function AuditWizard() {
                 return (
                   <div
                     key={field.id}
-                    className="group relative rounded-xl border border-brand-border bg-brand-surface p-5 transition hover:border-brand-border/80"
+                    className="liquid-glass group relative rounded-xl border border-brand-border bg-brand-surface/70 p-5 transition hover:border-brand-border/80"
                   >
                     {/* Tool header row */}
                     <div className="mb-4 flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <span className="text-xl">{meta.emoji}</span>
-                        <span className="rounded-full border border-brand-border bg-brand-bg px-2 py-0.5 text-[10px] font-medium text-brand-muted">
+                        <span className="inline-flex h-6 min-w-6 items-center justify-center rounded-md border border-brand-accent/35 bg-brand-accent/12 px-1.5 text-[10px] font-semibold text-brand-accent">
+                          {meta.emoji}
+                        </span>
+                        <span className="rounded-full border border-white/20 bg-black/35 px-2 py-0.5 text-[10px] font-medium text-white/72">
                           {meta.catLabel}
                         </span>
-                        <span className="text-sm font-medium text-brand-text">
+                        <span className="text-sm font-medium text-white">
                           {TOOLS.find((t) => t.id === toolId)?.name ?? "Tool"}
                         </span>
                       </div>
@@ -346,7 +349,7 @@ export function AuditWizard() {
                         type="button"
                         onClick={() => fields.remove(index)}
                         disabled={fields.fields.length === 1}
-                        className="rounded-md p-1 text-brand-muted transition hover:bg-brand-danger/10 hover:text-brand-danger disabled:pointer-events-none disabled:opacity-30"
+                        className="rounded-md p-1 text-white/72 transition hover:bg-brand-danger/10 hover:text-brand-danger disabled:pointer-events-none disabled:opacity-30"
                         title="Remove tool"
                       >
                         ✕
@@ -356,7 +359,7 @@ export function AuditWizard() {
                     {/* Grid of inputs */}
                     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                       <div className="lg:col-span-1">
-                        <label className="mb-1.5 block text-xs font-medium text-brand-muted">Tool</label>
+                        <label className="mb-1.5 block text-xs font-medium text-white/72">Tool</label>
                         <select {...register(`tools.${index}.toolId`)} className="select-field text-xs">
                           {TOOLS.map((tool) => (
                             <option key={tool.id} value={tool.id}>{tool.name}</option>
@@ -365,7 +368,7 @@ export function AuditWizard() {
                       </div>
 
                       <div className="lg:col-span-1">
-                        <label className="mb-1.5 block text-xs font-medium text-brand-muted">Plan</label>
+                        <label className="mb-1.5 block text-xs font-medium text-white/72">Plan</label>
                         <select {...register(`tools.${index}.planId`)} className="select-field text-xs">
                           {plans.map((plan) => (
                             <option key={plan.id} value={plan.id}>{plan.name}</option>
@@ -374,7 +377,7 @@ export function AuditWizard() {
                       </div>
 
                       <div>
-                        <label className="mb-1.5 block text-xs font-medium text-brand-muted">Seats</label>
+                        <label className="mb-1.5 block text-xs font-medium text-white/72">Seats</label>
                         <input
                           type="number"
                           min={1}
@@ -384,7 +387,7 @@ export function AuditWizard() {
                       </div>
 
                       <div>
-                        <label className="mb-1.5 block text-xs font-medium text-brand-muted">
+                        <label className="mb-1.5 block text-xs font-medium text-white/72">
                           Monthly spend (USD)
                         </label>
                         <input
@@ -400,8 +403,8 @@ export function AuditWizard() {
 
                     {/* Expected vs actual */}
                     <div className="mt-3 flex flex-wrap items-center gap-2">
-                      <span className="text-[11px] text-brand-muted">
-                        List price: <span className="font-mono text-brand-textSub">{formatCurrency(expected)}/mo</span>
+                      <span className="text-[11px] text-white/72">
+                        List price: <span className="font-mono text-white/78">{formatCurrency(expected)}/mo</span>
                       </span>
                       {overBudget && (
                         <span className="inline-flex items-center gap-1 rounded-full border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 text-[10px] text-amber-400">
@@ -431,7 +434,7 @@ export function AuditWizard() {
                   primaryUseCase,
                 })
               }
-              className="group flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-brand-border bg-transparent py-3 text-sm text-brand-muted transition hover:border-brand-accent/50 hover:text-brand-accent"
+              className="group flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-white/25 bg-transparent py-3 text-sm text-white/60 transition hover:border-brand-accent/50 hover:text-brand-accent"
             >
               <span className="text-lg">+</span>
               Add another tool
@@ -442,16 +445,19 @@ export function AuditWizard() {
         {/* ─── STEP 3: Review ─── */}
         {step === 3 && (
           <div className="space-y-4">
-            <div className="rounded-2xl border border-brand-border bg-brand-surface p-6">
+            <div className="liquid-glass rounded-2xl border border-brand-border bg-brand-surface/72 p-6">
               <h2 className="mb-1 font-heading text-xl font-semibold">Ready to run your audit</h2>
-              <p className="mb-6 text-xs text-brand-muted">Review your inputs. Click Run to get instant results.</p>
+              <p className="mb-6 text-xs text-white/72">Review your inputs. Click Run to get instant results.</p>
 
               {/* Team summary pills */}
               <div className="mb-6 flex flex-wrap gap-2">
-                <span className="rounded-full border border-brand-border bg-brand-bg px-3 py-1 text-xs">
-                  👥 {teamSize} people
+                <span className="rounded-full border border-white/20 bg-black/35 px-3 py-1 text-xs text-white/90">
+                  <span className="inline-flex items-center gap-1">
+                    <Users className="h-3 w-3" />
+                    {teamSize} people
+                  </span>
                 </span>
-                <span className="rounded-full border border-brand-border bg-brand-bg px-3 py-1 text-xs">
+                <span className="rounded-full border border-white/20 bg-black/35 px-3 py-1 text-xs text-white/90">
                   {USE_CASE_LABELS[primaryUseCase]}
                 </span>
                 <span className="rounded-full border border-brand-accent/30 bg-brand-accent/5 px-3 py-1 text-xs text-brand-accent font-mono">
@@ -464,28 +470,28 @@ export function AuditWizard() {
                 {watchedTools.map((tool, index) => {
                   const toolMeta = TOOLS.find((item) => item.id === tool.toolId);
                   const planMeta = toolMeta?.plans.find((plan) => plan.id === tool.planId);
-                  const meta = TOOL_META[tool.toolId] ?? { emoji: "🔧" };
+                  const meta = TOOL_META[tool.toolId] ?? { emoji: "AI" };
 
                   return (
                     <div
                       key={`${tool.toolId}-${index}`}
-                      className="flex items-center justify-between rounded-xl border border-brand-border bg-brand-bg px-4 py-3"
+                      className="liquid-glass flex items-center justify-between rounded-xl border border-brand-border bg-brand-bg/56 px-4 py-3"
                     >
                       <div className="flex items-center gap-3">
                         <span className="text-lg">{meta.emoji}</span>
                         <div>
-                          <p className="text-sm font-medium text-brand-text">{toolMeta?.name ?? tool.toolId}</p>
-                          <p className="text-[11px] text-brand-muted">
+                          <p className="text-sm font-medium text-white">{toolMeta?.name ?? tool.toolId}</p>
+                          <p className="text-[11px] text-white/72">
                             {planMeta?.name ?? tool.planId} · {tool.seats} seat{tool.seats !== 1 ? "s" : ""}
                           </p>
                         </div>
                       </div>
                       <div className="text-right">
-                        <p className="font-mono text-sm font-semibold text-brand-text">{formatCurrency(tool.monthlySpend)}/mo</p>
+                        <p className="font-mono text-sm font-semibold text-white">{formatCurrency(tool.monthlySpend)}/mo</p>
                         <button
                           type="button"
                           onClick={() => setStep(2)}
-                          className="text-[10px] text-brand-muted underline underline-offset-2 hover:text-brand-accent transition-colors"
+                          className="text-[10px] text-white/72 underline underline-offset-2 hover:text-brand-accent transition-colors"
                         >
                           Edit
                         </button>
@@ -496,9 +502,12 @@ export function AuditWizard() {
               </div>
 
               {/* Estimate note */}
-              <div className="mt-4 rounded-xl border border-brand-border bg-brand-bg p-3">
-                <p className="text-[11px] text-brand-muted">
-                  🔍 The audit engine will check for duplicate coverage, plan-size mismatches, over-seating, and credit arbitrage opportunities across all {watchedTools.length} tools.
+              <div className="liquid-glass mt-4 rounded-xl border border-brand-border bg-brand-bg/56 p-3">
+                <p className="text-[11px] text-white/72">
+                  <span className="inline-flex items-center gap-1.5 text-white/78">
+                    <Search className="h-3.5 w-3.5 text-brand-accent" />
+                    The audit engine will check for duplicate coverage, plan-size mismatches, over-seating, and credit arbitrage opportunities across all {watchedTools.length} tools.
+                  </span>
                 </p>
               </div>
             </div>
@@ -508,7 +517,10 @@ export function AuditWizard() {
         {/* ─── ERROR ─── */}
         {error && (
           <div className="mt-4 rounded-xl border border-brand-danger/30 bg-brand-danger/5 px-4 py-3 text-sm text-brand-danger">
-            ⚠ {error}
+            <span className="inline-flex items-center gap-2">
+              <CircleAlert className="h-4 w-4" />
+              {error}
+            </span>
           </div>
         )}
 
@@ -518,7 +530,7 @@ export function AuditWizard() {
             type="button"
             onClick={() => setStep((c) => Math.max(c - 1, 1))}
             disabled={step === 1 || isSubmitting}
-            className="rounded-xl border border-brand-border px-5 py-2.5 text-sm text-brand-textSub transition hover:border-brand-accent/50 hover:text-brand-text disabled:pointer-events-none disabled:opacity-30"
+            className="rounded-xl border border-white/25 px-5 py-2.5 text-sm text-white/78 transition hover:border-brand-accent/50 hover:text-white disabled:pointer-events-none disabled:opacity-30"
           >
             ← Back
           </button>
