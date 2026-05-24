@@ -1,90 +1,111 @@
 "use client";
 
-import Image from "next/image";
-import { motion, useInView } from "framer-motion";
-import { ArrowUpRight } from "lucide-react";
+import Link from "next/link";
 import { useRef } from "react";
+import { useGsapContext } from "@/lib/motion/use-gsap-context";
 
-const SERVICES = [
+const COVERAGE = [
   {
-    video:
-      "https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260314_131748_f2ca2a28-fed7-44c8-b9a9-bd9acdd5ec31.mp4",
-    tag: "Detection",
-    title: "SpendLens Audit Engine",
-    description:
-      "Detect duplicate tool coverage, idle seats, and plan drift with rule-based scoring designed for finance and ops reviews.",
+    group: "Coding",
+    tools: "Cursor, Copilot, Windsurf",
+    note: "Seat duplication and tier mismatch checks",
   },
   {
-    video:
-      "https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260324_151826_c7218672-6e92-402c-9e45-f1e0f454bdc4.mp4",
-    tag: "Execution",
-    title: "Renewal & Credit Strategy",
-    description:
-      "Move from findings to action using downgrade playbooks, vendor negotiation narratives, and Credex credit opportunities.",
+    group: "Chat",
+    tools: "ChatGPT, Claude, Gemini",
+    note: "Role fit and model overlap recommendations",
+  },
+  {
+    group: "API",
+    tools: "Anthropic API, OpenAI API, Gemini API",
+    note: "Usage-rate and unit-cost drift analysis",
   },
 ];
 
 export function ServicesSection() {
   const sectionRef = useRef<HTMLElement | null>(null);
-  const isInView = useInView(sectionRef, { once: true, margin: "-100px" });
+
+  useGsapContext(
+    (gsap) => {
+      const nodes = gsap.utils.toArray<HTMLElement>("[data-services-reveal]");
+      if (nodes.length > 0) {
+        gsap.fromTo(
+          nodes,
+          { autoAlpha: 0, y: 20 },
+          {
+            autoAlpha: 1,
+            y: 0,
+            stagger: 0.08,
+            duration: 0.52,
+            ease: "power2.out",
+            scrollTrigger: {
+              trigger: sectionRef.current,
+              start: "top 75%",
+            },
+          }
+        );
+      }
+    },
+    { scope: sectionRef }
+  );
 
   return (
-    <section id="features" ref={sectionRef} className="relative overflow-hidden bg-black px-6 py-28 md:py-40">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(255,255,255,0.02)_0%,_transparent_60%)]" />
-      <Image
-        src="/assets/liquid/section-orbit.svg"
-        alt=""
-        aria-hidden="true"
-        fill
-        className="pointer-events-none object-cover opacity-40"
-      />
+    <section
+      id="features"
+      ref={sectionRef}
+      className="relative overflow-hidden bg-brand-bg px-6 pb-24 pt-20 text-brand-text"
+    >
+      <div className="pointer-events-none absolute inset-0 bg-grid opacity-16" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(84,161,239,0.14),transparent_68%)]" />
 
-      <div className="relative mx-auto max-w-6xl">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-          transition={{ duration: 0.7 }}
-          className="mb-10 flex items-center justify-between md:mb-14"
-        >
-          <h2 className="text-3xl tracking-tight text-white md:text-5xl">What Credex ships</h2>
-          <p className="hidden text-sm text-white/40 md:block">Core capabilities</p>
-        </motion.div>
+      <div className="relative mx-auto max-w-7xl">
+        <div data-services-reveal className="mb-10 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+          <div>
+            <span className="kicker">Coverage</span>
+            <h2 className="cond-display mt-3 text-[clamp(1.8rem,4.3vw,3.3rem)] leading-[1.03]">
+              What SpendLens audits today.
+            </h2>
+          </div>
+          <Link
+            href="/audit"
+            className="inline-flex items-center rounded-full border border-brand-borderStrong bg-brand-surface/55 px-5 py-2.5 text-xs uppercase tracking-[0.1em] text-brand-textSub transition hover:border-brand-accent/55 hover:text-brand-text"
+            style={{ fontFamily: "var(--font-mono)", fontWeight: 600 }}
+          >
+            Start your own run
+          </Link>
+        </div>
 
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 md:gap-8">
-          {SERVICES.map((service, index) => (
-            <motion.article
-              key={service.title}
-              initial={{ opacity: 0, y: 50 }}
-              animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
-              transition={{ duration: 0.8, delay: index * 0.15 }}
-              className="liquid-glass group overflow-hidden rounded-3xl"
-            >
-              <div className="relative aspect-video overflow-hidden">
-                <video
-                  className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-                  src={service.video}
-                  muted
-                  autoPlay
-                  loop
-                  playsInline
-                  preload="auto"
-                />
-                <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
-              </div>
-
-              <div className="p-6 md:p-8">
-                <div className="mb-6 flex items-center justify-between">
-                  <p className="text-xs uppercase tracking-widest text-white/40">{service.tag}</p>
-                  <div className="liquid-glass rounded-full p-2 text-white">
-                    <ArrowUpRight size={16} />
-                  </div>
+        <div className="grid gap-6 lg:grid-cols-[0.92fr_1.08fr]">
+          <article data-services-reveal className="panel p-5">
+            <span className="kicker">Model confidence factors</span>
+            <div className="mt-4 space-y-3">
+              {[
+                "Current plan delta vs list price",
+                "Role-to-seat intensity mismatch",
+                "Functional overlap across tool categories",
+                "Spend-per-developer benchmark variance",
+                "Negotiation leverage signals",
+              ].map((item, index) => (
+                <div key={item} className="panel-raised flex items-start gap-3 px-4 py-3">
+                  <span className="mono-value mt-0.5 text-sm">{`0${index + 1}`}</span>
+                  <p className="serif-body text-sm">{item}</p>
                 </div>
+              ))}
+            </div>
+          </article>
 
-                <h3 className="mb-3 text-xl tracking-tight text-white md:text-2xl">{service.title}</h3>
-                <p className="text-sm leading-relaxed text-white/50">{service.description}</p>
-              </div>
-            </motion.article>
-          ))}
+          <div className="space-y-4">
+            {COVERAGE.map((item) => (
+              <article key={item.group} data-services-reveal className="panel p-5">
+                <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
+                  <span className="badge badge-righsize">{item.group}</span>
+                  <span className="kicker text-brand-accent">Live ruleset</span>
+                </div>
+                <h3 className="text-lg text-brand-text">{item.tools}</h3>
+                <p className="serif-body mt-2 text-sm">{item.note}</p>
+              </article>
+            ))}
+          </div>
         </div>
       </div>
     </section>

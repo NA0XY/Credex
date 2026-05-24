@@ -6,7 +6,7 @@ import { ServicesSection } from "@/components/landing/services-section";
 
 export function LandingPage() {
   return (
-    <main className="bg-black text-white">
+    <main className="bg-brand-stage bg-brand-bg text-brand-text">
       <HeroSection />
       <AboutSection />
       <FeaturedVideoSection />

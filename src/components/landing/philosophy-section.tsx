@@ -1,61 +1,99 @@
 "use client";
 
-import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
-
-const PHILOSOPHY_VIDEO_URL =
-  "https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260307_083826_e938b29f-a43a-41ec-a153-3d4730578ab8.mp4";
+import { useGsapContext } from "@/lib/motion/use-gsap-context";
 
 export function PhilosophySection() {
   const sectionRef = useRef<HTMLElement | null>(null);
-  const isInView = useInView(sectionRef, { once: true, margin: "-100px" });
+
+  useGsapContext(
+    (gsap) => {
+      const nodes = gsap.utils.toArray<HTMLElement>("[data-philosophy-reveal]");
+      if (nodes.length > 0) {
+        gsap.fromTo(
+          nodes,
+          { autoAlpha: 0, y: 24 },
+          {
+            autoAlpha: 1,
+            y: 0,
+            stagger: 0.1,
+            duration: 0.56,
+            ease: "power2.out",
+            scrollTrigger: {
+              trigger: sectionRef.current,
+              start: "top 72%",
+            },
+          }
+        );
+      }
+    },
+    { scope: sectionRef }
+  );
 
   return (
-    <section ref={sectionRef} className="overflow-hidden bg-black px-6 py-28 md:py-40">
-      <div className="mx-auto max-w-6xl">
-        <motion.h2
-          initial={{ opacity: 0, y: 40 }}
-          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
-          transition={{ duration: 0.8 }}
-          className="mb-16 text-5xl tracking-tight text-white md:mb-24 md:text-7xl lg:text-8xl"
-        >
-          Savings <span className="font-instrument italic text-white/40">x</span> Velocity
-        </motion.h2>
+    <section ref={sectionRef} className="relative overflow-hidden border-b border-brand-border bg-brand-bg px-6 py-24">
+      <div className="pointer-events-none absolute inset-0 bg-grid opacity-15" />
+      <div className="mx-auto max-w-7xl">
+        <div data-philosophy-reveal className="mb-14 max-w-3xl">
+          <span className="kicker">Philosophy</span>
+          <h2 className="cond-display mt-3 text-[clamp(2rem,4.7vw,3.8rem)] leading-[1.02] text-brand-text">
+            Savings discipline
+            <span className="mx-2 text-brand-muted">x</span>
+            product velocity
+          </h2>
+          <p className="serif-body mt-4 text-base md:text-lg">
+            Every recommendation is prioritized by confidence and execution cost so teams can reduce
+            spend without slowing product delivery.
+          </p>
+        </div>
 
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-2 md:gap-12">
-          <motion.div
-            initial={{ opacity: 0, x: -40 }}
-            animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -40 }}
-            transition={{ duration: 0.8, delay: 0.05 }}
-            className="aspect-[4/3] overflow-hidden rounded-3xl"
-          >
-            <video className="h-full w-full object-cover" src={PHILOSOPHY_VIDEO_URL} muted autoPlay loop playsInline preload="auto" />
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, x: 40 }}
-            animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: 40 }}
-            transition={{ duration: 0.8, delay: 0.15 }}
-            className="flex flex-col justify-between"
-          >
-            <div>
-              <p className="mb-4 text-xs uppercase tracking-widest text-white/40">How scores work</p>
-              <p className="text-base leading-relaxed text-white/70 md:text-lg">
-                SpendLens evaluates each recommendation with explicit confidence logic: seat overlap certainty, plan
-                mismatch severity, and pricing delta reliability. Teams see why each action is ranked before they act.
-              </p>
+        <div className="grid gap-5 md:grid-cols-3">
+          <article data-philosophy-reveal className="panel p-5 md:col-span-2">
+            <span className="kicker">Signal matrix</span>
+            <div className="mt-4 grid gap-3 sm:grid-cols-2">
+              {[
+                {
+                  title: "Redundancy",
+                  desc: "Checks if multiple tools are paid for equivalent workflows across functions.",
+                },
+                {
+                  title: "Plan fit",
+                  desc: "Flags premium tiers where activation or feature usage is below threshold.",
+                },
+                {
+                  title: "Seat efficiency",
+                  desc: "Maps paid seats against role intensity to identify over-provisioned licenses.",
+                },
+                {
+                  title: "Cost benchmark",
+                  desc: "Compares per-developer spend against company-size cohort medians.",
+                },
+              ].map((item) => (
+                <div key={item.title} className="panel-raised px-4 py-4">
+                  <h3 className="text-base text-brand-text">{item.title}</h3>
+                  <p className="serif-body mt-2 text-sm">{item.desc}</p>
+                </div>
+              ))}
             </div>
+          </article>
 
-            <div className="my-8 h-px w-full bg-white/10" />
-
-            <div>
-              <p className="mb-4 text-xs uppercase tracking-widest text-white/40">Where Credex helps</p>
-              <p className="text-base leading-relaxed text-white/70 md:text-lg">
-                After the audit, Credex supports execution with vendor negotiation strategy, right-sizing playbooks,
-                and discounted credit pathways for teams with material monthly exposure.
-              </p>
+          <article data-philosophy-reveal className="panel p-5">
+            <span className="kicker">Credex next steps</span>
+            <div className="mt-4 space-y-4">
+              <div className="panel-raised px-4 py-3">
+                <p className="kicker text-brand-accent">1 / Prioritize</p>
+                <p className="serif-body mt-1 text-sm">Launch high-confidence actions with payback under 30 days.</p>
+              </div>
+              <div className="panel-raised px-4 py-3">
+                <p className="kicker text-brand-accent">2 / Negotiate</p>
+                <p className="serif-body mt-1 text-sm">Use recommendation notes to support procurement conversations.</p>
+              </div>
+              <div className="panel-raised px-4 py-3">
+                <p className="kicker text-brand-accent">3 / Re-audit</p>
+                <p className="serif-body mt-1 text-sm">Re-run as team size or model mix changes over each quarter.</p>
+              </div>
             </div>
-          </motion.div>
+          </article>
         </div>
       </div>
     </section>

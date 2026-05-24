@@ -2,19 +2,17 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Credex | AI Spend Intelligence",
+  title: "Credex SpendLens | AI Spend Intelligence",
   description:
-    "SpendLens by Credex helps startup teams detect AI spend leakage and execute high-confidence savings actions.",
+    "Free AI spend audit for startup teams. Find savings in minutes - no account required.",
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className="min-h-screen bg-black font-sans text-white antialiased">{children}</body>
+      <body className="min-h-screen bg-brand-bg font-sans text-brand-text antialiased">
+        {children}
+      </body>
     </html>
   );
 }

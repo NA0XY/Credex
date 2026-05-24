@@ -1,5 +1,7 @@
 ﻿export type UseCase = "coding" | "writing" | "data" | "research" | "mixed";
 
+import type { StackScore } from "@/lib/stack-score";
+
 export interface ToolInput {
   toolId: string;
   planId: string;
@@ -22,6 +24,8 @@ export interface Recommendation {
   monthlySavings: number;
   annualSavings: number;
   confidence: "high" | "medium" | "low";
+  negotiationTip?: string;
+  priceChangeAlert?: string;
 }
 
 export interface ToolAuditResult {
@@ -35,6 +39,14 @@ export interface ToolAuditResult {
   isOptimal: boolean;
 }
 
+export interface BenchmarkAuditComparison {
+  yourCpdPerMonth: number;
+  medianCpdPerMonth: number;
+  cohortLabel: string;
+  verdict: string;
+  percentile: string;
+}
+
 export interface AuditResult {
   tools: ToolAuditResult[];
   totalCurrentMonthlyCost: number;
@@ -43,6 +55,13 @@ export interface AuditResult {
   savingsTier: "high" | "medium" | "low" | "optimal";
   credexRelevant: boolean;
   generatedAt: string;
+  stackScore?: StackScore;
+  benchmarkComparison?: BenchmarkAuditComparison;
+}
+
+export interface CompletedAuditResult extends AuditResult {
+  stackScore: StackScore;
+  benchmarkComparison: BenchmarkAuditComparison;
 }
 
 export interface AuditRecord {

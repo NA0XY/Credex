@@ -1,8 +1,7 @@
-﻿"use client";
+"use client";
 
 import Link from "next/link";
 import { useState } from "react";
-import { Download, Link2, Plus } from "lucide-react";
 
 interface ResultActionsProps {
   slug: string;
@@ -20,35 +19,25 @@ export function ResultActions({ slug }: ResultActionsProps) {
 
   return (
     <div className="result-actions-bar flex flex-wrap items-center gap-2">
-      <button
-        onClick={copy}
-        className="liquid-glass inline-flex items-center gap-1.5 rounded-xl border border-brand-border bg-brand-surface/78 px-3 py-2 text-xs font-medium text-brand-textSub transition hover:border-brand-accent/50 hover:text-brand-accent"
-      >
-        {status === "Share link copied." ? (
-          <>
-            <Link2 className="h-3.5 w-3.5" />
-            Copied
-          </>
-        ) : (
-          <>
-            <Link2 className="h-3.5 w-3.5" />
-            Share
-          </>
-        )}
-      </button>
-      <button
-        onClick={() => window.print()}
-        className="liquid-glass inline-flex items-center gap-1.5 rounded-xl border border-brand-border bg-brand-surface/78 px-3 py-2 text-xs font-medium text-brand-textSub transition hover:border-brand-accent/50 hover:text-brand-accent"
-      >
-        <Download className="h-3.5 w-3.5" />
-        Save PDF
-      </button>
+      {[
+        { label: status === "Share link copied." ? "COPIED OK" : "SHARE", onClick: copy },
+        { label: "SAVE PDF", onClick: () => window.print() },
+      ].map((btn) => (
+        <button
+          key={btn.label}
+          onClick={btn.onClick}
+          className="rounded-full border border-brand-borderStrong bg-brand-surface/55 px-4 py-2 text-brand-textSub transition hover:border-brand-accent/55 hover:text-brand-text"
+          style={{ fontFamily: "var(--font-mono)", fontSize: "0.72rem", letterSpacing: "0.08em", fontWeight: 700 }}
+        >
+          {btn.label}
+        </button>
+      ))}
       <Link
         href="/audit"
-        className="liquid-glass inline-flex items-center gap-1.5 rounded-xl border border-brand-border bg-brand-surface/78 px-3 py-2 text-xs font-medium text-brand-textSub transition hover:border-brand-accent/50 hover:text-brand-accent"
+        className="rounded-full border border-brand-borderStrong bg-brand-surface/55 px-4 py-2 text-brand-textSub transition hover:border-brand-accent/55 hover:text-brand-text"
+        style={{ fontFamily: "var(--font-mono)", fontSize: "0.72rem", letterSpacing: "0.08em", fontWeight: 700 }}
       >
-        <Plus className="h-3.5 w-3.5" />
-        New audit
+        + NEW AUDIT
       </Link>
     </div>
   );

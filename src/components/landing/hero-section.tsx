@@ -1,220 +1,176 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Camera, Globe, Send } from "lucide-react";
-import { type ReactNode, useEffect, useRef } from "react";
+import { useRef } from "react";
+import { HeroGlyphDrop } from "@/components/landing/hero-glyph-drop";
+import { HeroObjectCluster } from "@/components/landing/object-modules";
+import { SiteHeader } from "@/components/site-header";
+import { useGsapContext } from "@/lib/motion/use-gsap-context";
 
-const HERO_VIDEO_URL =
-  "https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260405_074625_a81f018a-956b-43fb-9aee-4d1508e30e6a.mp4";
-
-function SocialButton({ children, label }: { children: ReactNode; label: string }) {
-  return (
-    <button
-      type="button"
-      aria-label={label}
-      className="liquid-glass rounded-full p-4 text-white/80 transition-all hover:bg-white/5 hover:text-white"
-    >
-      {children}
-    </button>
-  );
-}
+const HERO_STATS = [
+  { label: "Median savings found", value: "$340/mo" },
+  { label: "Teams audited", value: "2.4k+" },
+  { label: "Average completion time", value: "2 min" },
+];
 
 export function HeroSection() {
-  const videoRef = useRef<HTMLVideoElement | null>(null);
-  const fadeRafRef = useRef<number | null>(null);
-  const resetTimeoutRef = useRef<number | null>(null);
-  const isFadingOutRef = useRef(false);
+  const rootRef = useRef<HTMLElement | null>(null);
 
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    const cancelFadeFrame = () => {
-      if (fadeRafRef.current !== null) {
-        cancelAnimationFrame(fadeRafRef.current);
-        fadeRafRef.current = null;
-      }
-    };
-
-    const fadeTo = (targetOpacity: number, durationMs: number) => {
-      cancelFadeFrame();
-
-      const currentOpacity = Number.parseFloat(video.style.opacity || getComputedStyle(video).opacity || "0");
-      const startTime = performance.now();
-
-      const tick = (now: number) => {
-        const elapsed = now - startTime;
-        const progress = Math.min(elapsed / durationMs, 1);
-        const nextOpacity = currentOpacity + (targetOpacity - currentOpacity) * progress;
-        video.style.opacity = `${nextOpacity}`;
-
-        if (progress < 1) {
-          fadeRafRef.current = requestAnimationFrame(tick);
-        } else {
-          fadeRafRef.current = null;
-        }
-      };
-
-      fadeRafRef.current = requestAnimationFrame(tick);
-    };
-
-    const handleCanPlay = () => {
-      isFadingOutRef.current = false;
-      void video.play().catch(() => undefined);
-      fadeTo(1, 500);
-    };
-
-    const handleTimeUpdate = () => {
-      if (!video.duration || Number.isNaN(video.duration)) return;
-      const remaining = video.duration - video.currentTime;
-      if (remaining <= 0.55 && !isFadingOutRef.current) {
-        isFadingOutRef.current = true;
-        fadeTo(0, 500);
-      }
-    };
-
-    const handleEnded = () => {
-      isFadingOutRef.current = false;
-      cancelFadeFrame();
-      video.style.opacity = "0";
-
-      if (resetTimeoutRef.current !== null) {
-        window.clearTimeout(resetTimeoutRef.current);
+  useGsapContext(
+    (gsap) => {
+      const revealNodes = gsap.utils.toArray<HTMLElement>("[data-hero-reveal]");
+      if (revealNodes.length > 0) {
+        gsap.fromTo(
+          revealNodes,
+          { autoAlpha: 0, y: 22 },
+          {
+            autoAlpha: 1,
+            duration: 0.56,
+            ease: "power2.out",
+            stagger: 0.08,
+            y: 0,
+          }
+        );
       }
 
-      resetTimeoutRef.current = window.setTimeout(() => {
-        video.currentTime = 0;
-        void video.play().catch(() => undefined);
-        fadeTo(1, 500);
-      }, 100);
-    };
-
-    video.style.opacity = "0";
-    video.addEventListener("canplay", handleCanPlay);
-    video.addEventListener("timeupdate", handleTimeUpdate);
-    video.addEventListener("ended", handleEnded);
-
-    if (video.readyState >= HTMLMediaElement.HAVE_FUTURE_DATA) {
-      handleCanPlay();
-    }
-
-    return () => {
-      video.removeEventListener("canplay", handleCanPlay);
-      video.removeEventListener("timeupdate", handleTimeUpdate);
-      video.removeEventListener("ended", handleEnded);
-      cancelFadeFrame();
-      if (resetTimeoutRef.current !== null) {
-        window.clearTimeout(resetTimeoutRef.current);
-      }
-    };
-  }, []);
+      gsap.to("[data-hero-orbit]", {
+        duration: 24,
+        ease: "none",
+        repeat: -1,
+        rotate: 360,
+        transformOrigin: "50% 50%",
+      });
+    },
+    { scope: rootRef }
+  );
 
   return (
-    <section className="relative flex min-h-screen flex-col overflow-hidden bg-black">
-      <video
-        ref={videoRef}
-        className="absolute inset-0 h-full w-full object-cover object-bottom"
-        src={HERO_VIDEO_URL}
-        muted
-        autoPlay
-        playsInline
-        preload="auto"
-      />
+    <section
+      ref={rootRef}
+      className="relative min-h-[100dvh] overflow-hidden border-b border-brand-border bg-brand-bg text-brand-text"
+    >
+      <div className="pointer-events-none absolute inset-0 bg-grid opacity-35" />
+      <div className="pointer-events-none absolute -left-24 top-24 h-80 w-80 rounded-full bg-[#56a2ff]/15 blur-[120px]" />
+      <div className="pointer-events-none absolute -right-20 top-10 h-80 w-80 rounded-full bg-brand-accent/18 blur-[140px]" />
+      <svg
+        className="pointer-events-none absolute inset-x-0 top-6 h-44 w-full opacity-35"
+        fill="none"
+        viewBox="0 0 1440 240"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M-40 168C188 26 354 22 590 156C786 268 1070 240 1472 38"
+          stroke="rgba(169,194,227,0.25)"
+          strokeWidth="1.2"
+        />
+        <path
+          d="M-20 212C206 74 432 54 648 178C854 296 1108 258 1470 76"
+          stroke="rgba(255,138,61,0.22)"
+          strokeWidth="1"
+        />
+      </svg>
 
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_55%_32%,rgba(255,255,255,0.14),transparent_44%)]" />
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/55 via-black/30 to-black/80" />
-      <Image
-        src="/assets/liquid/hero-caustic.svg"
-        alt=""
-        aria-hidden="true"
-        fill
-        className="pointer-events-none object-cover opacity-65"
-      />
-      <Image
-        src="/assets/liquid/noise-film.svg"
-        alt=""
-        aria-hidden="true"
-        fill
-        className="pointer-events-none object-cover opacity-35"
-      />
-
-      <nav className="relative z-20 px-6 py-6">
-        <div className="liquid-glass mx-auto flex w-full max-w-5xl items-center justify-between rounded-full px-6 py-3">
-          <div className="flex items-center">
-            <div className="flex items-center gap-2">
-              <Globe size={24} className="text-white" />
-              <span className="text-lg font-semibold text-white">Credex</span>
-            </div>
-            <div className="ml-8 hidden items-center gap-8 md:flex">
-              <a href="#features" className="text-sm font-medium text-white/80 transition-colors hover:text-white">
-                Features
-              </a>
-              <a href="#workflow" className="text-sm font-medium text-white/80 transition-colors hover:text-white">
-                Workflow
-              </a>
-              <a href="#about" className="text-sm font-medium text-white/80 transition-colors hover:text-white">
-                About
-              </a>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <Link href="/results/demo" className="text-sm font-medium text-white">
-              Sample report
-            </Link>
-            <Link href="/audit" className="liquid-glass rounded-full px-6 py-2 text-sm font-medium text-white">
+      <div className="relative z-20 px-2 pt-4 sm:px-4">
+        <SiteHeader
+          links={[
+            { href: "#features", label: "Features" },
+            { href: "#workflow", label: "Workflow" },
+            { href: "#about", label: "About" },
+          ]}
+          rightSlot={
+            <Link
+              href="/audit"
+              className="inline-flex items-center rounded-full border border-brand-borderStrong bg-brand-accent/15 px-5 py-2 text-xs uppercase tracking-[0.11em] text-brand-text transition hover:border-brand-accent hover:bg-brand-accent hover:text-brand-bg"
+              style={{ fontFamily: "var(--font-mono)", fontWeight: 600 }}
+            >
               Start audit
             </Link>
-          </div>
-        </div>
-      </nav>
-
-      <div className="relative z-10 mx-auto flex w-full max-w-6xl flex-1 flex-col items-center justify-center px-6 pb-18 pt-12 text-center">
-        <h1 className="font-instrument text-[clamp(3.9rem,9vw,8.2rem)] leading-[0.96] tracking-tight text-white lg:whitespace-nowrap">
-          Track it then <em className="italic text-white/92">trim</em>
-        </h1>
-
-        <form className="mt-10 w-full max-w-xl md:max-w-2xl">
-          <label htmlFor="newsletter-email" className="sr-only">
-            Enter your email
-          </label>
-          <div className="liquid-glass flex items-center gap-3 rounded-full py-2 pl-6 pr-2">
-            <input
-              id="newsletter-email"
-              type="email"
-              placeholder="Work email for audit updates"
-              className="w-full bg-transparent text-white placeholder:text-white/40 focus:outline-none"
-            />
-            <button type="submit" className="rounded-full bg-white p-3 text-black transition-transform hover:scale-105">
-              <ArrowRight size={20} />
-            </button>
-          </div>
-        </form>
-
-        <p className="mt-8 max-w-3xl px-4 text-sm leading-relaxed text-white/95 md:text-[1.05rem]">
-          SpendLens by Credex maps AI seat plans, direct API contracts, and duplicate tooling so teams can capture
-          monthly savings without slowing product velocity.
-        </p>
-
-        <a
-          href="#workflow"
-          className="liquid-glass mt-7 rounded-full px-8 py-3 text-sm font-medium text-white transition-colors hover:bg-white/5"
-        >
-          See audit methodology
-        </a>
+          }
+        />
       </div>
 
-      <div className="relative z-10 flex justify-center gap-4 pb-14">
-        <SocialButton label="Case studies">
-          <Camera size={20} />
-        </SocialButton>
-        <SocialButton label="Ops updates">
-          <Send size={20} />
-        </SocialButton>
-        <SocialButton label="Platform">
-          <Globe size={20} />
-        </SocialButton>
+      <div className="relative z-10 mx-auto grid max-w-7xl gap-14 px-6 pb-18 pt-14 md:gap-12 md:pb-20 md:pt-16 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
+        <div>
+          <span data-hero-reveal className="kicker inline-flex items-center gap-2 rounded-full border border-brand-borderStrong px-3 py-1.5 text-brand-textSub">
+            <span className="inline-block h-1.5 w-1.5 rounded-full bg-brand-accent" />
+            CREDEX SPENDLENS / LIVE AUDIT ENGINE
+          </span>
+
+          <h1
+            data-hero-reveal
+            className="cond-display mt-6 max-w-3xl text-[clamp(2.5rem,8vw,5.3rem)] leading-[0.98] text-brand-text"
+          >
+            Audit your AI stack before it
+            <br />
+            <span className="text-brand-accent">
+              <HeroGlyphDrop text="starts leaking budget." />
+            </span>
+          </h1>
+
+          <p data-hero-reveal className="serif-body mt-7 max-w-[58ch] text-base md:text-lg">
+            SpendLens maps seats, plans, and overlapping capabilities across your tools, then
+            produces a deterministic savings report you can share with finance and product.
+          </p>
+
+          <div data-hero-reveal className="mt-9 flex flex-wrap gap-3">
+            <Link
+              href="/audit"
+              className="inline-flex items-center rounded-full border border-brand-accent bg-brand-accent px-7 py-3 text-sm uppercase tracking-[0.11em] text-brand-bg transition hover:bg-brand-accentDim active:scale-[0.985]"
+              style={{ fontFamily: "var(--font-mono)", fontWeight: 600 }}
+            >
+              Run free audit
+            </Link>
+            <Link
+              href="/results/demo"
+              className="inline-flex items-center rounded-full border border-brand-borderStrong bg-brand-surface/40 px-7 py-3 text-sm uppercase tracking-[0.11em] text-brand-textSub transition hover:border-brand-accent/50 hover:text-brand-text active:scale-[0.985]"
+              style={{ fontFamily: "var(--font-mono)", fontWeight: 600 }}
+            >
+              Open sample report
+            </Link>
+          </div>
+
+          <div data-hero-reveal className="mt-10 grid gap-3 sm:grid-cols-3">
+            {HERO_STATS.map((item) => (
+              <article key={item.label} className="liquid-glass rounded-2xl border border-brand-border bg-brand-surface/60 px-4 py-4">
+                <p className="kicker">{item.label}</p>
+                <p className="mono-value mt-2 text-2xl font-semibold">{item.value}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+
+        <div className="space-y-5">
+          <div data-hero-reveal>
+            <HeroObjectCluster />
+          </div>
+          <article data-hero-reveal className="panel px-5 py-5">
+            <div className="mb-3 flex items-center justify-between">
+              <p className="kicker">Flow telemetry</p>
+              <p className="kicker text-brand-accent">updated every run</p>
+            </div>
+            <div className="relative h-24 overflow-hidden rounded-xl border border-brand-border bg-brand-surface2/70">
+              <svg
+                className="absolute inset-0 h-full w-full"
+                fill="none"
+                viewBox="0 0 600 180"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <g data-hero-orbit transform="translate(300 90)">
+                  <circle r="70" stroke="rgba(181,194,210,0.26)" />
+                  <circle r="46" stroke="rgba(181,194,210,0.16)" />
+                  <circle cx="70" cy="0" r="6" fill="rgba(255,138,61,0.9)" />
+                  <circle cx="-46" cy="0" r="4.4" fill="rgba(115,171,244,0.9)" />
+                </g>
+                <path
+                  d="M42 142L130 112L192 128L260 82L326 106L390 74L462 84L556 36"
+                  stroke="rgba(255,138,61,0.75)"
+                  strokeDasharray="8 8"
+                  strokeWidth="3"
+                />
+              </svg>
+            </div>
+          </article>
+        </div>
       </div>
     </section>
   );

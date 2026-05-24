@@ -1,23 +1,39 @@
 import Link from "next/link";
+import { cn } from "@/lib/utils";
 
 interface LogoProps {
   compact?: boolean;
+  className?: string;
 }
 
-export function Logo({ compact = false }: LogoProps) {
+export function Logo({ compact = false, className }: LogoProps) {
   return (
-    <Link href="/" className="inline-flex items-center gap-2.5 group">
-      <span className="liquid-glass flex h-10 w-10 items-center justify-center rounded-[0.82rem] border border-white/40 bg-white/8">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <circle cx="12" cy="12" r="8.25" stroke="#D4E8FF" strokeWidth="1.15" strokeOpacity="0.7" />
-          <path d="M15.8 8.2C14.95 7.45 13.84 7 12.62 7C10 7 7.88 9.24 7.88 12C7.88 14.76 10 17 12.62 17C13.84 17 14.95 16.55 15.8 15.8" stroke="#8EC5FF" strokeWidth="1.85" strokeLinecap="round" />
-          <circle cx="16.8" cy="12" r="1.05" fill="#8EC5FF" />
+    <Link href="/" className={cn("group inline-flex items-center gap-3", className)} aria-label="Credex home">
+      <span className="liquid-glass relative flex h-10 w-10 items-center justify-center rounded-xl border border-brand-borderStrong bg-brand-surface2/80">
+        <svg
+          aria-hidden="true"
+          className="h-5 w-5"
+          fill="none"
+          viewBox="0 0 20 20"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <rect x="3" y="3" width="14" height="14" rx="3" stroke="currentColor" strokeWidth="1.4" className="text-brand-textSub" />
+          <circle cx="10" cy="10" r="4.1" stroke="currentColor" strokeWidth="1.4" className="text-brand-accent" />
+          <circle cx="10" cy="10" r="1.2" className="fill-brand-accent" />
+          <path d="M14.6 5.4L16.5 3.5" stroke="currentColor" strokeLinecap="round" strokeWidth="1.6" className="text-brand-accent" />
         </svg>
       </span>
+
       {!compact && (
-        <span className="font-mono text-[0.82rem] font-semibold uppercase tracking-[0.28em] text-white transition-colors group-hover:text-brand-accent">
-          Credex
-        </span>
+        <div className="flex items-center gap-2">
+          <span
+            className="text-sm uppercase tracking-[0.12em] text-brand-text transition-colors group-hover:text-brand-accent"
+            style={{ fontFamily: "var(--font-mono)", fontWeight: 700 }}
+          >
+            Credex
+          </span>
+          <span className="h-1.5 w-1.5 rounded-full bg-brand-accent/80" />
+        </div>
       )}
     </Link>
   );
