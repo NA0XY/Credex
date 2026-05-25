@@ -26,6 +26,33 @@ export function PhilosophySection() {
           }
         );
       }
+
+      gsap.fromTo(
+        "[data-signal-item]",
+        { autoAlpha: 0, x: -16 },
+        {
+          autoAlpha: 1,
+          x: 0,
+          duration: 0.44,
+          ease: "power2.out",
+          stagger: 0.07,
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: "top 60%",
+          },
+        }
+      );
+
+      gsap.timeline({
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: "top bottom",
+          end: "bottom top",
+          scrub: 0.9,
+        },
+      })
+        .to("[data-philosophy-core]", { yPercent: -7 }, 0)
+        .to("[data-philosophy-guide]", { yPercent: 8 }, 0);
     },
     { scope: sectionRef }
   );
@@ -48,7 +75,7 @@ export function PhilosophySection() {
         </div>
 
         <div className="grid gap-5 md:grid-cols-3">
-          <article data-philosophy-reveal className="panel p-5 md:col-span-2">
+          <article data-philosophy-core data-philosophy-reveal className="panel p-5 md:col-span-2">
             <span className="kicker">Signal matrix</span>
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
               {[
@@ -69,7 +96,7 @@ export function PhilosophySection() {
                   desc: "Compares per-developer spend against company-size cohort medians.",
                 },
               ].map((item) => (
-                <div key={item.title} className="panel-raised px-4 py-4">
+                <div key={item.title} data-signal-item className="panel-raised px-4 py-4">
                   <h3 className="text-base text-brand-text">{item.title}</h3>
                   <p className="serif-body mt-2 text-sm">{item.desc}</p>
                 </div>
@@ -77,7 +104,7 @@ export function PhilosophySection() {
             </div>
           </article>
 
-          <article data-philosophy-reveal className="panel p-5">
+          <article data-philosophy-guide data-philosophy-reveal className="panel p-5">
             <span className="kicker">Credex next steps</span>
             <div className="mt-4 space-y-4">
               <div className="panel-raised px-4 py-3">

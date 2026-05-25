@@ -45,6 +45,33 @@ export function ServicesSection() {
           }
         );
       }
+
+      gsap.fromTo(
+        "[data-service-card]",
+        { autoAlpha: 0, x: 20 },
+        {
+          autoAlpha: 1,
+          x: 0,
+          duration: 0.45,
+          ease: "power2.out",
+          stagger: 0.08,
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: "top 64%",
+          },
+        }
+      );
+
+      gsap.timeline({
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: "top bottom",
+          end: "bottom top",
+          scrub: 0.85,
+        },
+      })
+        .to("[data-service-left]", { yPercent: -7 }, 0)
+        .to("[data-service-right]", { yPercent: 8 }, 0);
     },
     { scope: sectionRef }
   );
@@ -76,7 +103,7 @@ export function ServicesSection() {
         </div>
 
         <div className="grid gap-6 lg:grid-cols-[0.92fr_1.08fr]">
-          <article data-services-reveal className="panel p-5">
+          <article data-service-left data-services-reveal className="panel p-5">
             <span className="kicker">Model confidence factors</span>
             <div className="mt-4 space-y-3">
               {[
@@ -94,9 +121,9 @@ export function ServicesSection() {
             </div>
           </article>
 
-          <div className="space-y-4">
+          <div data-service-right className="space-y-4">
             {COVERAGE.map((item) => (
-              <article key={item.group} data-services-reveal className="panel p-5">
+              <article key={item.group} data-service-card data-services-reveal className="panel p-5">
                 <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
                   <span className="badge badge-righsize">{item.group}</span>
                   <span className="kicker text-brand-accent">Live ruleset</span>

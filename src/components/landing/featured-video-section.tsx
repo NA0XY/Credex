@@ -33,6 +33,36 @@ export function FeaturedVideoSection() {
           }
         );
       }
+
+      const rows = gsap.utils.toArray<HTMLElement>("[data-reco-row]");
+      if (rows.length > 0) {
+        gsap.fromTo(
+          rows,
+          { autoAlpha: 0, x: 18 },
+          {
+            autoAlpha: 1,
+            x: 0,
+            duration: 0.44,
+            ease: "power2.out",
+            stagger: 0.08,
+            scrollTrigger: {
+              trigger: sectionRef.current,
+              start: "top 62%",
+            },
+          }
+        );
+      }
+
+      gsap.timeline({
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: "top bottom",
+          end: "bottom top",
+          scrub: 0.85,
+        },
+      })
+        .to("[data-workflow-main]", { yPercent: -8 }, 0)
+        .to("[data-workflow-side]", { yPercent: 8 }, 0);
     },
     { scope: sectionRef }
   );
@@ -61,7 +91,7 @@ export function FeaturedVideoSection() {
         </div>
 
         <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
-          <article data-workflow-reveal className="panel p-5 md:p-6">
+          <article data-workflow-main data-workflow-reveal className="panel p-5 md:p-6">
             <div className="mb-5 flex flex-wrap items-center justify-between gap-3 border-b border-brand-border pb-4">
               <div className="flex items-center gap-3">
                 <span className="badge badge-grade-b">Stack grade B</span>
@@ -72,7 +102,7 @@ export function FeaturedVideoSection() {
 
             <div className="space-y-3">
               {DEMO_RESULTS.map((item) => (
-                <div key={item.tool} className="panel-raised px-4 py-4">
+                <div key={item.tool} data-reco-row className="panel-raised px-4 py-4">
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div>
                       <span className="kicker text-brand-accent">{item.type}</span>
@@ -103,7 +133,7 @@ export function FeaturedVideoSection() {
             </div>
           </article>
 
-          <aside data-workflow-reveal className="panel p-5">
+          <aside data-workflow-side data-workflow-reveal className="panel p-5">
             <span className="kicker">Audit signal chain</span>
             <div className="mt-4 space-y-3">
               {[

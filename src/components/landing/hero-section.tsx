@@ -3,9 +3,11 @@
 import Link from "next/link";
 import { useRef } from "react";
 import { HeroGlyphDrop } from "@/components/landing/hero-glyph-drop";
+import { HeroSignalTicker } from "@/components/landing/hero-signal-ticker";
 import { HeroObjectCluster } from "@/components/landing/object-modules";
 import { SiteHeader } from "@/components/site-header";
 import { useGsapContext } from "@/lib/motion/use-gsap-context";
+import { useMagnetic } from "@/lib/motion/use-magnetic";
 
 const HERO_STATS = [
   { label: "Median savings found", value: "$340/mo" },
@@ -15,6 +17,13 @@ const HERO_STATS = [
 
 export function HeroSection() {
   const rootRef = useRef<HTMLElement | null>(null);
+  const primaryCtaRef = useRef<HTMLAnchorElement | null>(null);
+  const secondaryCtaRef = useRef<HTMLAnchorElement | null>(null);
+  const telemetryCardRef = useRef<HTMLElement | null>(null);
+
+  useMagnetic(primaryCtaRef, { maxOffset: 6 });
+  useMagnetic(secondaryCtaRef, { maxOffset: 5 });
+  useMagnetic(telemetryCardRef, { maxOffset: 4 });
 
   useGsapContext(
     (gsap) => {
@@ -33,6 +42,31 @@ export function HeroSection() {
         );
       }
 
+      gsap.to("[data-hero-glow='left']", {
+        duration: 8.2,
+        ease: "sine.inOut",
+        repeat: -1,
+        x: 32,
+        y: -18,
+        yoyo: true,
+      });
+
+      gsap.to("[data-hero-glow='right']", {
+        duration: 7.4,
+        ease: "sine.inOut",
+        repeat: -1,
+        x: -28,
+        y: 14,
+        yoyo: true,
+      });
+
+      gsap.to("[data-hero-path='accent']", {
+        duration: 3.2,
+        ease: "none",
+        repeat: -1,
+        strokeDashoffset: -120,
+      });
+
       gsap.to("[data-hero-orbit]", {
         duration: 24,
         ease: "none",
@@ -40,6 +74,27 @@ export function HeroSection() {
         rotate: 360,
         transformOrigin: "50% 50%",
       });
+
+      gsap.to("[data-hero-float]", {
+        duration: 2.7,
+        ease: "sine.inOut",
+        repeat: -1,
+        stagger: 0.16,
+        y: -6,
+        yoyo: true,
+      });
+
+      gsap.timeline({
+        scrollTrigger: {
+          trigger: rootRef.current,
+          start: "top top",
+          end: "bottom top",
+          scrub: 0.8,
+        },
+      })
+        .to("[data-hero-content]", { opacity: 0.72, yPercent: 14 }, 0)
+        .to("[data-hero-visual]", { yPercent: -10 }, 0)
+        .to("[data-hero-arc]", { yPercent: 24 }, 0);
     },
     { scope: rootRef }
   );
@@ -50,9 +105,10 @@ export function HeroSection() {
       className="relative min-h-[100dvh] overflow-hidden border-b border-brand-border bg-brand-bg text-brand-text"
     >
       <div className="pointer-events-none absolute inset-0 bg-grid opacity-35" />
-      <div className="pointer-events-none absolute -left-24 top-24 h-80 w-80 rounded-full bg-[#56a2ff]/15 blur-[120px]" />
-      <div className="pointer-events-none absolute -right-20 top-10 h-80 w-80 rounded-full bg-brand-accent/18 blur-[140px]" />
+      <div data-hero-glow="left" className="pointer-events-none absolute -left-24 top-24 h-80 w-80 rounded-full bg-[#56a2ff]/15 blur-[120px]" />
+      <div data-hero-glow="right" className="pointer-events-none absolute -right-20 top-10 h-80 w-80 rounded-full bg-brand-accent/18 blur-[140px]" />
       <svg
+        data-hero-arc
         className="pointer-events-none absolute inset-x-0 top-6 h-44 w-full opacity-35"
         fill="none"
         viewBox="0 0 1440 240"
@@ -66,7 +122,9 @@ export function HeroSection() {
         <path
           d="M-20 212C206 74 432 54 648 178C854 296 1108 258 1470 76"
           stroke="rgba(255,138,61,0.22)"
+          strokeDasharray="8 10"
           strokeWidth="1"
+          data-hero-path="accent"
         />
       </svg>
 
@@ -90,7 +148,7 @@ export function HeroSection() {
       </div>
 
       <div className="relative z-10 mx-auto grid max-w-7xl gap-14 px-6 pb-18 pt-14 md:gap-12 md:pb-20 md:pt-16 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
-        <div>
+        <div data-hero-content>
           <span data-hero-reveal className="kicker inline-flex items-center gap-2 rounded-full border border-brand-borderStrong px-3 py-1.5 text-brand-textSub">
             <span className="inline-block h-1.5 w-1.5 rounded-full bg-brand-accent" />
             CREDEX SPENDLENS / LIVE AUDIT ENGINE
@@ -114,6 +172,7 @@ export function HeroSection() {
 
           <div data-hero-reveal className="mt-9 flex flex-wrap gap-3">
             <Link
+              ref={primaryCtaRef}
               href="/audit"
               className="inline-flex items-center rounded-full border border-brand-accent bg-brand-accent px-7 py-3 text-sm uppercase tracking-[0.11em] text-brand-bg transition hover:bg-brand-accentDim active:scale-[0.985]"
               style={{ fontFamily: "var(--font-mono)", fontWeight: 600 }}
@@ -121,6 +180,7 @@ export function HeroSection() {
               Run free audit
             </Link>
             <Link
+              ref={secondaryCtaRef}
               href="/results/demo"
               className="inline-flex items-center rounded-full border border-brand-borderStrong bg-brand-surface/40 px-7 py-3 text-sm uppercase tracking-[0.11em] text-brand-textSub transition hover:border-brand-accent/50 hover:text-brand-text active:scale-[0.985]"
               style={{ fontFamily: "var(--font-mono)", fontWeight: 600 }}
@@ -131,19 +191,23 @@ export function HeroSection() {
 
           <div data-hero-reveal className="mt-10 grid gap-3 sm:grid-cols-3">
             {HERO_STATS.map((item) => (
-              <article key={item.label} className="liquid-glass rounded-2xl border border-brand-border bg-brand-surface/60 px-4 py-4">
+              <article key={item.label} data-hero-float className="liquid-glass rounded-2xl border border-brand-border bg-brand-surface/60 px-4 py-4">
                 <p className="kicker">{item.label}</p>
                 <p className="mono-value mt-2 text-2xl font-semibold">{item.value}</p>
               </article>
             ))}
           </div>
+
+          <div data-hero-reveal className="mt-7">
+            <HeroSignalTicker />
+          </div>
         </div>
 
-        <div className="space-y-5">
+        <div data-hero-visual className="space-y-5">
           <div data-hero-reveal>
             <HeroObjectCluster />
           </div>
-          <article data-hero-reveal className="panel px-5 py-5">
+          <article ref={telemetryCardRef} data-hero-reveal className="panel magnetic-target px-5 py-5">
             <div className="mb-3 flex items-center justify-between">
               <p className="kicker">Flow telemetry</p>
               <p className="kicker text-brand-accent">updated every run</p>

@@ -45,6 +45,18 @@ export function AboutSection() {
           }
         );
       }
+
+      gsap.timeline({
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: "top bottom",
+          end: "bottom top",
+          scrub: 0.9,
+        },
+      })
+        .to("[data-about-steps]", { yPercent: -6 }, 0)
+        .to("[data-about-artifacts]", { yPercent: 8 }, 0)
+        .to("[data-about-haze]", { yPercent: 14 }, 0);
     },
     { scope: sectionRef }
   );
@@ -56,7 +68,7 @@ export function AboutSection() {
       className="relative overflow-hidden border-b border-brand-border bg-brand-bg px-6 py-24 text-brand-text"
     >
       <div className="pointer-events-none absolute inset-0 bg-grid opacity-25" />
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(103,164,236,0.14),transparent_68%)]" />
+      <div data-about-haze className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(103,164,236,0.14),transparent_68%)]" />
 
       <div className="relative mx-auto max-w-7xl">
         <div data-about-reveal className="mb-14 max-w-3xl">
@@ -70,7 +82,7 @@ export function AboutSection() {
           </p>
         </div>
 
-        <div className="mb-14 grid gap-4 md:grid-cols-3">
+        <div data-about-steps className="mb-14 grid gap-4 md:grid-cols-3">
           {STEPS.map((step) => (
             <article key={step.num} data-about-reveal className="panel px-5 py-5">
               <p className="mono-value text-2xl font-semibold">{step.num}</p>
@@ -80,7 +92,7 @@ export function AboutSection() {
           ))}
         </div>
 
-        <div data-about-reveal>
+        <div data-about-artifacts data-about-reveal>
           <SystemArtifactGrid />
         </div>
       </div>

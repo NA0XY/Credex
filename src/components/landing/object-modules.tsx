@@ -31,6 +31,49 @@ export function HeroObjectCluster() {
         );
       }
 
+      const cleanups: Array<() => void> = [];
+
+      cards.forEach((card) => {
+        const rotateX = gsap.quickTo(card, "rotateX", {
+          duration: 0.35,
+          ease: "power3.out",
+        });
+        const rotateY = gsap.quickTo(card, "rotateY", {
+          duration: 0.35,
+          ease: "power3.out",
+        });
+        const moveY = gsap.quickTo(card, "y", {
+          duration: 0.28,
+          ease: "power2.out",
+        });
+
+        const onMove = (event: PointerEvent) => {
+          const rect = card.getBoundingClientRect();
+          const px = (event.clientX - rect.left) / rect.width - 0.5;
+          const py = (event.clientY - rect.top) / rect.height - 0.5;
+          rotateX(py * -4.6);
+          rotateY(px * 5.4);
+        };
+
+        const onEnter = () => moveY(-4);
+        const onLeave = () => {
+          rotateX(0);
+          rotateY(0);
+          moveY(0);
+        };
+
+        card.addEventListener("pointermove", onMove);
+        card.addEventListener("pointerenter", onEnter);
+        card.addEventListener("pointerleave", onLeave);
+
+        cleanups.push(() => {
+          card.removeEventListener("pointermove", onMove);
+          card.removeEventListener("pointerenter", onEnter);
+          card.removeEventListener("pointerleave", onLeave);
+          gsap.set(card, { clearProps: "transform" });
+        });
+      });
+
       gsap.to("[data-orbit-group]", {
         duration: 20,
         ease: "none",
@@ -55,13 +98,17 @@ export function HeroObjectCluster() {
         stagger: 0.18,
         yoyo: true,
       });
+
+      return () => {
+        cleanups.forEach((cleanup) => cleanup());
+      };
     },
     { scope: rootRef }
   );
 
   return (
     <div ref={rootRef} className="space-y-4">
-      <article data-object-card className="panel p-4">
+      <article data-object-card className="panel p-4" style={{ perspective: "1000px", transformStyle: "preserve-3d" }}>
         <div className="mb-3 flex items-center justify-between">
           <ObjectTag>Coverage orbit</ObjectTag>
           <span className="kicker text-brand-accent">12 tools tracked</span>
@@ -102,7 +149,7 @@ export function HeroObjectCluster() {
         </svg>
       </article>
 
-      <article data-object-card className="panel p-4">
+      <article data-object-card className="panel p-4" style={{ perspective: "1000px", transformStyle: "preserve-3d" }}>
         <div className="mb-3 flex items-center justify-between">
           <ObjectTag>Seat lattice</ObjectTag>
           <span className="kicker text-brand-textSub">21 seats mapped</span>
