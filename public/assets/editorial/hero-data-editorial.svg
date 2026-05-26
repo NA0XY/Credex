@@ -1,0 +1,97 @@
+<svg width="1800" height="1200" viewBox="0 0 1800 1200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <filter id="softShadow" x="0" y="0" width="2000" height="1400" filterUnits="userSpaceOnUse">
+      <feDropShadow dx="0" dy="16" stdDeviation="18" flood-color="#1A1612" flood-opacity="0.22"/>
+    </filter>
+    <filter id="grain">
+      <feTurbulence type="fractalNoise" baseFrequency="0.78" numOctaves="2" seed="17"/>
+      <feColorMatrix type="saturate" values="0"/>
+      <feComponentTransfer>
+        <feFuncA type="table" tableValues="0 0.04"/>
+      </feComponentTransfer>
+    </filter>
+    <linearGradient id="bgWash" x1="0" y1="0" x2="1800" y2="1200" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#F4EFE6"/>
+      <stop offset="1" stop-color="#EDE7DB"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1800" height="1200" fill="url(#bgWash)"/>
+
+  <g opacity="0.28">
+    <path d="M0 130H1800" stroke="#5F7A61" stroke-width="1"/>
+    <path d="M0 274H1800" stroke="#5F7A61" stroke-width="1"/>
+    <path d="M0 418H1800" stroke="#5F7A61" stroke-width="1"/>
+    <path d="M0 562H1800" stroke="#5F7A61" stroke-width="1"/>
+    <path d="M0 706H1800" stroke="#5F7A61" stroke-width="1"/>
+    <path d="M0 850H1800" stroke="#5F7A61" stroke-width="1"/>
+    <path d="M0 994H1800" stroke="#5F7A61" stroke-width="1"/>
+    <path d="M120 0V1200" stroke="#5F7A61" stroke-width="1"/>
+    <path d="M264 0V1200" stroke="#5F7A61" stroke-width="1"/>
+    <path d="M408 0V1200" stroke="#5F7A61" stroke-width="1"/>
+    <path d="M552 0V1200" stroke="#5F7A61" stroke-width="1"/>
+    <path d="M696 0V1200" stroke="#5F7A61" stroke-width="1"/>
+    <path d="M840 0V1200" stroke="#5F7A61" stroke-width="1"/>
+    <path d="M984 0V1200" stroke="#5F7A61" stroke-width="1"/>
+    <path d="M1128 0V1200" stroke="#5F7A61" stroke-width="1"/>
+    <path d="M1272 0V1200" stroke="#5F7A61" stroke-width="1"/>
+    <path d="M1416 0V1200" stroke="#5F7A61" stroke-width="1"/>
+    <path d="M1560 0V1200" stroke="#5F7A61" stroke-width="1"/>
+  </g>
+
+  <g transform="translate(890 120) rotate(-5)" filter="url(#softShadow)">
+    <rect width="860" height="780" rx="38" fill="#EAE4D8" stroke="#C8BFB0" stroke-width="3"/>
+    <text x="46" y="72" fill="#1A1612" font-family="'JetBrains Mono', monospace" font-size="20" letter-spacing="2.8">SPEND vs BENCHMARK</text>
+    <rect x="58" y="620" width="120" height="100" rx="12" fill="#5F7A61"/>
+    <rect x="204" y="548" width="120" height="172" rx="12" fill="#8C6A2A"/>
+    <rect x="350" y="476" width="120" height="244" rx="12" fill="#5F7A61"/>
+    <rect x="496" y="566" width="120" height="154" rx="12" fill="#8C6A2A"/>
+  </g>
+
+  <g transform="translate(1060 360) rotate(4)" filter="url(#softShadow)">
+    <rect width="660" height="520" rx="34" fill="#263228" stroke="#C8BFB0" stroke-opacity="0.25" stroke-width="2"/>
+    <text x="44" y="66" fill="#FFFFFF" fill-opacity="0.66" font-family="'JetBrains Mono', monospace" font-size="18" letter-spacing="2.6">MONTHLY SAVINGS</text>
+    <text x="44" y="200" fill="#FFFFFF" font-family="'Barlow Condensed', sans-serif" font-size="170" font-weight="800">$1,240</text>
+    <text x="48" y="246" fill="#FFFFFF" fill-opacity="0.52" font-family="'JetBrains Mono', monospace" font-size="22" letter-spacing="2.2">/mo identified</text>
+    <circle cx="556" cy="164" r="68" stroke="#2F7C4F" stroke-width="18"/>
+    <circle cx="556" cy="164" r="41" stroke="#5F7A61" stroke-width="10" opacity="0.7"/>
+  </g>
+
+  <g transform="translate(420 260) rotate(-2)" filter="url(#softShadow)">
+    <rect width="940" height="700" rx="40" fill="#FDFAF6" stroke="#C8BFB0" stroke-width="3"/>
+    <text x="58" y="82" fill="#1A1612" font-family="'JetBrains Mono', monospace" font-size="20" letter-spacing="3">STACK HEALTH SCORE</text>
+    <text x="84" y="470" fill="#5F7A61" font-family="'Barlow Condensed', sans-serif" font-size="430" font-weight="800">B</text>
+    <text x="74" y="536" fill="#1A1612" font-family="'JetBrains Mono', monospace" font-size="24" letter-spacing="3.2">74 / 100 POINTS</text>
+
+    <text x="410" y="584" fill="#1A1612" font-family="'JetBrains Mono', monospace" font-size="20" letter-spacing="2.6">PLAN FIT</text>
+    <rect x="410" y="604" width="440" height="16" rx="8" fill="#EDE7DB"/>
+    <rect x="410" y="604" width="352" height="16" rx="8" fill="#2F7C4F"/>
+
+    <text x="410" y="654" fill="#1A1612" font-family="'JetBrains Mono', monospace" font-size="20" letter-spacing="2.6">REDUNDANCY</text>
+    <rect x="410" y="674" width="440" height="16" rx="8" fill="#EDE7DB"/>
+    <rect x="410" y="674" width="242" height="16" rx="8" fill="#8C6A2A"/>
+
+    <text x="410" y="724" fill="#1A1612" font-family="'JetBrains Mono', monospace" font-size="20" letter-spacing="2.6">SEAT EFF.</text>
+    <rect x="410" y="744" width="440" height="16" rx="8" fill="#EDE7DB"/>
+    <rect x="410" y="744" width="154" height="16" rx="8" fill="#A94843"/>
+  </g>
+
+  <g transform="translate(362 932)">
+    <rect width="242" height="52" rx="26" fill="#FDFAF6" stroke="#C8BFB0" stroke-width="2"/>
+    <text x="24" y="33" fill="#A94843" font-family="'JetBrains Mono', monospace" font-size="18" letter-spacing="2.6">SEAT OVERLAP ↑</text>
+  </g>
+  <g transform="translate(640 972)">
+    <rect width="178" height="52" rx="26" fill="#FDFAF6" stroke="#C8BFB0" stroke-width="2"/>
+    <text x="24" y="33" fill="#2F7C4F" font-family="'JetBrains Mono', monospace" font-size="18" letter-spacing="2.6">PLAN FIT ✓</text>
+  </g>
+  <g transform="translate(848 930)">
+    <rect width="250" height="52" rx="26" fill="#FDFAF6" stroke="#C8BFB0" stroke-width="2"/>
+    <text x="24" y="33" fill="#8C6A2A" font-family="'JetBrains Mono', monospace" font-size="18" letter-spacing="2.6">BENCHMARK DELTA</text>
+  </g>
+
+  <path d="M1120 804L1016 736" stroke="#5F7A61" stroke-opacity="0.35" stroke-width="2" stroke-dasharray="6 6"/>
+  <path d="M1278 786L1428 712" stroke="#5F7A61" stroke-opacity="0.35" stroke-width="2" stroke-dasharray="6 6"/>
+  <path d="M1162 906L872 894" stroke="#5F7A61" stroke-opacity="0.35" stroke-width="2" stroke-dasharray="6 6"/>
+
+  <rect width="1800" height="1200" filter="url(#grain)"/>
+</svg>

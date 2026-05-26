@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { FrameShell, SignalBadge } from "@/components/editorial/primitives";
 
 interface EmailCaptureFormProps {
   auditSlug: string;
@@ -45,9 +46,12 @@ export function EmailCaptureForm({ auditSlug }: EmailCaptureFormProps) {
   };
 
   return (
-    <div className="email-capture panel">
+    <FrameShell className="email-capture">
       <div className="border-b border-brand-border px-5 py-3">
-        <span className="kicker">DELIVER REPORT TO INBOX</span>
+        <div className="flex items-center justify-between gap-3">
+          <span className="kicker">Deliver report to inbox</span>
+          <SignalBadge tone="neutral">Optional follow-up</SignalBadge>
+        </div>
       </div>
 
       {!submitted ? (
@@ -73,16 +77,15 @@ export function EmailCaptureForm({ auditSlug }: EmailCaptureFormProps) {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="flex w-full items-center justify-center gap-2 border border-brand-accent bg-brand-accent px-6 py-3 font-black uppercase tracking-wider text-brand-bg transition hover:bg-brand-accentDim disabled:opacity-60 glow-accent-sm"
-              style={{ fontFamily: "var(--font-barlow)", fontSize: "0.8125rem", letterSpacing: "0.12em" }}
+              className="pill-action pill-action-primary glow-accent-sm flex w-full items-center justify-center gap-2 disabled:cursor-not-allowed disabled:opacity-60"
             >
               {isSubmitting ? (
                 <>
                   <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-brand-bg/30 border-t-brand-bg" />
-                  SENDING...
+                  Sending...
                 </>
               ) : (
-                "SEND REPORT TO MY INBOX ->"
+                "Send report to my inbox"
               )}
             </button>
             {status && !submitted && (
@@ -91,18 +94,18 @@ export function EmailCaptureForm({ auditSlug }: EmailCaptureFormProps) {
               </p>
             )}
             <p className="kicker text-center" style={{ fontSize: "0.58rem" }}>
-              NO SPAM &middot; CREDEX CONTACT FOR HIGH-SAVINGS ONLY &middot; UNSUBSCRIBE ANYTIME
+              No spam &middot; Credex contacts only when relevant &middot; unsubscribe anytime
             </p>
           </form>
         </div>
       ) : (
         <div className="px-5 py-10 text-center">
-          <p className="mono-value text-3xl font-bold">SENT OK</p>
+          <p className="mono-value text-3xl font-bold">Sent</p>
           <p className="mt-2 text-sm text-brand-textSub" style={{ fontFamily: "var(--font-serif)" }}>
             Check your inbox. The full report link is included.
           </p>
         </div>
       )}
-    </div>
+    </FrameShell>
   );
 }

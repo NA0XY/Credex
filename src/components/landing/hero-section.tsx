@@ -1,237 +1,227 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
+import { ArrowUpRight } from "lucide-react";
 import { useRef } from "react";
 import { HeroGlyphDrop } from "@/components/landing/hero-glyph-drop";
-import { HeroSignalTicker } from "@/components/landing/hero-signal-ticker";
-import { HeroObjectCluster } from "@/components/landing/object-modules";
-import { SiteHeader } from "@/components/site-header";
+import { Logo } from "@/components/logo";
 import { useGsapContext } from "@/lib/motion/use-gsap-context";
+import { ScrollTrigger } from "@/lib/motion/gsap-runtime";
 import { useMagnetic } from "@/lib/motion/use-magnetic";
-
-const HERO_STATS = [
-  { label: "Median savings found", value: "$340/mo" },
-  { label: "Teams audited", value: "2.4k+" },
-  { label: "Average completion time", value: "2 min" },
-];
 
 export function HeroSection() {
   const rootRef = useRef<HTMLElement | null>(null);
+  const navRef = useRef<HTMLDivElement | null>(null);
+  const heroImageRef = useRef<HTMLDivElement | null>(null);
   const primaryCtaRef = useRef<HTMLAnchorElement | null>(null);
-  const secondaryCtaRef = useRef<HTMLAnchorElement | null>(null);
-  const telemetryCardRef = useRef<HTMLElement | null>(null);
+  const secondaryIconRef = useRef<HTMLAnchorElement | null>(null);
 
   useMagnetic(primaryCtaRef, { maxOffset: 6 });
-  useMagnetic(secondaryCtaRef, { maxOffset: 5 });
-  useMagnetic(telemetryCardRef, { maxOffset: 4 });
+  useMagnetic(secondaryIconRef, { maxOffset: 6 });
 
   useGsapContext(
     (gsap) => {
-      const revealNodes = gsap.utils.toArray<HTMLElement>("[data-hero-reveal]");
-      if (revealNodes.length > 0) {
-        gsap.fromTo(
-          revealNodes,
-          { autoAlpha: 0, y: 22 },
-          {
-            autoAlpha: 1,
-            duration: 0.56,
-            ease: "power2.out",
-            stagger: 0.08,
-            y: 0,
-          }
-        );
+      const navEl = navRef.current;
+      if (navEl) {
+        const trigger = ScrollTrigger.create({
+          end: 99999,
+          start: 10,
+          onToggle: (self) => {
+            gsap.to(navEl, {
+              backdropFilter: self.isActive ? "blur(16px) saturate(160%)" : "blur(0px)",
+              backgroundColor: self.isActive ? "rgba(244, 239, 230, 0.84)" : "rgba(244, 239, 230, 0)",
+              borderColor: self.isActive ? "rgba(200, 191, 176, 0.92)" : "rgba(200, 191, 176, 0.56)",
+              duration: 0.28,
+              ease: "power3.out",
+            });
+          },
+        });
+        gsap.fromTo(navEl, { autoAlpha: 0, y: -10 }, { autoAlpha: 1, y: 0, duration: 0.4, ease: "power3.out" });
+        return () => trigger.kill();
       }
+      return undefined;
+    },
+    { scope: rootRef }
+  );
 
-      gsap.to("[data-hero-glow='left']", {
-        duration: 8.2,
-        ease: "sine.inOut",
-        repeat: -1,
-        x: 32,
-        y: -18,
-        yoyo: true,
-      });
-
-      gsap.to("[data-hero-glow='right']", {
-        duration: 7.4,
-        ease: "sine.inOut",
-        repeat: -1,
-        x: -28,
-        y: 14,
-        yoyo: true,
-      });
-
-      gsap.to("[data-hero-path='accent']", {
-        duration: 3.2,
-        ease: "none",
-        repeat: -1,
-        strokeDashoffset: -120,
-      });
-
-      gsap.to("[data-hero-orbit]", {
-        duration: 24,
-        ease: "none",
-        repeat: -1,
-        rotate: 360,
-        transformOrigin: "50% 50%",
-      });
-
-      gsap.to("[data-hero-float]", {
-        duration: 2.7,
-        ease: "sine.inOut",
-        repeat: -1,
-        stagger: 0.16,
-        y: -6,
-        yoyo: true,
-      });
-
-      gsap.timeline({
-        scrollTrigger: {
-          trigger: rootRef.current,
-          start: "top top",
-          end: "bottom top",
-          scrub: 0.8,
-        },
-      })
-        .to("[data-hero-content]", { opacity: 0.72, yPercent: 14 }, 0)
-        .to("[data-hero-visual]", { yPercent: -10 }, 0)
-        .to("[data-hero-arc]", { yPercent: 24 }, 0);
+  useGsapContext(
+    (gsap) => {
+      gsap.fromTo(
+        "[data-hero-kicker]",
+        { autoAlpha: 0, y: 12 },
+        { autoAlpha: 1, y: 0, duration: 0.32, delay: 0.08, ease: "power3.out" }
+      );
+      gsap.fromTo(
+        "[data-hero-subcopy]",
+        { autoAlpha: 0, y: 16 },
+        { autoAlpha: 1, y: 0, duration: 0.48, delay: 0.48, ease: "power3.out" }
+      );
+      gsap.fromTo(
+        "[data-hero-cta]",
+        { autoAlpha: 0, scale: 0.94 },
+        { autoAlpha: 1, scale: 1, duration: 0.38, delay: 0.56, ease: "power3.out" }
+      );
+      gsap.fromTo(
+        "[data-hero-proof]",
+        { autoAlpha: 0, y: 8 },
+        { autoAlpha: 1, y: 0, duration: 0.28, delay: 0.64, ease: "power3.out" }
+      );
+      gsap.fromTo(
+        heroImageRef.current,
+        { clipPath: "inset(0 100% 0 0)", autoAlpha: 0 },
+        { clipPath: "inset(0 0% 0 0)", autoAlpha: 1, duration: 1, delay: 0.5, ease: "power3.out" }
+      );
+      gsap.fromTo(
+        "[data-hero-accent]",
+        { autoAlpha: 0, x: 30, rotate: -30 },
+        { autoAlpha: 1, x: 0, rotate: -13, duration: 0.7, delay: 0.9, ease: "power3.out" }
+      );
     },
     { scope: rootRef }
   );
 
   return (
-    <section
-      ref={rootRef}
-      className="relative min-h-[100dvh] overflow-hidden border-b border-brand-border bg-brand-bg text-brand-text"
-    >
-      <div className="pointer-events-none absolute inset-0 bg-grid opacity-35" />
-      <div data-hero-glow="left" className="pointer-events-none absolute -left-24 top-24 h-80 w-80 rounded-full bg-[#56a2ff]/15 blur-[120px]" />
-      <div data-hero-glow="right" className="pointer-events-none absolute -right-20 top-10 h-80 w-80 rounded-full bg-brand-accent/18 blur-[140px]" />
-      <svg
-        data-hero-arc
-        className="pointer-events-none absolute inset-x-0 top-6 h-44 w-full opacity-35"
-        fill="none"
-        viewBox="0 0 1440 240"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path
-          d="M-40 168C188 26 354 22 590 156C786 268 1070 240 1472 38"
-          stroke="rgba(169,194,227,0.25)"
-          strokeWidth="1.2"
-        />
-        <path
-          d="M-20 212C206 74 432 54 648 178C854 296 1108 258 1470 76"
-          stroke="rgba(255,138,61,0.22)"
-          strokeDasharray="8 10"
-          strokeWidth="1"
-          data-hero-path="accent"
-        />
-      </svg>
+    <section ref={rootRef} className="relative min-h-[100svh] border-b border-brand-border bg-brand-bg pb-6">
+      <div className="mx-auto max-w-[1440px] px-[clamp(1.2rem,4vw,3.2rem)] pt-4">
+        <header ref={navRef} className="sticky top-3 z-40 rounded-full border border-brand-border px-2.5 py-1.5">
+          <div className="flex items-center justify-between gap-3">
+            <Logo className="rounded-full px-2 py-1" />
 
-      <div className="relative z-20 px-2 pt-4 sm:px-4">
-        <SiteHeader
-          links={[
-            { href: "#features", label: "Features" },
-            { href: "#workflow", label: "Workflow" },
-            { href: "#about", label: "About" },
-          ]}
-          rightSlot={
-            <Link
-              href="/audit"
-              className="inline-flex items-center rounded-full border border-brand-borderStrong bg-brand-accent/15 px-5 py-2 text-xs uppercase tracking-[0.11em] text-brand-text transition hover:border-brand-accent hover:bg-brand-accent hover:text-brand-bg"
-              style={{ fontFamily: "var(--font-mono)", fontWeight: 600 }}
-            >
-              Start audit
-            </Link>
-          }
-        />
-      </div>
+            <div className="hidden items-center gap-2 md:flex">
+              <nav className="inline-flex items-center rounded-full border border-brand-border bg-brand-surface p-1">
+                {[
+                  { href: "#method", label: "How it works" },
+                  { href: "#results-preview", label: "Results" },
+                  { href: "#faq", label: "FAQ" },
+                ].map((item) => (
+                  <Link key={item.label} href={item.href} className="kicker rounded-full px-3 py-1.5 hover:bg-brand-surface2">
+                    {item.label}
+                  </Link>
+                ))}
+              </nav>
 
-      <div className="relative z-10 mx-auto grid max-w-7xl gap-14 px-6 pb-18 pt-14 md:gap-12 md:pb-20 md:pt-16 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
-        <div data-hero-content>
-          <span data-hero-reveal className="kicker inline-flex items-center gap-2 rounded-full border border-brand-borderStrong px-3 py-1.5 text-brand-textSub">
-            <span className="inline-block h-1.5 w-1.5 rounded-full bg-brand-accent" />
-            CREDEX SPENDLENS / LIVE AUDIT ENGINE
-          </span>
-
-          <h1
-            data-hero-reveal
-            className="cond-display mt-6 max-w-3xl text-[clamp(2.5rem,8vw,5.3rem)] leading-[0.98] text-brand-text"
-          >
-            Audit your AI stack before it
-            <br />
-            <span className="text-brand-accent">
-              <HeroGlyphDrop text="starts leaking budget." />
-            </span>
-          </h1>
-
-          <p data-hero-reveal className="serif-body mt-7 max-w-[58ch] text-base md:text-lg">
-            SpendLens maps seats, plans, and overlapping capabilities across your tools, then
-            produces a deterministic savings report you can share with finance and product.
-          </p>
-
-          <div data-hero-reveal className="mt-9 flex flex-wrap gap-3">
-            <Link
-              ref={primaryCtaRef}
-              href="/audit"
-              className="inline-flex items-center rounded-full border border-brand-accent bg-brand-accent px-7 py-3 text-sm uppercase tracking-[0.11em] text-brand-bg transition hover:bg-brand-accentDim active:scale-[0.985]"
-              style={{ fontFamily: "var(--font-mono)", fontWeight: 600 }}
-            >
-              Run free audit
-            </Link>
-            <Link
-              ref={secondaryCtaRef}
-              href="/results/demo"
-              className="inline-flex items-center rounded-full border border-brand-borderStrong bg-brand-surface/40 px-7 py-3 text-sm uppercase tracking-[0.11em] text-brand-textSub transition hover:border-brand-accent/50 hover:text-brand-text active:scale-[0.985]"
-              style={{ fontFamily: "var(--font-mono)", fontWeight: 600 }}
-            >
-              Open sample report
-            </Link>
-          </div>
-
-          <div data-hero-reveal className="mt-10 grid gap-3 sm:grid-cols-3">
-            {HERO_STATS.map((item) => (
-              <article key={item.label} data-hero-float className="liquid-glass rounded-2xl border border-brand-border bg-brand-surface/60 px-4 py-4">
-                <p className="kicker">{item.label}</p>
-                <p className="mono-value mt-2 text-2xl font-semibold">{item.value}</p>
-              </article>
-            ))}
-          </div>
-
-          <div data-hero-reveal className="mt-7">
-            <HeroSignalTicker />
-          </div>
-        </div>
-
-        <div data-hero-visual className="space-y-5">
-          <div data-hero-reveal>
-            <HeroObjectCluster />
-          </div>
-          <article ref={telemetryCardRef} data-hero-reveal className="panel magnetic-target px-5 py-5">
-            <div className="mb-3 flex items-center justify-between">
-              <p className="kicker">Flow telemetry</p>
-              <p className="kicker text-brand-accent">updated every run</p>
-            </div>
-            <div className="relative h-24 overflow-hidden rounded-xl border border-brand-border bg-brand-surface2/70">
-              <svg
-                className="absolute inset-0 h-full w-full"
-                fill="none"
-                viewBox="0 0 600 180"
-                xmlns="http://www.w3.org/2000/svg"
+              <Link
+                href="/audit"
+                className="inline-flex items-center rounded-full border border-[var(--color-border-dark)] bg-[var(--color-dark)] px-4 py-2 text-[0.68rem] font-medium uppercase tracking-[0.14em] text-brand-surface transition hover:scale-[1.02] hover:bg-[var(--color-dark-surface)]"
+                style={{ fontFamily: "var(--font-mono)" }}
               >
-                <g data-hero-orbit transform="translate(300 90)">
-                  <circle r="70" stroke="rgba(181,194,210,0.26)" />
-                  <circle r="46" stroke="rgba(181,194,210,0.16)" />
-                  <circle cx="70" cy="0" r="6" fill="rgba(255,138,61,0.9)" />
-                  <circle cx="-46" cy="0" r="4.4" fill="rgba(115,171,244,0.9)" />
-                </g>
-                <path
-                  d="M42 142L130 112L192 128L260 82L326 106L390 74L462 84L556 36"
-                  stroke="rgba(255,138,61,0.75)"
-                  strokeDasharray="8 8"
-                  strokeWidth="3"
+                AUDIT MY AI SPEND -&gt;
+              </Link>
+            </div>
+          </div>
+        </header>
+
+        <div className="relative mt-5 min-h-[44rem]">
+          <div className="grid min-h-[44rem] grid-cols-12 gap-[1.6rem]">
+            <div className="col-span-12 lg:col-span-5" />
+            <div className="col-span-12 lg:col-span-7">
+              <div ref={heroImageRef} className="relative h-[44rem] overflow-hidden rounded-[2rem] border border-brand-border">
+                <div className="absolute inset-0 rounded-[2rem] [clip-path:polygon(0_0,100%_0,100%_86%,72%_100%,0_100%)]">
+                  <Image
+                    src="/assets/editorial/hero-data-editorial.svg"
+                    alt="Editorial visualization of SpendLens audit output with stacked data cards"
+                    fill
+                    priority
+                    sizes="(min-width: 1280px) 60vw, 100vw"
+                    className="object-cover transition-transform duration-[560ms] [transition-timing-function:var(--ease-enter)] hover:scale-[1.04]"
+                  />
+                </div>
+                <div className="pointer-events-none absolute -left-[8%] -top-[10%] h-[54%] w-[60%] rounded-br-[12rem] bg-brand-bg" />
+                <div className="pointer-events-none absolute bottom-0 right-0 h-[30%] w-[28%] bg-brand-bg [clip-path:polygon(35%_0,100%_0,100%_100%,0_100%)]" />
+              </div>
+            </div>
+          </div>
+
+          <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-[44%] rounded-br-[10rem] bg-brand-bg" />
+
+          <div className="absolute left-0 top-[2.2rem] z-20 w-[min(44rem,92vw)]">
+            <div data-hero-kicker className="inline-flex items-center rounded-full border border-brand-border bg-brand-surface px-3 py-1">
+              <span className="kicker">Free - 2 minutes - no credit card</span>
+            </div>
+
+            <div className="mt-4 max-w-[13.8ch]">
+              <HeroGlyphDrop
+                text={"You're probably overpaying for AI tools."}
+                className="cond-display text-[clamp(3rem,7.5vw,6rem)] leading-[0.88] text-brand-text"
+              />
+            </div>
+
+            <div className="mt-4 flex items-start gap-3">
+              <div className="relative h-16 w-44 shrink-0 overflow-hidden rounded-full border border-brand-border">
+                <Image
+                  src="/assets/editorial/hero-data-editorial.svg"
+                  alt="Audit card thumbnail"
+                  fill
+                  sizes="176px"
+                  className="object-cover object-left"
                 />
-              </svg>
+              </div>
+              <p data-hero-subcopy className="serif-body max-w-[35ch] text-[clamp(0.9rem,1.5vw,1.1rem)]">
+                Free 2-minute audit finds exactly where your startup&apos;s AI budget leaks and how to fix it.
+              </p>
+            </div>
+
+            <div data-hero-cta className="mt-5 flex items-center gap-2.5">
+              <Link ref={primaryCtaRef} href="/audit" className="hero-ghost-cta magnetic-target">
+                Audit my AI spend - it&apos;s free
+              </Link>
+              <Link href="#method" className="hero-ghost-cta">
+                See methodology
+              </Link>
+              <Link
+                ref={secondaryIconRef}
+                href="/audit"
+                aria-label="Audit my AI spend"
+                className="hero-icon-cta magnetic-target"
+              >
+                <ArrowUpRight className="h-4 w-4" strokeWidth={1.9} />
+              </Link>
+            </div>
+
+            <div data-hero-proof className="mt-4 inline-flex items-center gap-2">
+              <span className="h-2 w-2 rounded-full bg-brand-accent" />
+              <span className="kicker !text-brand-textSub">Used by 200+ founders and engineering managers</span>
+            </div>
+          </div>
+
+          <article
+            data-hero-accent
+            className="absolute bottom-5 right-4 z-30 w-[clamp(10rem,20vw,15rem)] overflow-hidden rounded-[1.6rem] border border-[var(--color-border-dark)] bg-[var(--color-dark-surface)] [clip-path:polygon(10%_0,100%_0,90%_100%,0_100%)] p-4 shadow-[0_24px_48px_-18px_rgba(26,22,18,0.28)]"
+          >
+            <p className="kicker !text-brand-surface/70">Stack health score</p>
+            <div className="mt-2 flex items-end justify-between">
+              <span className="cond-display text-6xl leading-none text-brand-accent">B</span>
+              <span className="kicker !text-brand-surface/85">74/100</span>
+            </div>
+            <div className="mt-3 space-y-2">
+              <div>
+                <div className="mb-1 flex items-center justify-between">
+                  <span className="kicker !text-brand-surface/70">Plan fit</span>
+                  <span className="kicker !text-brand-surface/70">80%</span>
+                </div>
+                <div className="h-1.5 rounded-full bg-brand-surface/20">
+                  <div className="h-full w-[80%] rounded-full bg-brand-accent" />
+                </div>
+              </div>
+              <div>
+                <div className="mb-1 flex items-center justify-between">
+                  <span className="kicker !text-brand-surface/70">Redundancy</span>
+                  <span className="kicker !text-brand-surface/70">55%</span>
+                </div>
+                <div className="h-1.5 rounded-full bg-brand-surface/20">
+                  <div className="h-full w-[55%] rounded-full bg-brand-warning" />
+                </div>
+              </div>
+              <div>
+                <div className="mb-1 flex items-center justify-between">
+                  <span className="kicker !text-brand-surface/70">Seat eff.</span>
+                  <span className="kicker !text-brand-surface/70">35%</span>
+                </div>
+                <div className="h-1.5 rounded-full bg-brand-surface/20">
+                  <div className="h-full w-[35%] rounded-full bg-brand-danger" />
+                </div>
+              </div>
             </div>
           </article>
         </div>

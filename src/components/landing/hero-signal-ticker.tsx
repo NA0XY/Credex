@@ -10,6 +10,10 @@ const SIGNALS = [
   "NEGOTIATION LEVERAGE",
   "SAVINGS PRIORITY QUEUE",
   "STACK GRADE OUTPUT",
+  "AI SPEND AUDIT",
+  "2-MINUTE ANALYSIS",
+  "FREE REPORT",
+  "CREDEX CREDITS",
 ];
 
 export function HeroSignalTicker() {
@@ -23,10 +27,17 @@ export function HeroSignalTicker() {
       }
 
       gsap.fromTo(
+        rootRef.current,
+        { autoAlpha: 0 },
+        { autoAlpha: 1, duration: 0.3, delay: 1.1, ease: "power3.out" }
+      );
+
+      gsap.fromTo(
         track,
         { xPercent: 0 },
         {
           duration: 24,
+          delay: 1.1,
           ease: "none",
           repeat: -1,
           xPercent: -50,
@@ -39,12 +50,12 @@ export function HeroSignalTicker() {
   const repeated = [...SIGNALS, ...SIGNALS];
 
   return (
-    <div ref={rootRef} className="liquid-glass overflow-hidden rounded-full border border-brand-border bg-brand-surface/45 px-0 py-2.5">
-      <div data-ticker-track className="flex w-max min-w-full items-center gap-8 px-4">
+    <div ref={rootRef} className="overflow-hidden border-y border-[var(--color-border-dark)] bg-[var(--color-dark)] py-2.5 opacity-0">
+      <div data-ticker-track className="flex w-max min-w-full items-center gap-8 px-6">
         {repeated.map((label, index) => (
           <div key={`${label}-${index}`} className="flex items-center gap-3">
             <span className="h-1.5 w-1.5 rounded-full bg-brand-accent" />
-            <span className="kicker whitespace-nowrap text-brand-textSub">{label}</span>
+            <span className="kicker whitespace-nowrap !text-[0.68rem] !text-brand-surface/80">{label}</span>
           </div>
         ))}
       </div>

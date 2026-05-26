@@ -1,3 +1,5 @@
+import { EditorialCard, FrameShell, SignalBadge } from "@/components/editorial/primitives";
+
 interface BenchmarkPanelProps {
   yourCpd: number;
   medianCpd: number;
@@ -12,11 +14,15 @@ export function BenchmarkPanel({ yourCpd, medianCpd, p75Cpd, cohortLabel, verdic
   const medianPct = (medianCpd / maxVal) * 100;
   const p75Pct = (p75Cpd / maxVal) * 100;
   const isAboveMedian = yourCpd > medianCpd;
+  const verdictTone = isAboveMedian ? "critical" : "ok";
 
   return (
-    <div className="panel">
+    <FrameShell>
       <div className="border-b border-brand-border px-5 py-3">
-        <span className="kicker">BENCHMARK - {cohortLabel.toUpperCase()}</span>
+        <div className="flex items-center justify-between gap-3">
+          <span className="kicker">Benchmark - {cohortLabel}</span>
+          <SignalBadge tone={verdictTone}>{verdict}</SignalBadge>
+        </div>
       </div>
       <div className="px-5 py-6">
         <p className="serif-body mb-6 text-sm">
@@ -24,41 +30,55 @@ export function BenchmarkPanel({ yourCpd, medianCpd, p75Cpd, cohortLabel, verdic
         </p>
 
         <div className="space-y-4">
+          <EditorialCard className="p-4">
+            <div className="mb-1.5 flex items-center justify-between">
+              <span className="kicker text-[0.6rem]">Your stack</span>
+              <span className="mono-value text-sm font-bold">${yourCpd}/dev/mo</span>
+            </div>
+            <div className="h-3 w-full overflow-hidden rounded-full bg-brand-surface2">
+              <div
+                className="h-full transition-all duration-700"
+                style={{
+                  width: `${yourPct}%`,
+                  background: isAboveMedian ? "var(--color-danger)" : "var(--color-brand)",
+                }}
+              />
+            </div>
+          </EditorialCard>
+
           <div>
             <div className="mb-1 flex items-center justify-between">
-              <span className="kicker" style={{ fontSize: "0.6rem", color: "#FF6B00" }}>YOUR STACK</span>
-              <span className="font-mono text-sm font-bold text-brand-accent">${yourCpd}/dev/mo</span>
+              <span className="kicker text-[0.6rem]">Cohort median</span>
+              <span className="mono-value text-xs text-brand-textSub">${medianCpd}/dev/mo</span>
             </div>
-            <div className="h-3 w-full overflow-hidden bg-brand-surface2">
-              <div className="h-full transition-all duration-700" style={{ width: `${yourPct}%`, background: isAboveMedian ? "#E84337" : "#2E7D52" }} />
+            <div className="h-2 w-full overflow-hidden rounded-full bg-brand-surface2">
+              <div
+                className="h-full bg-brand-textSub/40 transition-all duration-700"
+                style={{ width: `${medianPct}%` }}
+              />
             </div>
           </div>
 
           <div>
             <div className="mb-1 flex items-center justify-between">
-              <span className="kicker" style={{ fontSize: "0.6rem" }}>COHORT MEDIAN</span>
-              <span className="font-mono text-xs text-brand-textSub">${medianCpd}/dev/mo</span>
+              <span className="kicker text-[0.6rem]">75th percentile</span>
+              <span className="mono-value text-xs text-brand-muted">${p75Cpd}/dev/mo</span>
             </div>
-            <div className="h-2 w-full overflow-hidden bg-brand-surface2">
-              <div className="h-full bg-brand-textSub/40 transition-all duration-700" style={{ width: `${medianPct}%` }} />
-            </div>
-          </div>
-
-          <div>
-            <div className="mb-1 flex items-center justify-between">
-              <span className="kicker" style={{ fontSize: "0.6rem" }}>75TH PERCENTILE</span>
-              <span className="font-mono text-xs text-brand-muted">${p75Cpd}/dev/mo</span>
-            </div>
-            <div className="h-1 w-full overflow-hidden bg-brand-surface2">
-              <div className="h-full bg-brand-muted/40 transition-all duration-700" style={{ width: `${p75Pct}%` }} />
+            <div className="h-1.5 w-full overflow-hidden rounded-full bg-brand-surface2">
+              <div
+                className="h-full bg-brand-muted/40 transition-all duration-700"
+                style={{ width: `${p75Pct}%` }}
+              />
             </div>
           </div>
         </div>
 
         <div className="panel-raised mt-5 px-4 py-3">
-          <span className={`badge ${isAboveMedian ? "badge-switch" : "badge-ok"}`}>{verdict.toUpperCase()}</span>
+          <p className="serif-body text-xs text-brand-textSub">
+            Benchmark verdict reflects spend per developer against this cohort.
+          </p>
         </div>
       </div>
-    </div>
+    </FrameShell>
   );
 }

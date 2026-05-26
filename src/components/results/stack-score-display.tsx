@@ -1,3 +1,4 @@
+import { FrameShell, SignalBadge } from "@/components/editorial/primitives";
 import type { StackScore } from "@/lib/stack-score";
 
 interface StackScoreDisplayProps {
@@ -5,11 +6,11 @@ interface StackScoreDisplayProps {
 }
 
 const GRADE_STYLES: Record<string, { bg: string; border: string; text: string }> = {
-  A: { bg: "rgba(46,125,82,0.10)", border: "rgba(46,125,82,0.40)", text: "#4CAF7A" },
-  B: { bg: "rgba(100,150,220,0.10)", border: "rgba(100,150,220,0.40)", text: "#7BAEE8" },
-  C: { bg: "rgba(212,160,23,0.10)", border: "rgba(212,160,23,0.40)", text: "#D4A017" },
-  D: { bg: "rgba(232,67,55,0.08)", border: "rgba(232,67,55,0.35)", text: "#E84337" },
-  F: { bg: "rgba(232,67,55,0.12)", border: "rgba(232,67,55,0.40)", text: "#E84337" },
+  A: { bg: "rgba(47, 182, 124, 0.1)", border: "rgba(47, 182, 124, 0.3)", text: "var(--color-brand)" },
+  B: { bg: "rgba(59, 130, 246, 0.1)", border: "rgba(59, 130, 246, 0.32)", text: "var(--color-accent)" },
+  C: { bg: "rgba(140, 106, 42, 0.12)", border: "rgba(140, 106, 42, 0.34)", text: "var(--color-warn)" },
+  D: { bg: "rgba(212, 24, 61, 0.1)", border: "rgba(212, 24, 61, 0.35)", text: "var(--color-danger)" },
+  F: { bg: "rgba(212, 24, 61, 0.15)", border: "rgba(212, 24, 61, 0.42)", text: "var(--color-danger)" },
 };
 
 export function StackScoreDisplay({ score }: StackScoreDisplayProps) {
@@ -20,32 +21,64 @@ export function StackScoreDisplay({ score }: StackScoreDisplayProps) {
     { label: "SEAT EFF.", max: 25, value: score.breakdown.seatEfficiency },
     { label: "COST/DEV", max: 20, value: score.breakdown.costPerDeveloper },
   ];
+  const gradeTone =
+    score.grade === "A" || score.grade === "B"
+      ? "ok"
+      : score.grade === "C"
+        ? "warn"
+        : "critical";
 
   return (
-    <div className="panel" style={{ borderColor: style.border }}>
+    <FrameShell>
       <div className="border-b border-brand-border px-5 py-3">
-        <span className="kicker">STACK HEALTH SCORE</span>
+        <div className="flex items-center justify-between gap-3">
+          <span className="kicker">Stack health score</span>
+          <SignalBadge tone={gradeTone}>{score.total}/100 points</SignalBadge>
+        </div>
       </div>
-      <div className="grid divide-y divide-brand-border md:grid-cols-[auto_1fr] md:divide-x md:divide-y-0">
-        <div className="flex flex-col items-center justify-center p-6 md:p-8" style={{ background: style.bg }}>
-          <span className="font-black leading-none" style={{ fontFamily: "var(--font-barlow)", fontSize: "7rem", fontWeight: 900, color: style.text, lineHeight: 0.9 }}>
+      <div className="grid gap-4 p-5 md:grid-cols-[minmax(170px,210px)_1fr] md:p-6">
+        <article
+          className="editorial-card flex flex-col items-center justify-center p-5 md:p-7"
+          style={{ background: style.bg, borderColor: style.border }}
+        >
+          <span
+            className="cond-display text-[4.6rem] leading-none md:text-[5.8rem]"
+            style={{ color: style.text }}
+          >
             {score.grade}
           </span>
-          <p className="kicker mt-2" style={{ color: style.text }}>{score.total}/100 POINTS</p>
-          <p className="kicker mt-1 text-center text-brand-muted" style={{ fontSize: "0.6rem" }}>{score.headline}</p>
-        </div>
+          <p className="kicker mt-2" style={{ color: style.text }}>
+            Grade
+          </p>
+          <p className="kicker mt-1 text-center text-[0.6rem] text-brand-muted">
+            {score.headline}
+          </p>
+        </article>
 
-        <div className="divide-y divide-brand-border">
+        <div className="divide-y divide-brand-border rounded-2xl border border-brand-border bg-brand-surface">
           {breakdown.map((item) => {
             const ratio = item.value / item.max;
             return (
               <div key={item.label} className="px-5 py-4">
                 <div className="mb-2 flex items-center justify-between">
-                  <span className="kicker" style={{ fontSize: "0.6rem" }}>{item.label}</span>
-                  <span className="font-mono text-xs text-brand-textSub">{item.value}/{item.max}</span>
+                  <span className="kicker text-[0.6rem]">{item.label}</span>
+                  <span className="mono-value text-xs text-brand-textSub">
+                    {item.value}/{item.max}
+                  </span>
                 </div>
-                <div className="h-1 w-full overflow-hidden bg-brand-surface2">
-                  <div className="h-full transition-all duration-700" style={{ width: `${ratio * 100}%`, background: ratio > 0.75 ? "#2E7D52" : ratio > 0.5 ? "#D4A017" : "#E84337" }} />
+                <div className="h-1.5 w-full overflow-hidden rounded-full bg-brand-surface2">
+                  <div
+                    className="h-full transition-all duration-700"
+                    style={{
+                      width: `${ratio * 100}%`,
+                      background:
+                        ratio > 0.75
+                          ? "var(--color-brand)"
+                          : ratio > 0.5
+                            ? "var(--color-warn)"
+                            : "var(--color-danger)",
+                    }}
+                  />
                 </div>
               </div>
             );
@@ -53,13 +86,17 @@ export function StackScoreDisplay({ score }: StackScoreDisplayProps) {
 
           <div className="grid grid-cols-2 divide-x divide-brand-border">
             <div className="px-5 py-4">
-              <span className="kicker mb-2 block" style={{ fontSize: "0.6rem", color: "#2E7D52" }}>STRENGTHS</span>
+              <span className="kicker mb-2 block text-[0.6rem] text-brand-ok">
+                Strengths
+              </span>
               {score.strengths.map((strength) => (
                 <p key={strength} className="serif-body text-xs">+ {strength}</p>
               ))}
             </div>
             <div className="px-5 py-4">
-              <span className="kicker mb-2 block" style={{ fontSize: "0.6rem", color: "#E84337" }}>ISSUES</span>
+              <span className="kicker mb-2 block text-[0.6rem] text-brand-danger">
+                Issues
+              </span>
               {score.weaknesses.map((weakness) => (
                 <p key={weakness} className="serif-body text-xs">- {weakness}</p>
               ))}
@@ -67,6 +104,6 @@ export function StackScoreDisplay({ score }: StackScoreDisplayProps) {
           </div>
         </div>
       </div>
-    </div>
+    </FrameShell>
   );
 }

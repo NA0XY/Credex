@@ -1,138 +1,73 @@
 "use client";
 
-import Link from "next/link";
-import { useRef } from "react";
-import { useGsapContext } from "@/lib/motion/use-gsap-context";
+import { ChevronDown } from "lucide-react";
+import { useState } from "react";
 
-const COVERAGE = [
+const FAQ_ITEMS = [
   {
-    group: "Coding",
-    tools: "Cursor, Copilot, Windsurf",
-    note: "Seat duplication and tier mismatch checks",
+    q: "Is this actually free?",
+    a: "Yes. No credit card, no trial, no catch.",
   },
   {
-    group: "Chat",
-    tools: "ChatGPT, Claude, Gemini",
-    note: "Role fit and model overlap recommendations",
+    q: "Do you store my spend data?",
+    a: "We store audit inputs/results to power reports and future benchmarks. Email is only captured when you choose to share it.",
   },
   {
-    group: "API",
-    tools: "Anthropic API, OpenAI API, Gemini API",
-    note: "Usage-rate and unit-cost drift analysis",
+    q: "How accurate are recommendations?",
+    a: "Pricing data is tracked from official vendor pages and audit logic reflects explicit rule-based checks.",
+  },
+  {
+    q: "What is Credex?",
+    a: "Credex sources discounted AI infrastructure credits from companies that over-forecast usage.",
+  },
+  {
+    q: "Will I get spammed?",
+    a: "No. You only receive audit-related emails unless you explicitly opt into follow-up.",
   },
 ];
 
 export function ServicesSection() {
-  const sectionRef = useRef<HTMLElement | null>(null);
-
-  useGsapContext(
-    (gsap) => {
-      const nodes = gsap.utils.toArray<HTMLElement>("[data-services-reveal]");
-      if (nodes.length > 0) {
-        gsap.fromTo(
-          nodes,
-          { autoAlpha: 0, y: 20 },
-          {
-            autoAlpha: 1,
-            y: 0,
-            stagger: 0.08,
-            duration: 0.52,
-            ease: "power2.out",
-            scrollTrigger: {
-              trigger: sectionRef.current,
-              start: "top 75%",
-            },
-          }
-        );
-      }
-
-      gsap.fromTo(
-        "[data-service-card]",
-        { autoAlpha: 0, x: 20 },
-        {
-          autoAlpha: 1,
-          x: 0,
-          duration: 0.45,
-          ease: "power2.out",
-          stagger: 0.08,
-          scrollTrigger: {
-            trigger: sectionRef.current,
-            start: "top 64%",
-          },
-        }
-      );
-
-      gsap.timeline({
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: "top bottom",
-          end: "bottom top",
-          scrub: 0.85,
-        },
-      })
-        .to("[data-service-left]", { yPercent: -7 }, 0)
-        .to("[data-service-right]", { yPercent: 8 }, 0);
-    },
-    { scope: sectionRef }
-  );
+  const [openIndex, setOpenIndex] = useState<number | null>(0);
 
   return (
-    <section
-      id="features"
-      ref={sectionRef}
-      className="relative overflow-hidden bg-brand-bg px-6 pb-24 pt-20 text-brand-text"
-    >
-      <div className="pointer-events-none absolute inset-0 bg-grid opacity-16" />
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(84,161,239,0.14),transparent_68%)]" />
+    <section id="faq" className="bg-[var(--color-bg-alt)] px-[clamp(1.2rem,4vw,3.2rem)] py-[clamp(5rem,9vw,8.5rem)]">
+      <div className="mx-auto max-w-[1440px]">
+        <p className="kicker">FAQ</p>
+        <h2 className="cond-display mt-2 text-[clamp(2rem,4.5vw,3.8rem)] text-brand-text">
+          Common questions
+        </h2>
 
-      <div className="relative mx-auto max-w-7xl">
-        <div data-services-reveal className="mb-10 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-          <div>
-            <span className="kicker">Coverage</span>
-            <h2 className="cond-display mt-3 text-[clamp(1.8rem,4.3vw,3.3rem)] leading-[1.03]">
-              What SpendLens audits today.
-            </h2>
-          </div>
-          <Link
-            href="/audit"
-            className="inline-flex items-center rounded-full border border-brand-borderStrong bg-brand-surface/55 px-5 py-2.5 text-xs uppercase tracking-[0.1em] text-brand-textSub transition hover:border-brand-accent/55 hover:text-brand-text"
-            style={{ fontFamily: "var(--font-mono)", fontWeight: 600 }}
-          >
-            Start your own run
-          </Link>
-        </div>
-
-        <div className="grid gap-6 lg:grid-cols-[0.92fr_1.08fr]">
-          <article data-service-left data-services-reveal className="panel p-5">
-            <span className="kicker">Model confidence factors</span>
-            <div className="mt-4 space-y-3">
-              {[
-                "Current plan delta vs list price",
-                "Role-to-seat intensity mismatch",
-                "Functional overlap across tool categories",
-                "Spend-per-developer benchmark variance",
-                "Negotiation leverage signals",
-              ].map((item, index) => (
-                <div key={item} className="panel-raised flex items-start gap-3 px-4 py-3">
-                  <span className="mono-value mt-0.5 text-sm">{`0${index + 1}`}</span>
-                  <p className="serif-body text-sm">{item}</p>
+        <div className="mt-7 rounded-[1.5rem] border border-brand-border bg-brand-surface">
+          {FAQ_ITEMS.map((item, index) => {
+            const isOpen = openIndex === index;
+            return (
+              <article key={item.q} className={index !== 0 ? "border-t border-brand-border" : ""}>
+                <button
+                  type="button"
+                  onClick={() => setOpenIndex(isOpen ? null : index)}
+                  className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left"
+                >
+                  <span className="kicker !text-brand-text">{item.q}</span>
+                  <ChevronDown
+                    className={`h-4 w-4 text-brand-textSub transition duration-[240ms] [transition-timing-function:var(--ease-enter)] ${
+                      isOpen ? "rotate-180" : "rotate-0"
+                    }`}
+                    strokeWidth={1.9}
+                  />
+                </button>
+                <div
+                  className="overflow-hidden transition-[max-height,opacity,transform] duration-[320ms] [transition-timing-function:var(--ease-soft)]"
+                  style={{
+                    maxHeight: isOpen ? "14rem" : "0rem",
+                    opacity: isOpen ? 1 : 0,
+                    transform: isOpen ? "translateY(0)" : "translateY(-4px)",
+                  }}
+                >
+                  <p className="serif-body px-5 pb-5 text-[clamp(0.9rem,1.5vw,1.1rem)]">{item.a}</p>
                 </div>
-              ))}
-            </div>
-          </article>
-
-          <div data-service-right className="space-y-4">
-            {COVERAGE.map((item) => (
-              <article key={item.group} data-service-card data-services-reveal className="panel p-5">
-                <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
-                  <span className="badge badge-righsize">{item.group}</span>
-                  <span className="kicker text-brand-accent">Live ruleset</span>
-                </div>
-                <h3 className="text-lg text-brand-text">{item.tools}</h3>
-                <p className="serif-body mt-2 text-sm">{item.note}</p>
               </article>
-            ))}
-          </div>
+            );
+          })}
         </div>
       </div>
     </section>

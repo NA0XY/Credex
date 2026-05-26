@@ -6,6 +6,7 @@ import { useFieldArray, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { z } from "zod";
 import { CircleAlert } from "lucide-react";
+import { MetricTile, SignalBadge, StepperSegment } from "@/components/editorial/primitives";
 import { TOOLS, getPlanById } from "@/data/pricing";
 import { formatCurrency, roundCurrency } from "@/lib/format";
 import { useGsapContext } from "@/lib/motion/use-gsap-context";
@@ -204,511 +205,453 @@ export function AuditWizard() {
   });
 
   return (
-    <div ref={shellRef} className="mx-auto max-w-6xl px-4 py-12 md:px-6">
-      {/* ─── FORM HEADER ─── */}
-      <div className="mb-10 border-b border-brand-border pb-8">
-        <span className="kicker">SPENDLENS | AI SPEND AUDIT</span>
-        <h1
-          className="mt-3 text-brand-text"
-          style={{
-            fontFamily: "var(--font-barlow)",
-            fontSize: "clamp(2rem,5vw,3rem)",
-            fontWeight: 700,
-            letterSpacing: "-0.02em",
-            lineHeight: 1.05,
-          }}
-        >
-          Audit your AI spend with defensible math
-        </h1>
-        <p className="mt-3 text-sm leading-relaxed text-brand-textSub" style={{ fontFamily: "var(--font-serif)" }}>
-          Enter every AI tool your team pays for. The audit engine checks for overlap, rightsizing, and benchmark deviation.
-        </p>
-      </div>
-
-      {/* ─── STEP INDICATOR ─── */}
-      <div className="mb-8 flex items-center gap-0 divide-x divide-brand-border border border-brand-border">
-        {["TEAM CONTEXT", "YOUR TOOLS", "REVIEW"].map((label, i) => {
-          const stepNum = i + 1;
-          const isActive = step === stepNum;
-          const isDone = step > stepNum;
-          return (
-            <div
-              key={label}
-              className="relative flex flex-1 flex-col items-center px-4 py-3 transition"
-              style={{ background: isActive ? "rgba(255,107,0,0.06)" : "transparent" }}
-            >
-              {isActive && <div className="absolute inset-x-0 top-0 h-0.5 bg-brand-accent" />}
-              <span
-                className="font-black leading-none"
-                style={{
-                  fontFamily: "var(--font-barlow)",
-                  fontSize: "1.5rem",
-                  color: isDone || isActive ? "#FF8A3D" : "#6F86A2",
-                }}
-              >
-                {isDone ? "OK" : `0${stepNum}`}
-              </span>
-              <span
-                className="kicker mt-1 hidden text-center sm:block"
-                style={{ fontSize: "0.55rem", color: isActive ? "#FF8A3D" : "#6F86A2" }}
-              >
-                {label}
-              </span>
+    <div ref={shellRef} className="mx-auto max-w-7xl px-4 pb-16 pt-10 sm:px-6">
+      <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_300px] lg:gap-10">
+        <div className="min-w-0 space-y-6">
+          <header className="frame-shell px-6 py-7 md:px-8">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <SignalBadge>
+                <span className="h-1.5 w-1.5 rounded-full bg-brand-accent" />
+                spendlens audit lane
+              </SignalBadge>
+              <p className="kicker">deterministic pricing diagnostics</p>
             </div>
-          );
-        })}
-      </div>
+            <h1 className="cond-display mt-5 text-[clamp(2rem,4.3vw,3.3rem)] leading-[0.97] text-brand-text">
+              Audit your AI spend with defensible math.
+            </h1>
+            <p className="serif-body mt-3 max-w-[64ch] text-sm md:text-base">
+              Enter every AI tool your team pays for. The engine checks overlap, plan fit,
+              seat right-sizing, and benchmark spread before generating recommendations.
+            </p>
+          </header>
 
-      {/* ─── DRAFT RESTORED ─── */}
-      {initialDraft.restored && (
-        <div className="mb-6 flex items-center justify-between border border-brand-border px-4 py-3">
-          <span className="text-sm text-brand-textSub" style={{ fontFamily: "var(--font-serif)" }}>
-            Draft restored from your last session.
-          </span>
-          <button
-            type="button"
-            onClick={() => {
-              localStorage.removeItem(STORAGE_KEY);
-              window.location.reload();
-            }}
-            className="kicker text-brand-muted underline underline-offset-2 transition hover:text-brand-text"
-          >
-            START FRESH
-          </button>
-        </div>
-      )}
-
-      <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_280px]">
-      <form onSubmit={onSubmit} className="min-w-0">
-        <input type="text" className="hidden" tabIndex={-1} autoComplete="off" {...register("website")} />
-
-        {/* ─── STEP 1: Team Context ─── */}
-        {step === 1 && (
-          <div className="panel" data-step-panel>
-            <div className="border-b border-brand-border px-6 py-4">
-              <span className="kicker">STEP 01 - TEAM PROFILE</span>
+          <section className="frame-shell px-3 py-3 md:px-4" aria-label="Audit steps">
+            <div className="grid gap-2 md:grid-cols-3">
+              {[
+                { id: 1, label: "Team context" },
+                { id: 2, label: "Your tools" },
+                { id: 3, label: "Review" },
+              ].map((item) => (
+                <StepperSegment
+                  key={item.id}
+                  active={step === item.id}
+                  step={step > item.id ? "done" : `0${item.id}`}
+                  label={item.label}
+                  className={step > item.id ? "!border-brand-ok/35 !bg-brand-ok/10 !text-brand-ok" : ""}
+                />
+              ))}
             </div>
-            <div className="space-y-8 px-6 py-8">
-              <div>
-                <label className="kicker mb-3 block">HEADCOUNT USING AI TOOLS</label>
-                <div className="flex items-center gap-3">
-                  <input
-                    type="number"
-                    min={1}
-                    max={500}
-                    {...register("teamSize", { valueAsNumber: true })}
-                    className="input-field max-w-[180px] text-xl font-bold"
-                    style={{ fontFamily: "var(--font-mono)" }}
-                    placeholder="0"
-                  />
-                  <p className="text-sm text-brand-textSub" style={{ fontFamily: "var(--font-serif)" }}>
-                    Include devs, PMs, writers - anyone with a paid seat
-                  </p>
-                </div>
+          </section>
+
+          <details className="panel px-5 py-4 lg:hidden">
+            <summary className="cursor-pointer list-none">
+              <div className="flex items-center justify-between">
+                <p className="kicker">Live context</p>
+                <SignalBadge>step 0{step}/03</SignalBadge>
               </div>
+            </summary>
+            <div className="mt-4 grid gap-3 sm:grid-cols-3">
+              <MetricTile label="Step" value={`0${step} / 03`} />
+              <MetricTile label="Tools declared" value={`${watchedTools.length}`} />
+              <MetricTile label="Current total" value={`${formatCurrency(totalSpend)}/mo`} />
+            </div>
+          </details>
 
-              <hr className="ruling" />
+          {initialDraft.restored && (
+            <article className="editorial-card border-brand-accent/35 bg-brand-surface2/80 px-5 py-4">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="flex items-center gap-2">
+                  <SignalBadge tone="ok">draft restored</SignalBadge>
+                  <p className="serif-body text-sm">Draft recovered from your last session.</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    localStorage.removeItem(STORAGE_KEY);
+                    window.location.reload();
+                  }}
+                  className="pill-action pill-action-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent/45"
+                >
+                  start fresh
+                </button>
+              </div>
+            </article>
+          )}
 
-              <div>
-                <label className="kicker mb-3 block">PRIMARY USE CASE</label>
-                <div className="flex flex-wrap gap-2">
-                  {Object.entries(USE_CASE_LABELS).map(([value, label]) => {
-                    const isSelected = primaryUseCase === value;
+          <form onSubmit={onSubmit} className="space-y-6">
+            <input type="text" className="hidden" tabIndex={-1} autoComplete="off" {...register("website")} />
+
+            {step === 1 && (
+              <section className="frame-shell p-6 md:p-8" data-step-panel>
+                <div className="flex flex-wrap items-start justify-between gap-4 border-b border-brand-border pb-5">
+                  <div>
+                    <p className="kicker">step 01 / team profile</p>
+                    <h2 className="mt-2 text-2xl font-semibold text-brand-text">Tell us about your team</h2>
+                    <p className="serif-body mt-2 text-sm">
+                      This calibrates seat assumptions and recommendation confidence.
+                    </p>
+                  </div>
+                  <SignalBadge>required</SignalBadge>
+                </div>
+
+                <div className="mt-6 grid gap-7">
+                  <div className="space-y-2">
+                    <label htmlFor="team-size" className="kicker">
+                      Team size using AI tools
+                    </label>
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                      <input
+                        id="team-size"
+                        type="number"
+                        min={1}
+                        max={500}
+                        {...register("teamSize", { valueAsNumber: true })}
+                        className="input-field max-w-[190px] text-lg font-semibold"
+                        placeholder="0"
+                      />
+                      <p className="serif-body text-sm">
+                        Include developers, PMs, writers, researchers, and anyone on a paid seat.
+                      </p>
+                    </div>
+                  </div>
+
+                  <hr className="ruling" />
+
+                  <fieldset>
+                    <legend className="kicker mb-3">Primary use case</legend>
+                    <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                      {Object.entries(USE_CASE_LABELS).map(([value, label]) => {
+                        const selected = primaryUseCase === value;
+                        return (
+                          <label
+                            key={value}
+                            className={`cursor-pointer rounded-xl border px-4 py-3 transition ${
+                              selected
+                                ? "border-brand-accent bg-brand-surface text-brand-text shadow-[0_10px_24px_-18px_rgba(30,46,32,0.4)]"
+                                : "border-brand-border bg-white/70 text-brand-textSub hover:border-brand-borderStrong hover:bg-white"
+                            }`}
+                          >
+                            <input
+                              type="radio"
+                              value={value}
+                              {...register("primaryUseCase")}
+                              className="sr-only"
+                            />
+                            <span className="mono-value text-sm font-semibold">{label}</span>
+                          </label>
+                        );
+                      })}
+                    </div>
+                  </fieldset>
+                </div>
+              </section>
+            )}
+
+            {step === 2 && (
+              <section className="frame-shell p-5 md:p-6" data-step-panel>
+                <div className="mb-5 flex flex-wrap items-start justify-between gap-4 border-b border-brand-border pb-5">
+                  <div>
+                    <p className="kicker">step 02 / tool declaration</p>
+                    <h2 className="mt-2 text-2xl font-semibold text-brand-text">List every paid tool</h2>
+                    <p className="serif-body mt-2 text-sm">
+                      Overlap and rightsizing are only reliable when your full stack is declared.
+                    </p>
+                  </div>
+                  <MetricTile label="Total declared spend" value={`${formatCurrency(totalSpend)}/mo`} />
+                </div>
+
+                <div className="mb-2 hidden grid-cols-[2fr_1.4fr_90px_110px_44px] gap-3 px-1 md:grid">
+                  {["Tool", "Plan", "Seats", "Spend/mo", ""].map((heading) => (
+                    <p key={heading} className="kicker">
+                      {heading}
+                    </p>
+                  ))}
+                </div>
+
+                <div className="space-y-3">
+                  {fields.fields.map((field, index) => {
+                    const toolId = watchedTools[index]?.toolId;
+                    const meta = TOOL_META[toolId ?? ""] ?? { emoji: "--", cat: "other", catLabel: "Tool" };
+                    const plans = TOOLS.find((tool) => tool.id === toolId)?.plans ?? [];
+                    const planId = watchedTools[index]?.planId;
+                    const seats = Number(watchedTools[index]?.seats ?? 0);
+                    const spend = Number(watchedTools[index]?.monthlySpend ?? 0);
+                    const expected = expectedCost(toolId ?? "", planId ?? "", seats);
+                    const overBudget = spend > expected * 1.1 && expected > 0;
+                    const underBudget = spend > 0 && spend < expected * 0.8 && expected > 0;
+
                     return (
-                      <label key={value} className="cursor-pointer">
-                        <input type="radio" value={value} {...register("primaryUseCase")} className="sr-only" />
-                        <span
-                          className="inline-flex items-center border px-4 py-2.5 text-sm font-bold uppercase tracking-wider transition-all"
-                          style={{
-                            fontFamily: "var(--font-barlow)",
-                            letterSpacing: "0.1em",
-                            fontSize: "0.75rem",
-                            background: isSelected ? "#FF8A3D" : "rgba(21,31,42,0.4)",
-                            color: isSelected ? "#0D1218" : "#AFC0D5",
-                            borderColor: isSelected ? "#FF8A3D" : "rgba(177,199,228,0.25)",
-                          }}
-                        >
-                          {label}
-                        </span>
-                      </label>
+                      <article key={field.id} className="editorial-card p-4 md:p-5" data-tool-row>
+                        <div className="mb-3 flex items-center justify-between md:hidden">
+                          <div className="flex items-center gap-2">
+                            <SignalBadge>{meta.catLabel}</SignalBadge>
+                            <p className="mono-value text-sm font-semibold">
+                              {TOOLS.find((tool) => tool.id === toolId)?.name ?? "Tool"}
+                            </p>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => fields.remove(index)}
+                            disabled={fields.fields.length === 1}
+                            className="pill-action pill-action-secondary !px-3 !py-1.5 !text-[0.56rem] disabled:pointer-events-none disabled:opacity-40"
+                          >
+                            remove
+                          </button>
+                        </div>
+
+                        <div className="grid gap-3 md:hidden">
+                          <div className="grid grid-cols-2 gap-3">
+                            <div>
+                              <label className="kicker mb-1 block">Tool</label>
+                              <select {...register(`tools.${index}.toolId`)} className="input-field select-field text-xs">
+                                {TOOLS.map((tool) => (
+                                  <option key={tool.id} value={tool.id}>
+                                    {tool.name}
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
+                            <div>
+                              <label className="kicker mb-1 block">Plan</label>
+                              <select {...register(`tools.${index}.planId`)} className="input-field select-field text-xs">
+                                {plans.map((plan) => (
+                                  <option key={plan.id} value={plan.id}>
+                                    {plan.name}
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
+                          </div>
+                          <div className="grid grid-cols-2 gap-3">
+                            <div>
+                              <label className="kicker mb-1 block">Seats</label>
+                              <input
+                                type="number"
+                                min={1}
+                                {...register(`tools.${index}.seats`, { valueAsNumber: true })}
+                                className="input-field text-xs"
+                              />
+                            </div>
+                            <div>
+                              <label className="kicker mb-1 block">Spend/mo</label>
+                              <input
+                                type="number"
+                                min={0}
+                                step="0.01"
+                                {...register(`tools.${index}.monthlySpend`, { valueAsNumber: true })}
+                                className="input-field text-xs"
+                              />
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="hidden grid-cols-[2fr_1.4fr_90px_110px_44px] items-center gap-3 md:grid">
+                          <select {...register(`tools.${index}.toolId`)} className="input-field select-field text-xs">
+                            {TOOLS.map((tool) => (
+                              <option key={tool.id} value={tool.id}>
+                                {tool.name}
+                              </option>
+                            ))}
+                          </select>
+                          <select {...register(`tools.${index}.planId`)} className="input-field select-field text-xs">
+                            {plans.map((plan) => (
+                              <option key={plan.id} value={plan.id}>
+                                {plan.name}
+                              </option>
+                            ))}
+                          </select>
+                          <input
+                            type="number"
+                            min={1}
+                            {...register(`tools.${index}.seats`, { valueAsNumber: true })}
+                            className="input-field text-center text-xs"
+                          />
+                          <input
+                            type="number"
+                            min={0}
+                            step="0.01"
+                            {...register(`tools.${index}.monthlySpend`, { valueAsNumber: true })}
+                            className="input-field text-xs"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => fields.remove(index)}
+                            disabled={fields.fields.length === 1}
+                            className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-brand-border bg-brand-surface text-xs text-brand-textSub transition hover:border-brand-danger/45 hover:text-brand-danger disabled:pointer-events-none disabled:opacity-35"
+                            aria-label="Remove tool row"
+                          >
+                            x
+                          </button>
+                        </div>
+
+                        {expected > 0 && (
+                          <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-brand-border/70 pt-3">
+                            <p className="kicker">
+                              List price {formatCurrency(expected)}/mo
+                            </p>
+                            {overBudget && <SignalBadge tone="warn">Above list</SignalBadge>}
+                            {underBudget && <SignalBadge tone="ok">Below list</SignalBadge>}
+                          </div>
+                        )}
+                      </article>
                     );
                   })}
                 </div>
-              </div>
-            </div>
-          </div>
-        )}
 
-        {/* ─── STEP 2: Tools ─── */}
-        {step === 2 && (
-          <div className="space-y-4" data-step-panel>
-            <div className="flex items-baseline justify-between border-b border-brand-border pb-4">
-              <div>
-                <span className="kicker">STEP 02 - TOOL DECLARATION</span>
-                <p className="mt-1 text-xs text-brand-muted" style={{ fontFamily: "var(--font-serif)" }}>
-                  Declare all paid AI tools. Overlap is only caught when all tools are listed.
-                </p>
-              </div>
-              <div className="text-right">
-                <span className="kicker">TOTAL DECLARED SPEND</span>
-                <p className="mono-value text-xl font-bold tabular-nums">{formatCurrency(totalSpend)}/mo</p>
-              </div>
-            </div>
+                <button
+                  type="button"
+                  onClick={() =>
+                    fields.append({
+                      toolId: "chatgpt",
+                      planId: "plus",
+                      seats: teamSize ?? 1,
+                      monthlySpend: 20,
+                      primaryUseCase,
+                    })
+                  }
+                  className="mt-4 flex w-full items-center justify-center rounded-2xl border border-dashed border-brand-borderStrong bg-brand-surface2/55 px-5 py-3 text-xs font-semibold uppercase tracking-[0.1em] text-brand-textSub transition hover:border-brand-accent hover:bg-brand-surface"
+                >
+                  + add tool
+                </button>
+              </section>
+            )}
 
-            <div className="hidden grid-cols-[2fr_1.5fr_80px_100px_40px] gap-3 border-b border-brand-border pb-2 md:grid">
-              {["TOOL", "PLAN", "SEATS", "SPEND/MO", ""].map((heading) => (
-                <span key={heading} className="kicker" style={{ fontSize: "0.6rem" }}>
-                  {heading}
-                </span>
-              ))}
-            </div>
-
-            {fields.fields.map((field, index) => {
-              const toolId = watchedTools[index]?.toolId;
-              const meta = TOOL_META[toolId ?? ""] ?? { emoji: "--", cat: "other", catLabel: "Tool" };
-              const plans = TOOLS.find((tool) => tool.id === toolId)?.plans ?? [];
-              const planId = watchedTools[index]?.planId;
-              const seats = Number(watchedTools[index]?.seats ?? 0);
-              const spend = Number(watchedTools[index]?.monthlySpend ?? 0);
-              const expected = expectedCost(toolId ?? "", planId ?? "", seats);
-              const overBudget = spend > expected * 1.1 && expected > 0;
-              const underBudget = spend > 0 && spend < expected * 0.8 && expected > 0;
-
-              return (
-                <div key={field.id} className="panel-raised" data-tool-row>
-                  <div className="grid gap-3 p-4 md:hidden">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <span className="kicker border border-brand-border px-2 py-0.5" style={{ fontSize: "0.55rem" }}>
-                          {meta.catLabel}
-                        </span>
-                        <span className="text-sm font-bold text-brand-text" style={{ fontFamily: "var(--font-mono)" }}>
-                          {TOOLS.find((tool) => tool.id === toolId)?.name ?? "Tool"}
-                        </span>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => fields.remove(index)}
-                        disabled={fields.fields.length === 1}
-                        className="kicker text-brand-danger/70 disabled:opacity-30 hover:text-brand-danger"
-                      >
-                        ✕
-                      </button>
-                    </div>
-                    <div className="grid grid-cols-2 gap-3">
-                      <div>
-                        <label className="kicker mb-1 block" style={{ fontSize: "0.55rem" }}>
-                          TOOL
-                        </label>
-                        <select {...register(`tools.${index}.toolId`)} className="input-field select-field text-xs">
-                          {TOOLS.map((tool) => (
-                            <option key={tool.id} value={tool.id}>
-                              {tool.name}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-                      <div>
-                        <label className="kicker mb-1 block" style={{ fontSize: "0.55rem" }}>
-                          PLAN
-                        </label>
-                        <select {...register(`tools.${index}.planId`)} className="input-field select-field text-xs">
-                          {plans.map((plan) => (
-                            <option key={plan.id} value={plan.id}>
-                              {plan.name}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-                      <div>
-                        <label className="kicker mb-1 block" style={{ fontSize: "0.55rem" }}>
-                          SEATS
-                        </label>
-                        <input
-                          type="number"
-                          min={1}
-                          {...register(`tools.${index}.seats`, { valueAsNumber: true })}
-                          className="input-field text-xs"
-                        />
-                      </div>
-                      <div>
-                        <label className="kicker mb-1 block" style={{ fontSize: "0.55rem" }}>
-                          $/MO
-                        </label>
-                        <input
-                          type="number"
-                          min={0}
-                          step="0.01"
-                          {...register(`tools.${index}.monthlySpend`, { valueAsNumber: true })}
-                          className="input-field text-xs"
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="hidden grid-cols-[2fr_1.5fr_80px_100px_40px] items-center gap-3 px-4 py-3 md:grid">
-                    <select
-                      {...register(`tools.${index}.toolId`)}
-                      className="input-field select-field text-xs"
-                      style={{ fontFamily: "var(--font-mono)" }}
-                    >
-                      {TOOLS.map((tool) => (
-                        <option key={tool.id} value={tool.id}>
-                          {tool.name}
-                        </option>
-                      ))}
-                    </select>
-                    <select
-                      {...register(`tools.${index}.planId`)}
-                      className="input-field select-field text-xs"
-                      style={{ fontFamily: "var(--font-mono)" }}
-                    >
-                      {plans.map((plan) => (
-                        <option key={plan.id} value={plan.id}>
-                          {plan.name}
-                        </option>
-                      ))}
-                    </select>
-                    <input
-                      type="number"
-                      min={1}
-                      {...register(`tools.${index}.seats`, { valueAsNumber: true })}
-                      className="input-field text-center text-xs"
-                      style={{ fontFamily: "var(--font-mono)" }}
-                    />
-                    <input
-                      type="number"
-                      min={0}
-                      step="0.01"
-                      {...register(`tools.${index}.monthlySpend`, { valueAsNumber: true })}
-                      className="input-field text-xs"
-                      style={{ fontFamily: "var(--font-mono)" }}
-                    />
-                    <button
-                      type="button"
-                      onClick={() => fields.remove(index)}
-                      disabled={fields.fields.length === 1}
-                      className="flex h-8 w-8 items-center justify-center border border-brand-border text-xs text-brand-muted transition hover:border-brand-danger hover:text-brand-danger disabled:opacity-30"
-                    >
-                      ✕
-                    </button>
-                  </div>
-
-                  {expected > 0 && (
-                    <div className="flex flex-wrap items-center gap-3 border-t border-brand-border/50 px-4 py-2">
-                      <span className="kicker" style={{ fontSize: "0.55rem" }}>
-                        LIST PRICE: <span className="font-mono text-brand-textSub">{formatCurrency(expected)}/mo</span>
-                      </span>
-                      {overBudget && (
-                        <span className="badge badge-switch" style={{ fontSize: "0.55rem" }}>
-                          WARN: ABOVE LIST
-                        </span>
-                      )}
-                      {underBudget && (
-                        <span className="badge badge-ok" style={{ fontSize: "0.55rem" }}>
-                          ↓ BELOW LIST
-                        </span>
-                      )}
-                    </div>
-                  )}
+            {step === 3 && (
+              <section className="frame-shell p-6 md:p-7" data-step-panel>
+                <div className="border-b border-brand-border pb-5">
+                  <p className="kicker">step 03 / pre-flight review</p>
+                  <h2 className="mt-2 text-2xl font-semibold text-brand-text">Confirm before running audit</h2>
+                  <p className="serif-body mt-2 text-sm">
+                    Review declaration quality before the engine runs.
+                  </p>
                 </div>
-              );
-            })}
 
-            <button
-              type="button"
-              onClick={() =>
-                fields.append({
-                  toolId: "chatgpt",
-                  planId: "plus",
-                  seats: teamSize ?? 1,
-                  monthlySpend: 20,
-                  primaryUseCase,
-                })
-              }
-              className="flex w-full items-center justify-center gap-2 border border-dashed border-brand-border py-4 text-sm text-brand-textSub transition hover:border-brand-accent/50 hover:text-brand-accent"
-              style={{
-                fontFamily: "var(--font-barlow)",
-                letterSpacing: "0.1em",
-                fontSize: "0.75rem",
-                textTransform: "uppercase",
-              }}
-            >
-              + ADD TOOL
-            </button>
-          </div>
-        )}
+                <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+                  <MetricTile label="Headcount" value={`${teamSize} people`} />
+                  <MetricTile label="Use case" value={primaryUseCase.toUpperCase()} />
+                  <MetricTile label="Total spend" value={`${formatCurrency(totalSpend)}/mo`} />
+                  <MetricTile label="Tools" value={`${watchedTools.length} declared`} />
+                </div>
 
-        {/* ─── STEP 3: Review ─── */}
-        {step === 3 && (
-          <div className="panel" data-step-panel>
-            <div className="border-b border-brand-border px-6 py-4">
-              <span className="kicker">STEP 03 - PRE-FLIGHT REVIEW</span>
-            </div>
-            <div className="space-y-4 px-6 py-6">
-              <div className="flex flex-wrap gap-3">
-                {[
-                  { label: "HEADCOUNT", value: `${teamSize} people` },
-                  { label: "USE CASE", value: primaryUseCase.toUpperCase() },
-                  { label: "TOTAL SPEND", value: `${formatCurrency(totalSpend)}/mo` },
-                  { label: "TOOLS", value: `${watchedTools.length} declared` },
-                ].map((item) => (
-                  <div key={item.label} className="panel-raised px-4 py-3">
-                    <span className="kicker" style={{ fontSize: "0.55rem" }}>
-                      {item.label}
-                    </span>
-                    <p className="mt-1 text-sm font-bold text-brand-text" style={{ fontFamily: "var(--font-mono)" }}>
-                      {item.value}
-                    </p>
-                  </div>
-                ))}
-              </div>
-
-              <hr className="ruling" />
-
-              <div className="divide-y divide-brand-border">
-                {watchedTools.map((tool, index) => {
-                  const toolMeta = TOOLS.find((item) => item.id === tool.toolId);
-                  const planMeta = toolMeta?.plans.find((plan) => plan.id === tool.planId);
-                  const meta = TOOL_META[tool.toolId] ?? { catLabel: "Tool" };
-                  return (
-                    <div key={`${tool.toolId}-${index}`} className="flex items-center justify-between py-3">
-                      <div className="flex items-center gap-3">
-                        <span className="kicker border border-brand-border px-2 py-0.5" style={{ fontSize: "0.55rem" }}>
-                          {meta.catLabel}
-                        </span>
-                        <div>
-                          <p className="text-sm font-bold text-brand-text" style={{ fontFamily: "var(--font-mono)" }}>
-                            {toolMeta?.name ?? tool.toolId}
-                          </p>
-                          <p className="kicker" style={{ fontSize: "0.58rem" }}>
-                            {planMeta?.name} | {tool.seats} seat{tool.seats !== 1 ? "s" : ""}
-                          </p>
+                <div className="mt-5 space-y-3">
+                  {watchedTools.map((tool, index) => {
+                    const toolMeta = TOOLS.find((item) => item.id === tool.toolId);
+                    const planMeta = toolMeta?.plans.find((plan) => plan.id === tool.planId);
+                    const meta = TOOL_META[tool.toolId] ?? { catLabel: "Tool" };
+                    return (
+                      <article
+                        key={`${tool.toolId}-${index}`}
+                        className="panel-raised flex flex-wrap items-center justify-between gap-3 px-4 py-3"
+                      >
+                        <div className="flex items-center gap-3">
+                          <SignalBadge>{meta.catLabel}</SignalBadge>
+                          <div>
+                            <p className="mono-value text-sm font-semibold text-brand-text">
+                              {toolMeta?.name ?? tool.toolId}
+                            </p>
+                            <p className="kicker mt-1">
+                              {planMeta?.name} | {tool.seats} seat{tool.seats !== 1 ? "s" : ""}
+                            </p>
+                          </div>
                         </div>
-                      </div>
-                      <div className="flex items-center gap-4">
-                        <p className="mono-value text-sm font-bold tabular-nums">{formatCurrency(tool.monthlySpend)}/mo</p>
-                        <button
-                          type="button"
-                          onClick={() => setStep(2)}
-                          className="kicker text-brand-muted underline hover:text-brand-textSub"
-                          style={{ fontSize: "0.55rem" }}
-                        >
-                          EDIT
-                        </button>
-                      </div>
-                    </div>
-                  );
-                })}
+                        <div className="flex items-center gap-3">
+                          <p className="mono-value text-sm font-semibold">{formatCurrency(tool.monthlySpend)}/mo</p>
+                          <button
+                            type="button"
+                            onClick={() => setStep(2)}
+                            className="pill-action pill-action-secondary !px-3 !py-1.5 !text-[0.56rem]"
+                          >
+                            edit
+                          </button>
+                        </div>
+                      </article>
+                    );
+                  })}
+                </div>
+
+                <article className="panel mt-5 px-4 py-4">
+                  <p className="serif-body text-sm">
+                    The audit engine will run {watchedTools.length * 10} rule checks: overlap, plan fit,
+                    seat right-sizing, benchmark comparison, and credit arbitrage signals.
+                  </p>
+                </article>
+              </section>
+            )}
+
+            {error && (
+              <article
+                className="editorial-card border-brand-danger/40 bg-brand-danger/10 px-4 py-3"
+                role="alert"
+                aria-live="polite"
+              >
+                <div className="flex items-start gap-2">
+                  <CircleAlert className="mt-0.5 h-4 w-4 shrink-0 text-brand-danger" />
+                  <div>
+                    <p className="kicker !text-brand-danger/90">submission error</p>
+                    <p className="mt-1 text-sm text-brand-danger">{error}</p>
+                  </div>
+                </div>
+              </article>
+            )}
+
+            <section className="frame-shell px-4 py-4 md:px-5 md:py-5">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <button
+                  type="button"
+                  onClick={() => setStep((current) => Math.max(current - 1, 1))}
+                  disabled={step === 1 || isSubmitting}
+                  className="pill-action pill-action-secondary min-w-[8rem] disabled:pointer-events-none disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent/45"
+                >
+                  back
+                </button>
+
+                {step < 3 ? (
+                  <button
+                    type="button"
+                    onClick={nextStep}
+                    className="pill-action pill-action-primary min-w-[9rem] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent/45"
+                  >
+                    continue
+                  </button>
+                ) : (
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="pill-action pill-action-primary min-w-[10rem] disabled:pointer-events-none disabled:opacity-65 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent/45"
+                  >
+                    {isSubmitting ? (
+                      <span className="inline-flex items-center gap-2">
+                        <span className="inline-block h-3.5 w-3.5 animate-spin rounded-full border-2 border-brand-surface2 border-t-brand-surface" />
+                        running
+                      </span>
+                    ) : (
+                      "run my audit"
+                    )}
+                  </button>
+                )}
               </div>
-
-              <hr className="ruling" />
-
-              <div className="panel-raised px-5 py-4">
-                <p className="text-xs text-brand-muted" style={{ fontFamily: "var(--font-serif)" }}>
-                  The audit engine will run {watchedTools.length * 10} rule checks - overlap detection, plan-fit analysis,
-                  seat rightsizing, benchmark comparison, and credit arbitrage signals - and return a graded report in seconds.
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* ─── ERROR ─── */}
-        {error && (
-          <div className="mt-4 flex items-center gap-2 border border-brand-danger/30 bg-brand-danger/8 px-4 py-3" role="alert" aria-live="polite">
-            <CircleAlert className="h-4 w-4 shrink-0 text-brand-danger" />
-            <span className="text-sm text-brand-danger" style={{ fontFamily: "var(--font-serif)" }}>
-              {error}
-            </span>
-          </div>
-        )}
-
-        {/* ─── NAVIGATION ─── */}
-        <div className="mt-6 flex items-center justify-between border-t border-brand-border pt-6">
-          <button
-            type="button"
-            onClick={() => setStep((current) => Math.max(current - 1, 1))}
-            disabled={step === 1 || isSubmitting}
-            className="border border-brand-border px-6 py-3 text-sm text-brand-textSub transition hover:border-brand-accent/40 hover:text-brand-text disabled:pointer-events-none disabled:opacity-30"
-            style={{
-              fontFamily: "var(--font-barlow)",
-              letterSpacing: "0.1em",
-              fontSize: "0.75rem",
-              textTransform: "uppercase",
-            }}
-          >
-            BACK
-          </button>
-
-          {step < 3 ? (
-            <button
-              type="button"
-              onClick={nextStep}
-              className="border border-brand-accent bg-brand-accent/10 px-8 py-3 text-sm font-black text-brand-accent transition hover:bg-brand-accent hover:text-brand-bg glow-accent-sm"
-              style={{
-                fontFamily: "var(--font-barlow)",
-                letterSpacing: "0.12em",
-                fontSize: "0.8125rem",
-                textTransform: "uppercase",
-              }}
-            >
-              CONTINUE -&gt;
-            </button>
-          ) : (
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="border border-brand-accent bg-brand-accent px-8 py-3 text-sm font-black text-brand-bg transition hover:bg-brand-accentDim glow-accent disabled:opacity-60"
-              style={{
-                fontFamily: "var(--font-barlow)",
-                letterSpacing: "0.12em",
-                fontSize: "0.8125rem",
-                textTransform: "uppercase",
-              }}
-            >
-              {isSubmitting ? (
-                <span className="inline-flex items-center gap-2">
-                  <span className="inline-block h-3.5 w-3.5 animate-spin rounded-full border-2 border-brand-bg/30 border-t-brand-bg" />
-                  RUNNING AUDIT...
-                </span>
-              ) : (
-                "RUN MY AUDIT ->"
-              )}
-            </button>
-          )}
+              <p className="serif-body mt-3 text-xs">
+                Step {step} of 3. Keyboard navigation and visible focus states are enabled for all controls.
+              </p>
+            </section>
+          </form>
         </div>
-      </form>
-      <aside className="hidden lg:block">
-        <div className="panel sticky top-28 p-5">
-          <span className="kicker">Live context</span>
-          <div className="mt-4 space-y-3">
-            <div className="panel-raised px-3 py-2">
-              <p className="kicker" style={{ fontSize: "0.55rem" }}>
-                Step
-              </p>
-              <p className="mono-value mt-1 text-lg font-bold">
-                0{step} / 03
-              </p>
+
+        <aside className="hidden lg:block">
+          <div className="frame-shell sticky top-28 p-5">
+            <p className="kicker">Live context</p>
+            <div className="mt-4 space-y-3">
+              <MetricTile label="Step" value={`0${step} / 03`} />
+              <MetricTile label="Tools declared" value={`${watchedTools.length}`} />
+              <MetricTile label="Current total" value={`${formatCurrency(totalSpend)}/mo`} />
             </div>
-            <div className="panel-raised px-3 py-2">
-              <p className="kicker" style={{ fontSize: "0.55rem" }}>
-                Tools declared
+            <div className="mt-4 border-t border-brand-border pt-3">
+              <p className="serif-body text-xs">
+                Keep this card visible while tuning tools and plans.
               </p>
-              <p className="mono-value mt-1 text-lg font-bold">{watchedTools.length}</p>
-            </div>
-            <div className="panel-raised px-3 py-2">
-              <p className="kicker" style={{ fontSize: "0.55rem" }}>
-                Current total
-              </p>
-              <p className="mono-value mt-1 text-lg font-bold">{formatCurrency(totalSpend)}/mo</p>
             </div>
           </div>
-          <p className="mt-4 text-xs leading-relaxed text-brand-textSub">
-            Keep this summary visible while you tune tools and plans.
-          </p>
-        </div>
-      </aside>
+        </aside>
       </div>
     </div>
   );

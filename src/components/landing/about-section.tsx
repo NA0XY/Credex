@@ -1,24 +1,49 @@
 "use client";
 
 import { useRef } from "react";
-import { SystemArtifactGrid } from "@/components/landing/object-modules";
 import { useGsapContext } from "@/lib/motion/use-gsap-context";
 
 const STEPS = [
   {
-    num: "01",
-    title: "Declare stack context",
-    desc: "Capture tools, seat counts, and monthly commitments so the model has complete cost topology.",
+    number: "01",
+    title: "Enter your stack",
+    body:
+      "Tell us which AI tools your team uses and what you're paying. Takes under 2 minutes - no account needed.",
+    icon: (
+      <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.7">
+        <rect x="3" y="3" width="7" height="7" rx="1.2" />
+        <rect x="14" y="3" width="7" height="7" rx="1.2" />
+        <rect x="3" y="14" width="7" height="7" rx="1.2" />
+        <rect x="14" y="14" width="7" height="7" rx="1.2" />
+      </svg>
+    ),
   },
   {
-    num: "02",
-    title: "Run deterministic checks",
-    desc: "Rules detect overlap, oversized plans, seat drift, and benchmark deltas with transparent scoring.",
+    number: "02",
+    title: "We audit the numbers",
+    body:
+      "Our engine checks seat overlap, plan fit, benchmark spend, and negotiation leverage across your entire stack.",
+    icon: (
+      <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.7">
+        <path d="M4 15a8 8 0 1 1 16 0" />
+        <path d="M12 12L18 8" />
+        <circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none" />
+      </svg>
+    ),
   },
   {
-    num: "03",
-    title: "Execute ranked actions",
-    desc: "Deploy the highest-confidence recommendations first and monitor savings as procurement changes.",
+    number: "03",
+    title: "Get your report",
+    body:
+      "Receive a Stack Score (A-F), prioritized savings list, and AI-written action plan you can act on this week.",
+    icon: (
+      <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.7">
+        <rect x="5" y="3" width="14" height="18" rx="2" />
+        <path d="M9 8h6" />
+        <path d="M9 12h6" />
+        <path d="M9 16h4" />
+      </svg>
+    ),
   },
 ];
 
@@ -27,73 +52,53 @@ export function AboutSection() {
 
   useGsapContext(
     (gsap) => {
-      const nodes = gsap.utils.toArray<HTMLElement>("[data-about-reveal]");
-      if (nodes.length > 0) {
+      const cards = gsap.utils.toArray<HTMLElement>("[data-step-card]");
+      cards.forEach((card, index) => {
         gsap.fromTo(
-          nodes,
-          { autoAlpha: 0, y: 24 },
+          card,
+          { autoAlpha: 0, y: 26 },
           {
             autoAlpha: 1,
             y: 0,
-            stagger: 0.1,
             duration: 0.56,
-            ease: "power2.out",
+            delay: index * 0.12,
+            ease: "power3.out",
             scrollTrigger: {
               trigger: sectionRef.current,
-              start: "top 72%",
+              start: "top 76%",
             },
           }
         );
-      }
-
-      gsap.timeline({
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: "top bottom",
-          end: "bottom top",
-          scrub: 0.9,
-        },
-      })
-        .to("[data-about-steps]", { yPercent: -6 }, 0)
-        .to("[data-about-artifacts]", { yPercent: 8 }, 0)
-        .to("[data-about-haze]", { yPercent: 14 }, 0);
+      });
     },
     { scope: sectionRef }
   );
 
   return (
-    <section
-      id="about"
-      ref={sectionRef}
-      className="relative overflow-hidden border-b border-brand-border bg-brand-bg px-6 py-24 text-brand-text"
-    >
-      <div className="pointer-events-none absolute inset-0 bg-grid opacity-25" />
-      <div data-about-haze className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(103,164,236,0.14),transparent_68%)]" />
+    <section id="method" ref={sectionRef} className="bg-[var(--color-bg-alt)] px-[clamp(1.2rem,4vw,3.2rem)] py-[clamp(5rem,9vw,8.5rem)]">
+      <div className="mx-auto max-w-[1440px]">
+        <p className="kicker">How it works</p>
+        <h2 className="cond-display mt-2 text-[clamp(2rem,4.5vw,3.8rem)] text-brand-text">
+          Three steps to clarity
+        </h2>
 
-      <div className="relative mx-auto max-w-7xl">
-        <div data-about-reveal className="mb-14 max-w-3xl">
-          <span className="kicker">Method</span>
-          <h2 className="cond-display mt-3 text-[clamp(2rem,4.7vw,3.8rem)] leading-[1.02] text-brand-text">
-            Spend clarity for teams moving faster than finance cycles.
-          </h2>
-          <p className="serif-body mt-5 text-base md:text-lg">
-            Credex SpendLens is built for operator teams that ship quickly and need spend decisions
-            backed by transparent logic, not black-box guesses.
-          </p>
-        </div>
+        <div className="relative mt-8 grid gap-4 md:grid-cols-3">
+          <div className="pointer-events-none absolute left-[15%] right-[15%] top-8 hidden border-t border-dashed border-brand-border md:block" />
 
-        <div data-about-steps className="mb-14 grid gap-4 md:grid-cols-3">
           {STEPS.map((step) => (
-            <article key={step.num} data-about-reveal className="panel px-5 py-5">
-              <p className="mono-value text-2xl font-semibold">{step.num}</p>
-              <h3 className="mt-3 text-lg text-brand-text">{step.title}</h3>
-              <p className="serif-body mt-2 text-sm">{step.desc}</p>
+            <article key={step.number} data-step-card className="relative rounded-[1.5rem] border border-brand-border bg-brand-surface p-5 shadow-[0_6px_28px_-10px_rgba(26,22,18,0.16)] transition duration-[320ms] [transition-timing-function:var(--ease-enter)] hover:-translate-y-1">
+              <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-brand-border bg-brand-surface2 px-3 py-1">
+                <span className="kicker !text-brand-text">{`Step ${step.number}`}</span>
+              </div>
+              <div className="mb-3 inline-flex h-8 w-8 items-center justify-center rounded-full border border-brand-border bg-brand-bg text-brand-accent">
+                {step.icon}
+              </div>
+              <h3 className="cond-display text-[clamp(1.4rem,2.5vw,2rem)] leading-[1.02] text-brand-text">
+                {step.title}
+              </h3>
+              <p className="serif-body mt-3 text-[clamp(0.9rem,1.5vw,1.1rem)]">{step.body}</p>
             </article>
           ))}
-        </div>
-
-        <div data-about-artifacts data-about-reveal>
-          <SystemArtifactGrid />
         </div>
       </div>
     </section>

@@ -13,23 +13,81 @@ export function ResultsMotionShell({ children }: ResultsMotionShellProps) {
 
   useGsapContext(
     (gsap) => {
-      const nodes = gsap.utils.toArray<HTMLElement>("[data-results-reveal]");
-      if (nodes.length === 0) {
+      const heroNodes = gsap.utils.toArray<HTMLElement>(
+        "[data-results-stage='hero']"
+      );
+      const cardStageNodes = gsap.utils.toArray<HTMLElement>(
+        "[data-results-stage='cards']"
+      );
+      const cardItems = gsap.utils.toArray<HTMLElement>("[data-results-card]");
+      const secondaryNodes = gsap.utils.toArray<HTMLElement>(
+        "[data-results-stage='secondary']"
+      );
+
+      const allNodes = [
+        ...heroNodes,
+        ...cardStageNodes,
+        ...cardItems,
+        ...secondaryNodes,
+      ];
+
+      if (allNodes.length === 0) {
         return;
       }
 
-      gsap.set(nodes, {
+      gsap.set(allNodes, {
         autoAlpha: 0,
-        y: 18,
+        y: 14,
       });
 
-      gsap.to(nodes, {
-        autoAlpha: 1,
-        duration: 0.56,
-        ease: "power2.out",
-        stagger: 0.08,
-        y: 0,
-      });
+      const intro = gsap.timeline({ defaults: { ease: "power3.out" } });
+
+      if (heroNodes.length > 0) {
+        intro.to(heroNodes, {
+          autoAlpha: 1,
+          y: 0,
+          duration: 0.62,
+          stagger: 0.08,
+        });
+      }
+
+      if (cardStageNodes.length > 0) {
+        intro.to(
+          cardStageNodes,
+          {
+            autoAlpha: 1,
+            y: 0,
+            duration: 0.48,
+          },
+          "-=0.14"
+        );
+      }
+
+      if (cardItems.length > 0) {
+        intro.to(
+          cardItems,
+          {
+            autoAlpha: 1,
+            y: 0,
+            duration: 0.38,
+            stagger: 0.07,
+          },
+          "-=0.08"
+        );
+      }
+
+      if (secondaryNodes.length > 0) {
+        intro.to(
+          secondaryNodes,
+          {
+            autoAlpha: 1,
+            y: 0,
+            duration: 0.44,
+            stagger: 0.09,
+          },
+          "-=0.06"
+        );
+      }
     },
     { scope: rootRef }
   );

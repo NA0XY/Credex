@@ -31,8 +31,9 @@ Rules:
 
 ## Fallback strategy
 
-When Anthropic fails, times out, or rate-limits:
+When Groq (or configured LLM provider) fails, times out, or rate-limits:
 
 - Never surface raw API errors to the user.
 - Generate deterministic fallback text from audit totals and top recommendation.
 - Persist fallback summary to keep the results page stable.
+

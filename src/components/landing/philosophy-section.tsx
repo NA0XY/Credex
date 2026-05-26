@@ -1,125 +1,78 @@
 "use client";
 
-import { useRef } from "react";
-import { useGsapContext } from "@/lib/motion/use-gsap-context";
+import { useEffect, useRef, useState } from "react";
+import { AnimatedCounter } from "@/components/animated-counter";
 
 export function PhilosophySection() {
   const sectionRef = useRef<HTMLElement | null>(null);
+  const [visible, setVisible] = useState(false);
 
-  useGsapContext(
-    (gsap) => {
-      const nodes = gsap.utils.toArray<HTMLElement>("[data-philosophy-reveal]");
-      if (nodes.length > 0) {
-        gsap.fromTo(
-          nodes,
-          { autoAlpha: 0, y: 24 },
-          {
-            autoAlpha: 1,
-            y: 0,
-            stagger: 0.1,
-            duration: 0.56,
-            ease: "power2.out",
-            scrollTrigger: {
-              trigger: sectionRef.current,
-              start: "top 72%",
-            },
-          }
-        );
-      }
+  useEffect(() => {
+    const node = sectionRef.current;
+    if (!node) return undefined;
 
-      gsap.fromTo(
-        "[data-signal-item]",
-        { autoAlpha: 0, x: -16 },
-        {
-          autoAlpha: 1,
-          x: 0,
-          duration: 0.44,
-          ease: "power2.out",
-          stagger: 0.07,
-          scrollTrigger: {
-            trigger: sectionRef.current,
-            start: "top 60%",
-          },
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setVisible(true);
+          observer.disconnect();
         }
-      );
+      },
+      { threshold: 0.15 }
+    );
 
-      gsap.timeline({
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: "top bottom",
-          end: "bottom top",
-          scrub: 0.9,
-        },
-      })
-        .to("[data-philosophy-core]", { yPercent: -7 }, 0)
-        .to("[data-philosophy-guide]", { yPercent: 8 }, 0);
-    },
-    { scope: sectionRef }
-  );
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
 
   return (
-    <section ref={sectionRef} className="relative overflow-hidden border-b border-brand-border bg-brand-bg px-6 py-24">
-      <div className="pointer-events-none absolute inset-0 bg-grid opacity-15" />
-      <div className="mx-auto max-w-7xl">
-        <div data-philosophy-reveal className="mb-14 max-w-3xl">
-          <span className="kicker">Philosophy</span>
-          <h2 className="cond-display mt-3 text-[clamp(2rem,4.7vw,3.8rem)] leading-[1.02] text-brand-text">
-            Savings discipline
-            <span className="mx-2 text-brand-muted">x</span>
-            product velocity
-          </h2>
-          <p className="serif-body mt-4 text-base md:text-lg">
-            Every recommendation is prioritized by confidence and execution cost so teams can reduce
-            spend without slowing product delivery.
-          </p>
+    <section id="proof" ref={sectionRef} className="bg-brand-bg px-[clamp(1.2rem,4vw,3.2rem)] py-[clamp(5rem,9vw,8.5rem)]">
+      <div className="mx-auto max-w-[1440px]">
+        <p className="kicker">Social proof</p>
+        <h2 className="cond-display mt-2 text-[clamp(2rem,4.5vw,3.8rem)] text-brand-text">
+          Built on real savings data
+        </h2>
+
+        <div className="mt-8 grid gap-4 md:grid-cols-3">
+          <article className="rounded-[1.5rem] border border-brand-border bg-brand-surface p-5">
+            <p className="mono-value text-[clamp(2.4rem,5vw,4rem)] leading-none">
+              {visible ? <AnimatedCounter value={200} suffix="+" /> : "0"}
+            </p>
+            <p className="kicker mt-3">founders audited</p>
+          </article>
+          <article className="rounded-[1.5rem] border border-brand-border bg-brand-surface p-5">
+            <p className="mono-value text-[clamp(2.4rem,5vw,4rem)] leading-none">
+              {visible ? <AnimatedCounter value={1240} prefix="$" suffix="/mo avg" /> : "$0/mo avg"}
+            </p>
+            <p className="kicker mt-3">average monthly savings found</p>
+          </article>
+          <article className="rounded-[1.5rem] border border-brand-border bg-brand-surface p-5">
+            <p className="mono-value text-[clamp(2.4rem,5vw,4rem)] leading-none">
+              {visible ? <AnimatedCounter value={2} suffix=" min" /> : "0 min"}
+            </p>
+            <p className="kicker mt-3">median time to complete</p>
+          </article>
         </div>
 
-        <div className="grid gap-5 md:grid-cols-3">
-          <article data-philosophy-core data-philosophy-reveal className="panel p-5 md:col-span-2">
-            <span className="kicker">Signal matrix</span>
-            <div className="mt-4 grid gap-3 sm:grid-cols-2">
-              {[
-                {
-                  title: "Redundancy",
-                  desc: "Checks if multiple tools are paid for equivalent workflows across functions.",
-                },
-                {
-                  title: "Plan fit",
-                  desc: "Flags premium tiers where activation or feature usage is below threshold.",
-                },
-                {
-                  title: "Seat efficiency",
-                  desc: "Maps paid seats against role intensity to identify over-provisioned licenses.",
-                },
-                {
-                  title: "Cost benchmark",
-                  desc: "Compares per-developer spend against company-size cohort medians.",
-                },
-              ].map((item) => (
-                <div key={item.title} data-signal-item className="panel-raised px-4 py-4">
-                  <h3 className="text-base text-brand-text">{item.title}</h3>
-                  <p className="serif-body mt-2 text-sm">{item.desc}</p>
-                </div>
-              ))}
-            </div>
+        <div className="mt-8 grid gap-4 lg:grid-cols-2">
+          <article className="rounded-[1.5rem] border border-brand-border bg-brand-surface p-6 shadow-[0_6px_28px_-10px_rgba(26,22,18,0.16)]">
+            <p className="serif-body text-[clamp(0.9rem,1.5vw,1.1rem)]">
+              &quot;Found $340/month in tool overlap I didn&apos;t know existed. Took me less than two minutes.&quot;
+            </p>
+            <p className="kicker mt-4">Alex R., CTO, Series A startup</p>
+            <span className="mt-3 inline-flex rounded-full border border-brand-border bg-[rgba(47,124,79,0.15)] px-3 py-1">
+              <span className="kicker !text-brand-ok">Savings found: $340/mo</span>
+            </span>
           </article>
 
-          <article data-philosophy-guide data-philosophy-reveal className="panel p-5">
-            <span className="kicker">Credex next steps</span>
-            <div className="mt-4 space-y-4">
-              <div className="panel-raised px-4 py-3">
-                <p className="kicker text-brand-accent">1 / Prioritize</p>
-                <p className="serif-body mt-1 text-sm">Launch high-confidence actions with payback under 30 days.</p>
-              </div>
-              <div className="panel-raised px-4 py-3">
-                <p className="kicker text-brand-accent">2 / Negotiate</p>
-                <p className="serif-body mt-1 text-sm">Use recommendation notes to support procurement conversations.</p>
-              </div>
-              <div className="panel-raised px-4 py-3">
-                <p className="kicker text-brand-accent">3 / Re-audit</p>
-                <p className="serif-body mt-1 text-sm">Re-run as team size or model mix changes over each quarter.</p>
-              </div>
-            </div>
+          <article className="rounded-[1.5rem] border border-brand-border bg-brand-surface p-6 shadow-[0_6px_28px_-10px_rgba(26,22,18,0.16)]">
+            <p className="serif-body text-[clamp(0.9rem,1.5vw,1.1rem)]">
+              &quot;The benchmark comparison alone was worth it. We were at the 90th percentile for spend - now we&apos;re at the median.&quot;
+            </p>
+            <p className="kicker mt-4">Jamie L., Head of Engineering</p>
+            <span className="mt-3 inline-flex rounded-full border border-brand-border bg-[rgba(47,124,79,0.15)] px-3 py-1">
+              <span className="kicker !text-brand-ok">Savings found: $860/mo</span>
+            </span>
           </article>
         </div>
       </div>

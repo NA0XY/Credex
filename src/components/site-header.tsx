@@ -54,8 +54,8 @@ export function SiteHeader({ links = [], rightSlot, compactLogo = false }: SiteH
         start: 10,
         onToggle: (self) => {
           gsap.to(shell, {
-            backdropFilter: self.isActive ? "blur(18px)" : "blur(10px)",
-            borderColor: self.isActive ? "rgba(255, 235, 200, 0.22)" : "rgba(255, 235, 200, 0.14)",
+            backdropFilter: self.isActive ? "blur(14px)" : "blur(10px)",
+            borderColor: self.isActive ? "rgba(111, 132, 111, 0.52)" : "rgba(168, 182, 168, 0.9)",
             duration: 0.25,
             ease: "power2.out",
             scale: self.isActive ? 0.99 : 1,
@@ -85,7 +85,7 @@ export function SiteHeader({ links = [], rightSlot, compactLogo = false }: SiteH
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <div
           ref={shellRef}
-          className="liquid-glass flex items-center justify-between gap-4 rounded-[22px] border border-brand-borderStrong bg-brand-surface/75 px-4 py-2.5 shadow-[0_20px_50px_-36px_rgba(2,6,15,0.95)] md:rounded-full"
+          className="capsule-nav flex items-center justify-between gap-4 border border-brand-border bg-brand-surface/75 px-4 py-2.5 shadow-[0_20px_44px_-34px_rgba(15,23,42,0.22)] md:rounded-full"
         >
           <Logo compact={compactLogo} />
 
@@ -94,10 +94,10 @@ export function SiteHeader({ links = [], rightSlot, compactLogo = false }: SiteH
               <Link
                 key={`${link.href}-${link.label}`}
                 href={link.href}
-                className={`rounded-full border px-3.5 py-1.5 text-xs uppercase tracking-[0.09em] transition ${
+                className={`rounded-full border px-3.5 py-1.5 text-xs uppercase tracking-[0.09em] transition [transition-timing-function:var(--ease-enter)] ${
                   link.active
-                    ? "border-brand-borderStrong bg-brand-surface2/80 text-brand-text"
-                    : "border-transparent text-brand-textSub hover:border-brand-border hover:text-brand-text"
+                    ? "border-brand-border bg-brand-surface text-brand-text shadow-[0_8px_16px_-14px_rgba(15,23,42,0.25)]"
+                    : "border-transparent text-brand-textSub hover:border-brand-border hover:bg-brand-surface hover:text-brand-text"
                 }`}
                 style={{ fontFamily: "var(--font-mono)", fontWeight: 500 }}
               >

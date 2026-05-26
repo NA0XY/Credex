@@ -1,0 +1,18 @@
+<svg width="540" height="320" viewBox="0 0 540 320" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="cyl-body" x1="95" y1="111" x2="431" y2="249" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#8DA38F"/>
+      <stop offset="1" stop-color="#536B55"/>
+    </linearGradient>
+    <radialGradient id="cyl-rim" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(380 168) rotate(111.179) scale(55.1081 84.445)">
+      <stop stop-color="#D4DECE"/>
+      <stop offset="1" stop-color="#839984"/>
+    </radialGradient>
+  </defs>
+  <rect x="88" y="136" width="352" height="108" rx="54" transform="rotate(-12 88 136)" fill="url(#cyl-body)"/>
+  <ellipse cx="162" cy="176" rx="54" ry="54" transform="rotate(-12 162 176)" fill="url(#cyl-rim)"/>
+  <ellipse cx="162" cy="176" rx="20" ry="20" transform="rotate(-12 162 176)" fill="#516851"/>
+  <ellipse cx="377" cy="128" rx="54" ry="54" transform="rotate(-12 377 128)" fill="url(#cyl-rim)"/>
+  <ellipse cx="377" cy="128" rx="20" ry="20" transform="rotate(-12 377 128)" fill="#516851"/>
+  <path d="M324 96C332.805 92.2214 342.818 93.6341 350.211 99.6884C357.604 105.743 361.156 115.209 359.42 124.604C357.683 134 350.946 141.694 341.86 144.648C332.773 147.602 322.813 145.355 315.87 138.747" stroke="#C6764C" stroke-width="5" stroke-linecap="round"/>
+</svg>
