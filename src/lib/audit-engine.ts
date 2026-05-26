@@ -1,6 +1,8 @@
 ﻿import { getPlanById, getToolById } from "@/data/pricing";
-import type { AuditInput, AuditResult, Recommendation, ToolAuditResult } from "@/types/audit";
+import { compareToBenchmark } from "@/data/benchmarks";
+import type { AuditInput, AuditResult, CompletedAuditResult, Recommendation, ToolAuditResult } from "@/types/audit";
 import { roundCurrency } from "@/lib/format";
+import { computeStackScore } from "@/lib/stack-score";
 
 const MONTHS_PER_YEAR = 12;
 
@@ -61,7 +63,7 @@ function sortRecommendations(recommendations: Recommendation[]): Recommendation[
   });
 }
 
-export function runAudit(input: AuditInput): AuditResult {
+export function runAudit(input: AuditInput): CompletedAuditResult {
   const toolResults: ToolAuditResult[] = input.tools.map((toolInput) => {
     const tool = getToolById(toolInput.toolId);
     const plan = getPlanById(toolInput.toolId, toolInput.planId);
@@ -328,15 +330,59 @@ export function runAudit(input: AuditInput): AuditResult {
           : "low";
 
   const credexRelevant = savingsTier === "high" || savingsTier === "medium";
+  const toolsWithRecommendationContext = finalizedTools.map<ToolAuditResult>((toolResult) => {
+    const tool = getToolById(toolResult.toolId);
+    const recommendationContext: Pick<Recommendation, "negotiationTip" | "priceChangeAlert"> = {};
+
+    if (tool?.recentChanges?.length) {
+      const [latestChange] = tool.recentChanges;
+      recommendationContext.priceChangeAlert = `${tool.name} price change (${latestChange.date}): ${latestChange.note}`;
+    }
+
+    if (toolResult.currentMonthlyCost > 200) {
+      recommendationContext.negotiationTip = `At $${toolResult.currentMonthlyCost}/mo, you have leverage to request annual billing discount (typically 15-20%). Contact the vendor's sales team.`;
+    }
+
+    if (!recommendationContext.negotiationTip && !recommendationContext.priceChangeAlert) {
+      return toolResult;
+    }
+
+    const addContext = (recommendation: Recommendation): Recommendation => ({
+      ...recommendation,
+      ...recommendationContext,
+    });
+
+    return {
+      ...toolResult,
+      recommendations: toolResult.recommendations.map((recommendation, index) =>
+        index === 0 ? addContext(recommendation) : recommendation
+      ),
+      bestRecommendation: addContext(toolResult.bestRecommendation),
+    };
+  });
+
+  const benchmark = compareToBenchmark(input.teamSize, totalCurrentMonthlyCost);
+  const stackScore = computeStackScore(input, {
+    tools: toolsWithRecommendationContext,
+    totalCurrentMonthlyCost,
+  });
 
   return {
-    tools: finalizedTools,
+    tools: toolsWithRecommendationContext,
     totalCurrentMonthlyCost,
     totalMonthlySavings,
     totalAnnualSavings,
     savingsTier,
     credexRelevant,
     generatedAt: new Date().toISOString(),
+    stackScore,
+    benchmarkComparison: {
+      yourCpdPerMonth: benchmark.yourCpdPerMonth,
+      medianCpdPerMonth: benchmark.medianCpdPerMonth,
+      cohortLabel: benchmark.cohortLabel,
+      verdict: benchmark.verdict,
+      percentile: benchmark.percentile,
+    },
   };
 }
 

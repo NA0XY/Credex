@@ -102,4 +102,40 @@ describe("Audit Engine", () => {
     expect(result).toHaveProperty("credexRelevant");
     expect(result.tools[0]).toHaveProperty("bestRecommendation");
   });
+
+  it("computeStackScore returns valid grade for well-optimized stack", () => {
+    const result = runAudit({
+      tools: [{ toolId: "cursor", planId: "pro", seats: 3, monthlySpend: 60, primaryUseCase: "coding" }],
+      teamSize: 3,
+      primaryUseCase: "coding",
+    });
+
+    expect(result.stackScore).toBeDefined();
+    expect(["A", "B", "C", "D", "F"]).toContain(result.stackScore.grade);
+    expect(result.stackScore.total).toBeGreaterThanOrEqual(0);
+    expect(result.stackScore.total).toBeLessThanOrEqual(100);
+  });
+
+  it("benchmark comparison returns cohort for team size", () => {
+    const result = runAudit({
+      tools: [{ toolId: "claude", planId: "pro", seats: 10, monthlySpend: 200, primaryUseCase: "writing" }],
+      teamSize: 10,
+      primaryUseCase: "writing",
+    });
+
+    expect(result.benchmarkComparison).toBeDefined();
+    expect(result.benchmarkComparison.yourCpdPerMonth).toBe(20);
+    expect(result.benchmarkComparison.cohortLabel).toBeDefined();
+  });
+
+  it("adds priceChangeAlert to tools with recent changes", () => {
+    const result = runAudit({
+      tools: [{ toolId: "cursor", planId: "business", seats: 5, monthlySpend: 200, primaryUseCase: "coding" }],
+      teamSize: 5,
+      primaryUseCase: "coding",
+    });
+
+    const cursorTool = result.tools.find((tool) => tool.toolId === "cursor");
+    expect(cursorTool?.bestRecommendation.priceChangeAlert).toBeDefined();
+  });
 });

@@ -1,0 +1,89 @@
+<svg width="1600" height="980" viewBox="0 0 1600 980" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgPlate" x1="0" y1="0" x2="1600" y2="980" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#F5FAF2"/>
+      <stop offset="0.5" stop-color="#EFF6ED"/>
+      <stop offset="1" stop-color="#E8F0E6"/>
+    </linearGradient>
+    <linearGradient id="mediaFog" x1="220" y1="140" x2="1360" y2="780" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#DCEAD9"/>
+      <stop offset="0.46" stop-color="#E9EFE6"/>
+      <stop offset="1" stop-color="#D8E3D3"/>
+    </linearGradient>
+    <linearGradient id="darkGlass" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#253028"/>
+      <stop offset="1" stop-color="#1A221C"/>
+    </linearGradient>
+    <linearGradient id="accentBar" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#6E886E"/>
+      <stop offset="1" stop-color="#4C634D"/>
+    </linearGradient>
+    <filter id="grain">
+      <feTurbulence baseFrequency="0.85" numOctaves="2" type="fractalNoise" seed="11"/>
+      <feColorMatrix type="saturate" values="0"/>
+      <feComponentTransfer>
+        <feFuncA type="table" tableValues="0 0.06"/>
+      </feComponentTransfer>
+    </filter>
+    <clipPath id="mediaMask">
+      <rect x="174" y="110" width="1252" height="728" rx="46"/>
+    </clipPath>
+  </defs>
+
+  <rect width="1600" height="980" fill="url(#bgPlate)"/>
+
+  <rect x="98" y="62" width="1404" height="856" rx="62" fill="#F6FCF4" stroke="#C2D2C1" stroke-width="4"/>
+  <rect x="124" y="88" width="1352" height="804" rx="52" fill="#F9FDF7" stroke="#D2DED0" stroke-width="2"/>
+
+  <rect x="174" y="110" width="1252" height="728" rx="46" fill="url(#mediaFog)"/>
+  <g clip-path="url(#mediaMask)">
+    <rect x="174" y="110" width="1252" height="728" fill="#ECF4EA"/>
+    <circle cx="400" cy="700" r="250" fill="#D6E2D3"/>
+    <circle cx="1130" cy="250" r="230" fill="#DEE9DC"/>
+    <path d="M120 620C360 530 620 750 910 610C1090 522 1290 560 1500 690V920H120V620Z" fill="#D0DDCE"/>
+    <path d="M210 355C390 170 620 210 790 380C930 520 1140 550 1320 430L1400 390V840H210V355Z" fill="#C8D6C4"/>
+
+    <rect x="302" y="238" width="486" height="250" rx="26" fill="#F6FBF4" stroke="#B9CABB" stroke-width="3"/>
+    <rect x="345" y="292" width="266" height="22" rx="11" fill="#CCDCCB"/>
+    <rect x="345" y="332" width="214" height="18" rx="9" fill="#D6E2D3"/>
+    <rect x="345" y="366" width="186" height="16" rx="8" fill="#DCE7DB"/>
+    <circle cx="668" cy="362" r="66" fill="#D5E3D4"/>
+    <circle cx="668" cy="362" r="48" fill="#EAF1E8"/>
+    <circle cx="668" cy="362" r="30" fill="#C9DAC8"/>
+
+    <rect x="850" y="240" width="464" height="284" rx="30" fill="#E8F1E7" stroke="#B7C8B9" stroke-width="3"/>
+    <path d="M890 456L1000 320L1118 418L1254 286" stroke="#7B937B" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="890" y="476" width="350" height="20" rx="10" fill="#C8D7C7"/>
+
+    <ellipse cx="640" cy="790" rx="236" ry="54" fill="#B8C9B8"/>
+    <rect x="436" y="596" width="410" height="208" rx="48" fill="url(#darkGlass)"/>
+    <rect x="472" y="634" width="180" height="116" rx="16" fill="#4A5C4A"/>
+    <rect x="672" y="634" width="138" height="18" rx="9" fill="#6F846F"/>
+    <rect x="672" y="668" width="104" height="16" rx="8" fill="#5A715B"/>
+    <rect x="672" y="700" width="120" height="16" rx="8" fill="#4C634D"/>
+
+    <g transform="translate(1025 570) rotate(-26)">
+      <rect x="-10" y="-8" width="430" height="220" rx="86" fill="#2E3D31"/>
+      <rect x="18" y="18" width="374" height="164" rx="72" fill="#506B52"/>
+      <rect x="286" y="42" width="78" height="116" rx="39" fill="#223126"/>
+      <circle cx="325" cy="100" r="25" fill="#8BA08A"/>
+      <circle cx="325" cy="100" r="14" fill="#D9E5D8"/>
+      <rect x="42" y="70" width="184" height="18" rx="9" fill="#7E977F"/>
+      <rect x="42" y="104" width="140" height="16" rx="8" fill="#96AB97"/>
+    </g>
+
+    <rect x="280" y="152" width="562" height="130" rx="34" fill="#FDFEFC" stroke="#C5D3C4" stroke-width="2"/>
+    <rect x="312" y="176" width="208" height="42" rx="21" fill="#2A372C"/>
+    <circle cx="334" cy="197" r="8" fill="#5E785F"/>
+    <rect x="350" y="192" width="146" height="10" rx="5" fill="#DDE8DC"/>
+    <rect x="532" y="176" width="118" height="42" rx="21" fill="#EEF5EC" stroke="#CCD8CB"/>
+    <rect x="672" y="176" width="130" height="42" rx="21" fill="#EEF5EC" stroke="#CCD8CB"/>
+  </g>
+
+  <rect x="1220" y="730" width="224" height="148" rx="30" fill="url(#darkGlass)"/>
+  <rect x="1262" y="788" width="134" height="32" rx="16" fill="url(#accentBar)"/>
+  <circle cx="1370" cy="804" r="14" fill="#A9BCA8"/>
+  <circle cx="1390" cy="804" r="14" fill="#6A846B"/>
+
+  <rect width="1600" height="980" filter="url(#grain)"/>
+</svg>

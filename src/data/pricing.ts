@@ -20,6 +20,10 @@ export interface Tool {
   plans: Plan[];
   officialPricingUrl: string;
   lastVerified: string;
+  recentChanges?: Array<{
+    date: string;
+    note: string;
+  }>;
 }
 
 const lastVerified = "2026-05-21";
@@ -31,6 +35,9 @@ export const TOOLS: Tool[] = [
     category: "coding",
     officialPricingUrl: "https://www.cursor.com/pricing",
     lastVerified,
+    recentChanges: [
+      { date: "2025-09", note: "Business plan increased from $32 to $40/seat/mo" },
+    ],
     plans: [
       {
         id: "hobby",
@@ -72,6 +79,9 @@ export const TOOLS: Tool[] = [
     category: "coding",
     officialPricingUrl: "https://github.com/features/copilot#pricing",
     lastVerified,
+    recentChanges: [
+      { date: "2025-12", note: "Individual plan now includes code review features" },
+    ],
     plans: [
       {
         id: "individual",
@@ -105,6 +115,9 @@ export const TOOLS: Tool[] = [
     category: "chat",
     officialPricingUrl: "https://www.anthropic.com/pricing",
     lastVerified,
+    recentChanges: [
+      { date: "2026-02", note: "Max plan ($100/mo) introduced; Pro usage limits unchanged" },
+    ],
     plans: [
       {
         id: "free",
@@ -155,6 +168,9 @@ export const TOOLS: Tool[] = [
     category: "chat",
     officialPricingUrl: "https://openai.com/chatgpt/pricing/",
     lastVerified,
+    recentChanges: [
+      { date: "2026-01", note: "Team plan requires minimum 2 seats (was 1)" },
+    ],
     plans: [
       {
         id: "free",

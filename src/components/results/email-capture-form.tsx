@@ -1,6 +1,7 @@
-﻿"use client";
+"use client";
 
 import { useState } from "react";
+import { FrameShell, SignalBadge } from "@/components/editorial/primitives";
 
 interface EmailCaptureFormProps {
   auditSlug: string;
@@ -45,69 +46,66 @@ export function EmailCaptureForm({ auditSlug }: EmailCaptureFormProps) {
   };
 
   return (
-    <div className="email-capture rounded-2xl border border-brand-border bg-brand-surface p-6 sm:p-8">
-      <div className="mb-5 flex items-start gap-3">
-        <span className="text-2xl">📬</span>
-        <div>
-          <h3 className="font-heading text-lg font-semibold text-brand-text">Get this report in your inbox</h3>
-          <p className="mt-0.5 text-sm text-brand-textSub">
-            Plus alerts when better options launch for your stack. No spam — Credex may reach out if you qualify for significant credit savings.
-          </p>
+    <FrameShell className="email-capture">
+      <div className="border-b border-brand-border px-5 py-3">
+        <div className="flex items-center justify-between gap-3">
+          <span className="kicker">Deliver report to inbox</span>
+          <SignalBadge tone="neutral">Optional follow-up</SignalBadge>
         </div>
       </div>
 
       {!submitted ? (
-        <form onSubmit={submit} className="space-y-3">
-          <input
-            required
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="you@company.com"
-            className="input-field"
-          />
-          <div className="grid gap-3 sm:grid-cols-2">
-            <input
-              type="text"
-              value={companyName}
-              onChange={(e) => setCompanyName(e.target.value)}
-              placeholder="Company name (optional)"
-              className="input-field"
-            />
-            <input
-              type="text"
-              value={role}
-              onChange={(e) => setRole(e.target.value)}
-              placeholder="Your role (optional)"
-              className="input-field"
-            />
-          </div>
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-brand-accent text-sm font-semibold text-brand-bg transition glow-accent-sm hover:bg-brand-accentDim disabled:opacity-60"
-          >
-            {isSubmitting ? (
-              <>
-                <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-brand-bg/30 border-t-brand-bg" />
-                Sending...
-              </>
-            ) : "Get my report →"}
-          </button>
-          {status && !submitted && (
-            <p className="text-center text-sm text-brand-danger">{status}</p>
-          )}
-          <p className="text-center text-[10px] text-brand-muted">
-            No spam · Credex may reach out for high-savings accounts · Unsubscribe anytime
+        <div className="px-5 py-6">
+          <p className="serif-body mb-5 text-sm">
+            Get this report plus alerts when better options launch for your specific stack. Credex reaches out only for high-savings accounts, and only if you want.
           </p>
-        </form>
+          <form onSubmit={submit} className="space-y-3">
+            <label className="block">
+              <span className="kicker mb-1.5 block">Work email</span>
+              <input required type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="your@company.com" className="input-field" />
+            </label>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <label className="block">
+                <span className="kicker mb-1.5 block">Company name</span>
+                <input type="text" value={companyName} onChange={(e) => setCompanyName(e.target.value)} placeholder="Optional" className="input-field" />
+              </label>
+              <label className="block">
+                <span className="kicker mb-1.5 block">Role</span>
+                <input type="text" value={role} onChange={(e) => setRole(e.target.value)} placeholder="Optional" className="input-field" />
+              </label>
+            </div>
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="pill-action pill-action-primary glow-accent-sm flex w-full items-center justify-center gap-2 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {isSubmitting ? (
+                <>
+                  <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-brand-bg/30 border-t-brand-bg" />
+                  Sending...
+                </>
+              ) : (
+                "Send report to my inbox"
+              )}
+            </button>
+            {status && !submitted && (
+              <p className="text-center text-sm text-brand-danger" style={{ fontFamily: "var(--font-serif)" }}>
+                {status}
+              </p>
+            )}
+            <p className="kicker text-center" style={{ fontSize: "0.58rem" }}>
+              No spam &middot; Credex contacts only when relevant &middot; unsubscribe anytime
+            </p>
+          </form>
+        </div>
       ) : (
-        <div className="py-4 text-center">
-          <p className="text-4xl">🎉</p>
-          <p className="mt-3 font-semibold text-brand-text">Report sent!</p>
-          <p className="mt-1 text-sm text-brand-textSub">Check your inbox. The full report link is included.</p>
+        <div className="px-5 py-10 text-center">
+          <p className="mono-value text-3xl font-bold">Sent</p>
+          <p className="mt-2 text-sm text-brand-textSub" style={{ fontFamily: "var(--font-serif)" }}>
+            Check your inbox. The full report link is included.
+          </p>
         </div>
       )}
-    </div>
+    </FrameShell>
   );
 }

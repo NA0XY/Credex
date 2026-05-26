@@ -5,9 +5,9 @@ flowchart LR
     A[User] --> B[Landing Page]
     B --> C[Audit Form]
     C --> D[/api/audit]
-    D --> E[(Supabase)]
+    D --> E[(Supabase or In-Memory Fallback)]
     D --> F[/api/summary]
-    F --> G[Anthropic API]
+    F --> G[Groq API Optional]
     E --> H[Results Page]
     H --> I[/api/leads]
     I --> J[Resend]
@@ -34,6 +34,6 @@ A user enters team context and tool spend inputs in the multi-step audit form. T
 ## Scaling to 10k audits/day
 
 - Move rate limiting to Redis for low-latency counters.
-- Queue summary generation with Inngest/QStash workers.
+- Queue summary generation with worker jobs.
 - Cache static assets and report shells with CDN.
 - Add read replicas and partitioning for audit-result analytics.

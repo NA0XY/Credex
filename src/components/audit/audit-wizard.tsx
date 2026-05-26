@@ -1,12 +1,15 @@
 ﻿"use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useFieldArray, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { z } from "zod";
+import { CircleAlert } from "lucide-react";
+import { MetricTile, SignalBadge, StepperSegment } from "@/components/editorial/primitives";
 import { TOOLS, getPlanById } from "@/data/pricing";
 import { formatCurrency, roundCurrency } from "@/lib/format";
+import { useGsapContext } from "@/lib/motion/use-gsap-context";
 import { auditFormSchema } from "@/lib/validation";
 const STORAGE_KEY = "spendlens_audit_draft";
 
@@ -28,8 +31,6 @@ const USE_CASE_LABELS: Record<string, string> = {
   research: "Research",
   mixed: "Mixed",
 };
-
-const STEP_LABELS = ["Team context", "Your tools", "Review"];
 
 type AuditFormValues = z.infer<typeof auditFormSchema>;
 
@@ -86,6 +87,7 @@ function loadInitialDraft(): { values: AuditFormValues; restored: boolean } {
 
 export function AuditWizard() {
   const router = useRouter();
+  const shellRef = useRef<HTMLDivElement | null>(null);
   const [step, setStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -127,6 +129,35 @@ export function AuditWizard() {
   const totalSpend = useMemo(
     () => roundCurrency(watchedTools.reduce((sum, tool) => sum + Number(tool.monthlySpend ?? 0), 0)),
     [watchedTools]
+  );
+
+  useGsapContext(
+    (gsap) => {
+      gsap.fromTo(
+        "[data-step-panel]",
+        { autoAlpha: 0, y: 18 },
+        { autoAlpha: 1, duration: 0.34, ease: "power2.out", y: 0 }
+      );
+    },
+    {
+      dependencies: [step],
+      scope: shellRef,
+    }
+  );
+
+  useGsapContext(
+    (gsap) => {
+      gsap.fromTo(
+        "[data-tool-row]",
+        { autoAlpha: 0, y: 10 },
+        { autoAlpha: 1, duration: 0.32, ease: "power2.out", stagger: 0.04, y: 0 }
+      );
+    },
+    {
+      dependencies: [step, watchedTools.length],
+      disabled: step !== 2,
+      scope: shellRef,
+    }
   );
 
   const nextStep = async () => {
@@ -174,381 +205,454 @@ export function AuditWizard() {
   });
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-10">
+    <div ref={shellRef} className="mx-auto max-w-7xl px-4 pb-16 pt-10 sm:px-6">
+      <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_300px] lg:gap-10">
+        <div className="min-w-0 space-y-6">
+          <header className="frame-shell px-6 py-7 md:px-8">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <SignalBadge>
+                <span className="h-1.5 w-1.5 rounded-full bg-brand-accent" />
+                spendlens audit lane
+              </SignalBadge>
+              <p className="kicker">deterministic pricing diagnostics</p>
+            </div>
+            <h1 className="cond-display mt-5 text-[clamp(2rem,4.3vw,3.3rem)] leading-[0.97] text-brand-text">
+              Audit your AI spend with defensible math.
+            </h1>
+            <p className="serif-body mt-3 max-w-[64ch] text-sm md:text-base">
+              Enter every AI tool your team pays for. The engine checks overlap, plan fit,
+              seat right-sizing, and benchmark spread before generating recommendations.
+            </p>
+          </header>
 
-      {/* ─── HEADER ─── */}
-      <div className="mb-10">
-        <h1 className="font-heading text-3xl font-bold sm:text-4xl">
-          Audit your AI spend
-        </h1>
-        <p className="mt-2 text-sm text-brand-textSub">
-          Answer a few questions. Get an instant, defensible breakdown of where you&apos;re overspending.
-        </p>
-      </div>
+          <section className="frame-shell px-3 py-3 md:px-4" aria-label="Audit steps">
+            <div className="grid gap-2 md:grid-cols-3">
+              {[
+                { id: 1, label: "Team context" },
+                { id: 2, label: "Your tools" },
+                { id: 3, label: "Review" },
+              ].map((item) => (
+                <StepperSegment
+                  key={item.id}
+                  active={step === item.id}
+                  step={step > item.id ? "done" : `0${item.id}`}
+                  label={item.label}
+                  className={step > item.id ? "!border-brand-ok/35 !bg-brand-ok/10 !text-brand-ok" : ""}
+                />
+              ))}
+            </div>
+          </section>
 
-      {/* ─── STEP PROGRESS ─── */}
-      <div className="mb-8">
-        <div className="mb-3 flex items-center justify-between">
-          {STEP_LABELS.map((label, i) => {
-            const stepNum = i + 1;
-            const isActive = step === stepNum;
-            const isDone = step > stepNum;
-            return (
-              <div key={label} className="flex items-center gap-2">
-                <div className={`flex h-7 w-7 items-center justify-center rounded-full border text-xs font-bold transition-all
-                  ${isDone
-                    ? "border-brand-accent bg-brand-accent text-brand-bg"
-                    : isActive
-                      ? "border-brand-accent bg-brand-accent/10 text-brand-accent"
-                      : "border-brand-border bg-brand-surface text-brand-muted"
-                  }`}
+          <details className="panel px-5 py-4 lg:hidden">
+            <summary className="cursor-pointer list-none">
+              <div className="flex items-center justify-between">
+                <p className="kicker">Live context</p>
+                <SignalBadge>step 0{step}/03</SignalBadge>
+              </div>
+            </summary>
+            <div className="mt-4 grid gap-3 sm:grid-cols-3">
+              <MetricTile label="Step" value={`0${step} / 03`} />
+              <MetricTile label="Tools declared" value={`${watchedTools.length}`} />
+              <MetricTile label="Current total" value={`${formatCurrency(totalSpend)}/mo`} />
+            </div>
+          </details>
+
+          {initialDraft.restored && (
+            <article className="editorial-card border-brand-accent/35 bg-brand-surface2/80 px-5 py-4">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="flex items-center gap-2">
+                  <SignalBadge tone="ok">draft restored</SignalBadge>
+                  <p className="serif-body text-sm">Draft recovered from your last session.</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    localStorage.removeItem(STORAGE_KEY);
+                    window.location.reload();
+                  }}
+                  className="pill-action pill-action-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent/45"
                 >
-                  {isDone ? "✓" : stepNum}
-                </div>
-                <span className={`hidden text-xs font-medium sm:block ${isActive ? "text-brand-text" : "text-brand-muted"}`}>
-                  {label}
-                </span>
-                {i < 2 && <div className="mx-2 h-px w-8 bg-brand-border" />}
+                  start fresh
+                </button>
               </div>
-            );
-          })}
-        </div>
-        <div className="h-1 w-full overflow-hidden rounded-full bg-brand-surface">
-          <div
-            className="h-full rounded-full bg-brand-accent transition-all duration-500 ease-out"
-            style={{ width: `${(step / 3) * 100}%` }}
-          />
-        </div>
-      </div>
-
-      {/* ─── DRAFT RESTORED TOAST ─── */}
-      {initialDraft.restored && (
-        <div className="mb-6 flex items-center gap-2 rounded-xl border border-brand-accent/30 bg-brand-accent/5 px-4 py-3 text-sm">
-          <span className="text-brand-accent">↩</span>
-          <span className="text-brand-text">Draft restored from your last session.</span>
-          <button
-            type="button"
-            onClick={() => {
-              localStorage.removeItem(STORAGE_KEY);
-              window.location.reload();
-            }}
-            className="ml-auto text-xs text-brand-muted underline underline-offset-2 hover:text-brand-text"
-          >
-            Start fresh
-          </button>
-        </div>
-      )}
-
-      <form onSubmit={onSubmit}>
-        <input type="text" className="hidden" tabIndex={-1} autoComplete="off" {...register("website")} />
-
-        {/* ─── STEP 1: Team Context ─── */}
-        {step === 1 && (
-          <div className="space-y-6">
-            <div className="rounded-2xl border border-brand-border bg-brand-surface p-6">
-              <h2 className="mb-1 font-heading text-xl font-semibold">Tell us about your team</h2>
-              <p className="mb-6 text-xs text-brand-muted">This helps calibrate per-seat pricing and plan recommendations.</p>
-
-              <div className="grid gap-6 sm:grid-cols-2">
-                {/* Team size */}
-                <div>
-                  <label className="mb-2 block text-sm font-medium text-brand-text">
-                    Team size <span className="text-brand-muted">(people using AI tools)</span>
-                  </label>
-                  <input
-                    type="number"
-                    min={1}
-                    max={500}
-                    {...register("teamSize", { valueAsNumber: true })}
-                    className="input-field font-mono"
-                    placeholder="e.g. 8"
-                  />
-                  <p className="mt-1.5 text-[11px] text-brand-muted">Include devs, PMs, writers, researchers — anyone with a paid seat.</p>
-                </div>
-
-                {/* Primary use case */}
-                <div>
-                  <label className="mb-2 block text-sm font-medium text-brand-text">Primary use case</label>
-                  <div className="grid grid-cols-1 gap-2">
-                    {Object.entries(USE_CASE_LABELS).map(([value, label]) => {
-                      const isSelected = primaryUseCase === value;
-                      return (
-                        <label
-                          key={value}
-                          className={`flex cursor-pointer items-center gap-2 rounded-lg border px-3 py-2.5 text-sm transition-all
-                            ${isSelected
-                              ? "border-brand-accent bg-brand-accent/10 text-brand-text"
-                              : "border-brand-border bg-brand-bg text-brand-textSub hover:border-brand-accent/40"
-                            }`}
-                        >
-                          <input
-                            type="radio"
-                            value={value}
-                            {...register("primaryUseCase")}
-                            className="sr-only"
-                          />
-                          <span>{label}</span>
-                          {isSelected && <span className="ml-auto text-brand-accent text-xs">✓</span>}
-                        </label>
-                      );
-                    })}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* ─── STEP 2: Tools ─── */}
-        {step === 2 && (
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="font-heading text-xl font-semibold">Which AI tools does your team pay for?</h2>
-                <p className="mt-0.5 text-xs text-brand-muted">Add every tool. Overlap detection only works when all tools are present.</p>
-              </div>
-              <div className="text-right">
-                <p className="text-xs text-brand-muted">Total monthly spend</p>
-                <p className="font-mono text-xl font-bold text-brand-accent">{formatCurrency(totalSpend)}</p>
-              </div>
-            </div>
-
-            {/* Tool rows */}
-            <div className="space-y-3">
-              {fields.fields.map((field, index) => {
-                const toolId = watchedTools[index]?.toolId;
-                const meta = TOOL_META[toolId ?? ""] ?? { emoji: "🔧", cat: "other", catLabel: "Tool" };
-                const plans = TOOLS.find((tool) => tool.id === toolId)?.plans ?? [];
-                const planId = watchedTools[index]?.planId;
-                const seats = Number(watchedTools[index]?.seats ?? 0);
-                const spend = Number(watchedTools[index]?.monthlySpend ?? 0);
-                const expected = expectedCost(toolId ?? "", planId ?? "", seats);
-                const overBudget = spend > expected && expected > 0;
-                const underBudget = spend > 0 && spend < expected * 0.8 && expected > 0;
-
-                return (
-                  <div
-                    key={field.id}
-                    className="group relative rounded-xl border border-brand-border bg-brand-surface p-5 transition hover:border-brand-border/80"
-                  >
-                    {/* Tool header row */}
-                    <div className="mb-4 flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <span className="text-xl">{meta.emoji}</span>
-                        <span className="rounded-full border border-brand-border bg-brand-bg px-2 py-0.5 text-[10px] font-medium text-brand-muted">
-                          {meta.catLabel}
-                        </span>
-                        <span className="text-sm font-medium text-brand-text">
-                          {TOOLS.find((t) => t.id === toolId)?.name ?? "Tool"}
-                        </span>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => fields.remove(index)}
-                        disabled={fields.fields.length === 1}
-                        className="rounded-md p-1 text-brand-muted transition hover:bg-brand-danger/10 hover:text-brand-danger disabled:pointer-events-none disabled:opacity-30"
-                        title="Remove tool"
-                      >
-                        ✕
-                      </button>
-                    </div>
-
-                    {/* Grid of inputs */}
-                    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                      <div className="lg:col-span-1">
-                        <label className="mb-1.5 block text-xs font-medium text-brand-muted">Tool</label>
-                        <select {...register(`tools.${index}.toolId`)} className="select-field text-xs">
-                          {TOOLS.map((tool) => (
-                            <option key={tool.id} value={tool.id}>{tool.name}</option>
-                          ))}
-                        </select>
-                      </div>
-
-                      <div className="lg:col-span-1">
-                        <label className="mb-1.5 block text-xs font-medium text-brand-muted">Plan</label>
-                        <select {...register(`tools.${index}.planId`)} className="select-field text-xs">
-                          {plans.map((plan) => (
-                            <option key={plan.id} value={plan.id}>{plan.name}</option>
-                          ))}
-                        </select>
-                      </div>
-
-                      <div>
-                        <label className="mb-1.5 block text-xs font-medium text-brand-muted">Seats</label>
-                        <input
-                          type="number"
-                          min={1}
-                          {...register(`tools.${index}.seats`, { valueAsNumber: true })}
-                          className="input-field font-mono text-xs"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="mb-1.5 block text-xs font-medium text-brand-muted">
-                          Monthly spend (USD)
-                        </label>
-                        <input
-                          type="number"
-                          min={0}
-                          step="0.01"
-                          {...register(`tools.${index}.monthlySpend`, { valueAsNumber: true })}
-                          className="input-field font-mono text-xs"
-                          placeholder="0.00"
-                        />
-                      </div>
-                    </div>
-
-                    {/* Expected vs actual */}
-                    <div className="mt-3 flex flex-wrap items-center gap-2">
-                      <span className="text-[11px] text-brand-muted">
-                        List price: <span className="font-mono text-brand-textSub">{formatCurrency(expected)}/mo</span>
-                      </span>
-                      {overBudget && (
-                        <span className="inline-flex items-center gap-1 rounded-full border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 text-[10px] text-amber-400">
-                          ⚠ Above list — annual billing?
-                        </span>
-                      )}
-                      {underBudget && (
-                        <span className="inline-flex items-center gap-1 rounded-full border border-blue-500/30 bg-blue-500/10 px-2 py-0.5 text-[10px] text-blue-400">
-                          ℹ Below list — verify spend
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-
-            {/* Add tool button */}
-            <button
-              type="button"
-              onClick={() =>
-                fields.append({
-                  toolId: "chatgpt",
-                  planId: "plus",
-                  seats: teamSize ?? 1,
-                  monthlySpend: 20,
-                  primaryUseCase,
-                })
-              }
-              className="group flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-brand-border bg-transparent py-3 text-sm text-brand-muted transition hover:border-brand-accent/50 hover:text-brand-accent"
-            >
-              <span className="text-lg">+</span>
-              Add another tool
-            </button>
-          </div>
-        )}
-
-        {/* ─── STEP 3: Review ─── */}
-        {step === 3 && (
-          <div className="space-y-4">
-            <div className="rounded-2xl border border-brand-border bg-brand-surface p-6">
-              <h2 className="mb-1 font-heading text-xl font-semibold">Ready to run your audit</h2>
-              <p className="mb-6 text-xs text-brand-muted">Review your inputs. Click Run to get instant results.</p>
-
-              {/* Team summary pills */}
-              <div className="mb-6 flex flex-wrap gap-2">
-                <span className="rounded-full border border-brand-border bg-brand-bg px-3 py-1 text-xs">
-                  👥 {teamSize} people
-                </span>
-                <span className="rounded-full border border-brand-border bg-brand-bg px-3 py-1 text-xs">
-                  {USE_CASE_LABELS[primaryUseCase]}
-                </span>
-                <span className="rounded-full border border-brand-accent/30 bg-brand-accent/5 px-3 py-1 text-xs text-brand-accent font-mono">
-                  {formatCurrency(totalSpend)}/mo total
-                </span>
-              </div>
-
-              {/* Tool rows */}
-              <div className="space-y-2">
-                {watchedTools.map((tool, index) => {
-                  const toolMeta = TOOLS.find((item) => item.id === tool.toolId);
-                  const planMeta = toolMeta?.plans.find((plan) => plan.id === tool.planId);
-                  const meta = TOOL_META[tool.toolId] ?? { emoji: "🔧" };
-
-                  return (
-                    <div
-                      key={`${tool.toolId}-${index}`}
-                      className="flex items-center justify-between rounded-xl border border-brand-border bg-brand-bg px-4 py-3"
-                    >
-                      <div className="flex items-center gap-3">
-                        <span className="text-lg">{meta.emoji}</span>
-                        <div>
-                          <p className="text-sm font-medium text-brand-text">{toolMeta?.name ?? tool.toolId}</p>
-                          <p className="text-[11px] text-brand-muted">
-                            {planMeta?.name ?? tool.planId} · {tool.seats} seat{tool.seats !== 1 ? "s" : ""}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <p className="font-mono text-sm font-semibold text-brand-text">{formatCurrency(tool.monthlySpend)}/mo</p>
-                        <button
-                          type="button"
-                          onClick={() => setStep(2)}
-                          className="text-[10px] text-brand-muted underline underline-offset-2 hover:text-brand-accent transition-colors"
-                        >
-                          Edit
-                        </button>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-
-              {/* Estimate note */}
-              <div className="mt-4 rounded-xl border border-brand-border bg-brand-bg p-3">
-                <p className="text-[11px] text-brand-muted">
-                  🔍 The audit engine will check for duplicate coverage, plan-size mismatches, over-seating, and credit arbitrage opportunities across all {watchedTools.length} tools.
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* ─── ERROR ─── */}
-        {error && (
-          <div className="mt-4 rounded-xl border border-brand-danger/30 bg-brand-danger/5 px-4 py-3 text-sm text-brand-danger">
-            ⚠ {error}
-          </div>
-        )}
-
-        {/* ─── NAV BUTTONS ─── */}
-        <div className="mt-6 flex items-center justify-between">
-          <button
-            type="button"
-            onClick={() => setStep((c) => Math.max(c - 1, 1))}
-            disabled={step === 1 || isSubmitting}
-            className="rounded-xl border border-brand-border px-5 py-2.5 text-sm text-brand-textSub transition hover:border-brand-accent/50 hover:text-brand-text disabled:pointer-events-none disabled:opacity-30"
-          >
-            ← Back
-          </button>
-
-          {step < 3 ? (
-            <button
-              type="button"
-              onClick={nextStep}
-              className="inline-flex h-11 items-center gap-2 rounded-xl bg-brand-accent px-6 text-sm font-semibold text-brand-bg transition glow-accent-sm hover:bg-brand-accentDim"
-            >
-              Continue →
-            </button>
-          ) : (
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="inline-flex h-11 items-center gap-2 rounded-xl bg-brand-accent px-6 text-sm font-semibold text-brand-bg transition glow-accent hover:bg-brand-accentDim disabled:opacity-60"
-            >
-              {isSubmitting ? (
-                <>
-                  <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-brand-bg/30 border-t-brand-bg" />
-                  Running audit...
-                </>
-              ) : (
-                <>Run my audit →</>
-              )}
-            </button>
+            </article>
           )}
+
+          <form onSubmit={onSubmit} className="space-y-6">
+            <input type="text" className="hidden" tabIndex={-1} autoComplete="off" {...register("website")} />
+
+            {step === 1 && (
+              <section className="frame-shell p-6 md:p-8" data-step-panel>
+                <div className="flex flex-wrap items-start justify-between gap-4 border-b border-brand-border pb-5">
+                  <div>
+                    <p className="kicker">step 01 / team profile</p>
+                    <h2 className="mt-2 text-2xl font-semibold text-brand-text">Tell us about your team</h2>
+                    <p className="serif-body mt-2 text-sm">
+                      This calibrates seat assumptions and recommendation confidence.
+                    </p>
+                  </div>
+                  <SignalBadge>required</SignalBadge>
+                </div>
+
+                <div className="mt-6 grid gap-7">
+                  <div className="space-y-2">
+                    <label htmlFor="team-size" className="kicker">
+                      Team size using AI tools
+                    </label>
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                      <input
+                        id="team-size"
+                        type="number"
+                        min={1}
+                        max={500}
+                        {...register("teamSize", { valueAsNumber: true })}
+                        className="input-field max-w-[190px] text-lg font-semibold"
+                        placeholder="0"
+                      />
+                      <p className="serif-body text-sm">
+                        Include developers, PMs, writers, researchers, and anyone on a paid seat.
+                      </p>
+                    </div>
+                  </div>
+
+                  <hr className="ruling" />
+
+                  <fieldset>
+                    <legend className="kicker mb-3">Primary use case</legend>
+                    <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                      {Object.entries(USE_CASE_LABELS).map(([value, label]) => {
+                        const selected = primaryUseCase === value;
+                        return (
+                          <label
+                            key={value}
+                            className={`cursor-pointer rounded-xl border px-4 py-3 transition ${
+                              selected
+                                ? "border-brand-accent bg-brand-surface text-brand-text shadow-[0_10px_24px_-18px_rgba(30,46,32,0.4)]"
+                                : "border-brand-border bg-white/70 text-brand-textSub hover:border-brand-borderStrong hover:bg-white"
+                            }`}
+                          >
+                            <input
+                              type="radio"
+                              value={value}
+                              {...register("primaryUseCase")}
+                              className="sr-only"
+                            />
+                            <span className="mono-value text-sm font-semibold">{label}</span>
+                          </label>
+                        );
+                      })}
+                    </div>
+                  </fieldset>
+                </div>
+              </section>
+            )}
+
+            {step === 2 && (
+              <section className="frame-shell p-5 md:p-6" data-step-panel>
+                <div className="mb-5 flex flex-wrap items-start justify-between gap-4 border-b border-brand-border pb-5">
+                  <div>
+                    <p className="kicker">step 02 / tool declaration</p>
+                    <h2 className="mt-2 text-2xl font-semibold text-brand-text">List every paid tool</h2>
+                    <p className="serif-body mt-2 text-sm">
+                      Overlap and rightsizing are only reliable when your full stack is declared.
+                    </p>
+                  </div>
+                  <MetricTile label="Total declared spend" value={`${formatCurrency(totalSpend)}/mo`} />
+                </div>
+
+                <div className="mb-2 hidden grid-cols-[2fr_1.4fr_90px_110px_44px] gap-3 px-1 md:grid">
+                  {["Tool", "Plan", "Seats", "Spend/mo", ""].map((heading) => (
+                    <p key={heading} className="kicker">
+                      {heading}
+                    </p>
+                  ))}
+                </div>
+
+                <div className="space-y-3">
+                  {fields.fields.map((field, index) => {
+                    const toolId = watchedTools[index]?.toolId;
+                    const meta = TOOL_META[toolId ?? ""] ?? { emoji: "--", cat: "other", catLabel: "Tool" };
+                    const plans = TOOLS.find((tool) => tool.id === toolId)?.plans ?? [];
+                    const planId = watchedTools[index]?.planId;
+                    const seats = Number(watchedTools[index]?.seats ?? 0);
+                    const spend = Number(watchedTools[index]?.monthlySpend ?? 0);
+                    const expected = expectedCost(toolId ?? "", planId ?? "", seats);
+                    const overBudget = spend > expected * 1.1 && expected > 0;
+                    const underBudget = spend > 0 && spend < expected * 0.8 && expected > 0;
+
+                    return (
+                      <article key={field.id} className="editorial-card p-4 md:p-5" data-tool-row>
+                        <div className="mb-3 flex items-center justify-between md:hidden">
+                          <div className="flex items-center gap-2">
+                            <SignalBadge>{meta.catLabel}</SignalBadge>
+                            <p className="mono-value text-sm font-semibold">
+                              {TOOLS.find((tool) => tool.id === toolId)?.name ?? "Tool"}
+                            </p>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => fields.remove(index)}
+                            disabled={fields.fields.length === 1}
+                            className="pill-action pill-action-secondary !px-3 !py-1.5 !text-[0.56rem] disabled:pointer-events-none disabled:opacity-40"
+                          >
+                            remove
+                          </button>
+                        </div>
+
+                        <div className="grid gap-3 md:hidden">
+                          <div className="grid grid-cols-2 gap-3">
+                            <div>
+                              <label className="kicker mb-1 block">Tool</label>
+                              <select {...register(`tools.${index}.toolId`)} className="input-field select-field text-xs">
+                                {TOOLS.map((tool) => (
+                                  <option key={tool.id} value={tool.id}>
+                                    {tool.name}
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
+                            <div>
+                              <label className="kicker mb-1 block">Plan</label>
+                              <select {...register(`tools.${index}.planId`)} className="input-field select-field text-xs">
+                                {plans.map((plan) => (
+                                  <option key={plan.id} value={plan.id}>
+                                    {plan.name}
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
+                          </div>
+                          <div className="grid grid-cols-2 gap-3">
+                            <div>
+                              <label className="kicker mb-1 block">Seats</label>
+                              <input
+                                type="number"
+                                min={1}
+                                {...register(`tools.${index}.seats`, { valueAsNumber: true })}
+                                className="input-field text-xs"
+                              />
+                            </div>
+                            <div>
+                              <label className="kicker mb-1 block">Spend/mo</label>
+                              <input
+                                type="number"
+                                min={0}
+                                step="0.01"
+                                {...register(`tools.${index}.monthlySpend`, { valueAsNumber: true })}
+                                className="input-field text-xs"
+                              />
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="hidden grid-cols-[2fr_1.4fr_90px_110px_44px] items-center gap-3 md:grid">
+                          <select {...register(`tools.${index}.toolId`)} className="input-field select-field text-xs">
+                            {TOOLS.map((tool) => (
+                              <option key={tool.id} value={tool.id}>
+                                {tool.name}
+                              </option>
+                            ))}
+                          </select>
+                          <select {...register(`tools.${index}.planId`)} className="input-field select-field text-xs">
+                            {plans.map((plan) => (
+                              <option key={plan.id} value={plan.id}>
+                                {plan.name}
+                              </option>
+                            ))}
+                          </select>
+                          <input
+                            type="number"
+                            min={1}
+                            {...register(`tools.${index}.seats`, { valueAsNumber: true })}
+                            className="input-field text-center text-xs"
+                          />
+                          <input
+                            type="number"
+                            min={0}
+                            step="0.01"
+                            {...register(`tools.${index}.monthlySpend`, { valueAsNumber: true })}
+                            className="input-field text-xs"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => fields.remove(index)}
+                            disabled={fields.fields.length === 1}
+                            className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-brand-border bg-brand-surface text-xs text-brand-textSub transition hover:border-brand-danger/45 hover:text-brand-danger disabled:pointer-events-none disabled:opacity-35"
+                            aria-label="Remove tool row"
+                          >
+                            x
+                          </button>
+                        </div>
+
+                        {expected > 0 && (
+                          <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-brand-border/70 pt-3">
+                            <p className="kicker">
+                              List price {formatCurrency(expected)}/mo
+                            </p>
+                            {overBudget && <SignalBadge tone="warn">Above list</SignalBadge>}
+                            {underBudget && <SignalBadge tone="ok">Below list</SignalBadge>}
+                          </div>
+                        )}
+                      </article>
+                    );
+                  })}
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    fields.append({
+                      toolId: "chatgpt",
+                      planId: "plus",
+                      seats: teamSize ?? 1,
+                      monthlySpend: 20,
+                      primaryUseCase,
+                    })
+                  }
+                  className="mt-4 flex w-full items-center justify-center rounded-2xl border border-dashed border-brand-borderStrong bg-brand-surface2/55 px-5 py-3 text-xs font-semibold uppercase tracking-[0.1em] text-brand-textSub transition hover:border-brand-accent hover:bg-brand-surface"
+                >
+                  + add tool
+                </button>
+              </section>
+            )}
+
+            {step === 3 && (
+              <section className="frame-shell p-6 md:p-7" data-step-panel>
+                <div className="border-b border-brand-border pb-5">
+                  <p className="kicker">step 03 / pre-flight review</p>
+                  <h2 className="mt-2 text-2xl font-semibold text-brand-text">Confirm before running audit</h2>
+                  <p className="serif-body mt-2 text-sm">
+                    Review declaration quality before the engine runs.
+                  </p>
+                </div>
+
+                <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+                  <MetricTile label="Headcount" value={`${teamSize} people`} />
+                  <MetricTile label="Use case" value={primaryUseCase.toUpperCase()} />
+                  <MetricTile label="Total spend" value={`${formatCurrency(totalSpend)}/mo`} />
+                  <MetricTile label="Tools" value={`${watchedTools.length} declared`} />
+                </div>
+
+                <div className="mt-5 space-y-3">
+                  {watchedTools.map((tool, index) => {
+                    const toolMeta = TOOLS.find((item) => item.id === tool.toolId);
+                    const planMeta = toolMeta?.plans.find((plan) => plan.id === tool.planId);
+                    const meta = TOOL_META[tool.toolId] ?? { catLabel: "Tool" };
+                    return (
+                      <article
+                        key={`${tool.toolId}-${index}`}
+                        className="panel-raised flex flex-wrap items-center justify-between gap-3 px-4 py-3"
+                      >
+                        <div className="flex items-center gap-3">
+                          <SignalBadge>{meta.catLabel}</SignalBadge>
+                          <div>
+                            <p className="mono-value text-sm font-semibold text-brand-text">
+                              {toolMeta?.name ?? tool.toolId}
+                            </p>
+                            <p className="kicker mt-1">
+                              {planMeta?.name} | {tool.seats} seat{tool.seats !== 1 ? "s" : ""}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <p className="mono-value text-sm font-semibold">{formatCurrency(tool.monthlySpend)}/mo</p>
+                          <button
+                            type="button"
+                            onClick={() => setStep(2)}
+                            className="pill-action pill-action-secondary !px-3 !py-1.5 !text-[0.56rem]"
+                          >
+                            edit
+                          </button>
+                        </div>
+                      </article>
+                    );
+                  })}
+                </div>
+
+                <article className="panel mt-5 px-4 py-4">
+                  <p className="serif-body text-sm">
+                    The audit engine will run {watchedTools.length * 10} rule checks: overlap, plan fit,
+                    seat right-sizing, benchmark comparison, and credit arbitrage signals.
+                  </p>
+                </article>
+              </section>
+            )}
+
+            {error && (
+              <article
+                className="editorial-card border-brand-danger/40 bg-brand-danger/10 px-4 py-3"
+                role="alert"
+                aria-live="polite"
+              >
+                <div className="flex items-start gap-2">
+                  <CircleAlert className="mt-0.5 h-4 w-4 shrink-0 text-brand-danger" />
+                  <div>
+                    <p className="kicker !text-brand-danger/90">submission error</p>
+                    <p className="mt-1 text-sm text-brand-danger">{error}</p>
+                  </div>
+                </div>
+              </article>
+            )}
+
+            <section className="frame-shell px-4 py-4 md:px-5 md:py-5">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <button
+                  type="button"
+                  onClick={() => setStep((current) => Math.max(current - 1, 1))}
+                  disabled={step === 1 || isSubmitting}
+                  className="pill-action pill-action-secondary min-w-[8rem] disabled:pointer-events-none disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent/45"
+                >
+                  back
+                </button>
+
+                {step < 3 ? (
+                  <button
+                    type="button"
+                    onClick={nextStep}
+                    className="pill-action pill-action-primary min-w-[9rem] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent/45"
+                  >
+                    continue
+                  </button>
+                ) : (
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="pill-action pill-action-primary min-w-[10rem] disabled:pointer-events-none disabled:opacity-65 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent/45"
+                  >
+                    {isSubmitting ? (
+                      <span className="inline-flex items-center gap-2">
+                        <span className="inline-block h-3.5 w-3.5 animate-spin rounded-full border-2 border-brand-surface2 border-t-brand-surface" />
+                        running
+                      </span>
+                    ) : (
+                      "run my audit"
+                    )}
+                  </button>
+                )}
+              </div>
+              <p className="serif-body mt-3 text-xs">
+                Step {step} of 3. Keyboard navigation and visible focus states are enabled for all controls.
+              </p>
+            </section>
+          </form>
         </div>
-      </form>
+
+        <aside className="hidden lg:block">
+          <div className="frame-shell sticky top-28 p-5">
+            <p className="kicker">Live context</p>
+            <div className="mt-4 space-y-3">
+              <MetricTile label="Step" value={`0${step} / 03`} />
+              <MetricTile label="Tools declared" value={`${watchedTools.length}`} />
+              <MetricTile label="Current total" value={`${formatCurrency(totalSpend)}/mo`} />
+            </div>
+            <div className="mt-4 border-t border-brand-border pt-3">
+              <p className="serif-body text-xs">
+                Keep this card visible while tuning tools and plans.
+              </p>
+            </div>
+          </div>
+        </aside>
+      </div>
     </div>
   );
 }
