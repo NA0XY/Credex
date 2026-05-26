@@ -30,6 +30,7 @@ export async function sendLeadEmail(lead: LeadInput, record: AuditRecord): Promi
   const recommendations = topRecommendations(record);
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
   const resultUrl = `${appUrl}/results/${record.publicSlug}`;
+  const from = process.env.RESEND_FROM || "SpendLens <onboarding@resend.dev>";
 
   const credexCta =
     record.auditResult.totalMonthlySavings > 500
@@ -58,12 +59,20 @@ export async function sendLeadEmail(lead: LeadInput, record: AuditRecord): Promi
   `;
 
   try {
-    await resend.emails.send({
-      from: "SpendLens <audit@spendlens.app>",
+    const response = await resend.emails.send({
+      from,
       to: lead.email,
       subject: "Your AI spend audit from SpendLens",
       html,
     });
+
+    if ((response as { error?: { message?: string } }).error) {
+      const providerError = (response as { error?: { message?: string } }).error;
+      return {
+        sent: false,
+        error: providerError?.message || "Email provider rejected the request.",
+      };
+    }
 
     return { sent: true };
   } catch (error) {

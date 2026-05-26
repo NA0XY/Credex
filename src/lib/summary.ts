@@ -3,7 +3,7 @@ import { buildSummaryPrompt } from "@/lib/prompts";
 import type { AuditInput, AuditResult } from "@/types/audit";
 
 const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
-const DEFAULT_GROQ_MODEL = "llama-3.1-8b-instant";
+const DEFAULT_GROQ_MODEL = "llama-3.3-70b-versatile";
 
 type GroqChatCompletionResponse = {
   choices?: Array<{
@@ -24,9 +24,9 @@ export function generateFallbackSummary(result: AuditResult, input: AuditInput):
 
   return `Your team is currently spending $${result.totalCurrentMonthlyCost}/month across ${result.tools.length} AI tool${
     result.tools.length > 1 ? "s" : ""
-  }. Our audit identified $${result.totalMonthlySavings}/month ($${result.totalAnnualSavings}/year) in potential savings. The biggest opportunity is ${
+  }. The audit identified $${result.totalMonthlySavings}/month ($${result.totalAnnualSavings}/year) in potential savings. The biggest opportunity is ${
     topTool.toolName
-  }: ${topTool.bestRecommendation.reason} ${
+  }: ${topTool.bestRecommendation.reason} Next step this week: validate current seats and plan tier for this tool against active user count. ${
     result.credexRelevant
       ? "For teams at your spend level, sourcing through AI credit providers like Credex can unlock additional 20-40% savings on top of these optimizations."
       : "Your stack looks reasonably optimized, so re-auditing after pricing changes is the best next step."
@@ -50,6 +50,14 @@ function extractTextFromGroqResponse(response: GroqChatCompletionResponse): stri
   return "";
 }
 
+function postProcessSummary(text: string): string {
+  return text
+    .replace(/^["'`]|["'`]$/g, "")
+    .replace(/\s+/g, " ")
+    .replace(/^(summary|executive brief)\s*:\s*/i, "")
+    .trim();
+}
+
 export async function generateAiSummary(input: AuditInput, result: AuditResult): Promise<string> {
   const apiKey = process.env.GROQ_API_KEY;
   const model = process.env.GROQ_MODEL || DEFAULT_GROQ_MODEL;
@@ -70,9 +78,17 @@ export async function generateAiSummary(input: AuditInput, result: AuditResult):
       },
       body: JSON.stringify({
         model,
-        messages: [{ role: "user", content: buildSummaryPrompt(input, result) }],
-        max_tokens: 240,
-        temperature: 0.2,
+        messages: [
+          {
+            role: "system",
+            content:
+              "You are an expert B2B SaaS spend analyst. Be precise, concrete, and financially actionable.",
+          },
+          { role: "user", content: buildSummaryPrompt(input, result) },
+        ],
+        max_tokens: 320,
+        temperature: 0.15,
+        top_p: 0.9,
       }),
       signal: controller.signal,
     });
@@ -82,7 +98,7 @@ export async function generateAiSummary(input: AuditInput, result: AuditResult):
     }
 
     const payload = (await response.json()) as GroqChatCompletionResponse;
-    const summary = extractTextFromGroqResponse(payload);
+    const summary = postProcessSummary(extractTextFromGroqResponse(payload));
     return summary || generateFallbackSummary(result, input);
   } catch {
     return generateFallbackSummary(result, input);

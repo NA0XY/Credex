@@ -220,9 +220,9 @@ export default async function ResultPage({ params }: ResultPageProps) {
         ]}
         rightSlot={<ResultActions slug={slug} />}
       />
-      <main className="relative z-10 mx-auto max-w-6xl px-4 pb-20 pt-8 sm:px-6 md:px-8">
+      <main className="relative z-10 mx-auto w-full max-w-[1380px] px-4 pb-14 pt-6 sm:px-6 lg:px-8">
         <ResultsMotionShell>
-          <div data-results-stage="hero" className="mb-8">
+          <div data-results-stage="hero" className="mb-6">
             <FrameShell>
               <div className="border-b border-brand-border px-5 py-4 md:px-7">
                 <div className="flex flex-wrap items-center gap-2.5">
@@ -232,8 +232,8 @@ export default async function ResultPage({ params }: ResultPageProps) {
                   <span className="kicker">Slug {slug}</span>
                 </div>
               </div>
-              <div className="grid gap-4 px-5 py-5 md:grid-cols-[minmax(180px,230px)_1fr] md:px-7 md:py-7">
-                <EditorialCard className="flex min-h-[220px] flex-col items-center justify-center border-brand-borderStrong/75">
+              <div className="grid gap-4 px-4 py-4 md:grid-cols-[minmax(170px,220px)_1fr] md:px-6 md:py-6">
+                <EditorialCard className="flex min-h-[180px] flex-col items-center justify-center border-brand-borderStrong/75">
                   <span className="kicker mb-2">Stack grade</span>
                   <span
                     className="cond-display text-[5rem] leading-none md:text-[6.2rem]"
@@ -284,7 +284,7 @@ export default async function ResultPage({ params }: ResultPageProps) {
             </FrameShell>
           </div>
 
-          <section data-results-stage="cards" className="mb-8">
+          <section data-results-stage="cards" className="mb-6">
             <div className="mb-4 flex items-baseline justify-between gap-4">
               <h2 className="text-2xl font-semibold tracking-tight text-brand-text">
                 Ranked recommendations
@@ -302,10 +302,7 @@ export default async function ResultPage({ params }: ResultPageProps) {
             </div>
           </section>
 
-          <div
-            data-results-stage="secondary"
-            className="mb-8 grid gap-4 md:grid-cols-2"
-          >
+          <div data-results-stage="secondary" className="mb-6 grid gap-4 lg:grid-cols-[1.05fr_1fr]">
             {result.stackScore && <StackScoreDisplay score={result.stackScore} />}
             {result.benchmarkComparison && (
               <BenchmarkPanel
@@ -318,19 +315,19 @@ export default async function ResultPage({ params }: ResultPageProps) {
             )}
           </div>
 
-          <div data-results-stage="secondary" className="mb-8">
+          <div data-results-stage="secondary" className="mb-6">
             <WhatIfSimulator
               tools={result.tools}
               totalCurrentMonthly={result.totalCurrentMonthlyCost}
             />
           </div>
 
-          <div data-results-stage="secondary" className="mb-8">
+          <div data-results-stage="secondary" className="mb-6">
             <FrameShell>
               <div className="border-b border-brand-border px-5 py-3">
                 <div className="flex items-center gap-2">
                   <SignalBadge tone="neutral">Executive brief</SignalBadge>
-                  <span className="kicker">AI generated summary</span>
+                  <span className="kicker !text-brand-text">AI generated summary</span>
                 </div>
               </div>
               <div className="px-5 py-6">
@@ -344,7 +341,7 @@ export default async function ResultPage({ params }: ResultPageProps) {
           </div>
 
           {result.totalMonthlySavings > 500 && (
-            <div data-results-stage="secondary" className="mb-8">
+            <div data-results-stage="secondary" className="mb-6">
               <FrameShell>
                 <div className="border-b border-brand-border px-5 py-3">
                   <SignalBadge tone="warn">
@@ -376,7 +373,7 @@ export default async function ResultPage({ params }: ResultPageProps) {
           )}
 
           {result.savingsTier === "optimal" && (
-            <div data-results-stage="secondary" className="mb-8">
+            <div data-results-stage="secondary" className="mb-6">
               <FrameShell>
                 <div className="px-5 py-6">
                   <SignalBadge tone="ok">Stack is well optimized</SignalBadge>

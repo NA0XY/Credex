@@ -1422,7 +1422,7 @@ export function LandingPage() {
     }, []);
 
     return (
-        <div className="bg-background min-h-screen font-body flex flex-col text-textMain relative" style={{ backgroundColor: 'var(--color-background)' }}>
+        <div className="bg-background min-h-screen font-body flex flex-col text-textMain relative overflow-x-hidden" style={{ backgroundColor: 'var(--color-background)' }}>
             {/* Inject global CSS */}
             <style>{LANDING_CSS}</style>
 

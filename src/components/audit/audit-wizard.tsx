@@ -91,6 +91,7 @@ export function AuditWizard() {
   const [step, setStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [stepFeedback, setStepFeedback] = useState<string | null>(null);
   const [draftLoaded, setDraftLoaded] = useState(false);
   const [draftRestored, setDraftRestored] = useState(false);
 
@@ -100,7 +101,14 @@ export function AuditWizard() {
     mode: "onChange",
   });
 
-  const { control, register, handleSubmit, trigger, reset } = form;
+  const {
+    control,
+    register,
+    handleSubmit,
+    trigger,
+    reset,
+    formState: { errors },
+  } = form;
 
   const fields = useFieldArray({ control, name: "tools" });
   const watchedTools = useWatch({ control, name: "tools", defaultValue: defaultValues.tools });
@@ -177,6 +185,7 @@ export function AuditWizard() {
     if (step === 1) {
       const valid = await trigger(["teamSize", "primaryUseCase"]);
       if (!valid) {
+        setStepFeedback("Please enter a valid team size and confirm the primary use case.");
         return;
       }
     }
@@ -184,16 +193,19 @@ export function AuditWizard() {
     if (step === 2) {
       const valid = await trigger("tools");
       if (!valid) {
+        setStepFeedback("Please fix tool details before continuing.");
         return;
       }
     }
 
+    setStepFeedback(null);
     setStep((current) => Math.min(current + 1, 3));
   };
 
   const onSubmit = handleSubmit(async (values) => {
     setIsSubmitting(true);
     setError(null);
+    setStepFeedback(null);
 
     try {
       const response = await fetch("/api/audit", {
@@ -218,8 +230,8 @@ export function AuditWizard() {
   });
 
   return (
-    <div ref={shellRef} className="mx-auto max-w-7xl px-4 pb-16 pt-10 sm:px-6">
-      <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_300px] lg:gap-10">
+    <div ref={shellRef} className="mx-auto w-full max-w-[1380px] px-4 pb-12 pt-6 sm:px-6 lg:px-8">
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start lg:gap-8">
         <div className="min-w-0 space-y-6">
           <header className="frame-shell px-6 py-7 md:px-8">
             <div className="flex flex-wrap items-center justify-between gap-3">
@@ -254,6 +266,9 @@ export function AuditWizard() {
                 />
               ))}
             </div>
+            <p className="sr-only" aria-live="polite">
+              Step {step} of 3
+            </p>
           </section>
 
           <details className="panel px-5 py-4 lg:hidden">
@@ -281,13 +296,27 @@ export function AuditWizard() {
                   type="button"
                   onClick={() => {
                     localStorage.removeItem(STORAGE_KEY);
-                    window.location.reload();
+                    reset(defaultValues);
+                    setStep(1);
+                    setDraftRestored(false);
+                    setStepFeedback(null);
+                    setError(null);
                   }}
                   className="pill-action pill-action-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent/45"
                 >
-                  start fresh
+                  Start fresh
                 </button>
               </div>
+            </article>
+          )}
+
+          {stepFeedback && (
+            <article
+              className="editorial-card border-brand-warn/45 bg-brand-warn/10 px-4 py-3"
+              role="status"
+              aria-live="polite"
+            >
+              <p className="text-sm text-brand-text">{stepFeedback}</p>
             </article>
           )}
 
@@ -319,13 +348,22 @@ export function AuditWizard() {
                         min={1}
                         max={500}
                         {...register("teamSize", { valueAsNumber: true })}
-                        className="input-field max-w-[190px] text-lg font-semibold"
-                        placeholder="0"
+                        className={`input-field max-w-[190px] text-lg font-semibold ${
+                          errors.teamSize ? "border-brand-danger/55 ring-1 ring-brand-danger/35" : ""
+                        }`}
+                        placeholder="5"
+                        aria-invalid={Boolean(errors.teamSize)}
+                        aria-describedby={errors.teamSize ? "team-size-error" : undefined}
                       />
                       <p className="serif-body text-sm">
                         Include developers, PMs, writers, researchers, and anyone on a paid seat.
                       </p>
                     </div>
+                    {errors.teamSize?.message && (
+                      <p id="team-size-error" className="mt-2 text-sm text-brand-danger">
+                        {String(errors.teamSize.message)}
+                      </p>
+                    )}
                   </div>
 
                   <hr className="ruling" />
@@ -355,6 +393,9 @@ export function AuditWizard() {
                         );
                       })}
                     </div>
+                    {errors.primaryUseCase?.message && (
+                      <p className="mt-2 text-sm text-brand-danger">{String(errors.primaryUseCase.message)}</p>
+                    )}
                   </fieldset>
                 </div>
               </section>
@@ -392,9 +433,28 @@ export function AuditWizard() {
                     const expected = expectedCost(toolId ?? "", planId ?? "", seats);
                     const overBudget = spend > expected * 1.1 && expected > 0;
                     const underBudget = spend > 0 && spend < expected * 0.8 && expected > 0;
+                    const rowErrors = errors.tools?.[index] as
+                      | {
+                          toolId?: { message?: string };
+                          planId?: { message?: string };
+                          seats?: { message?: string };
+                          monthlySpend?: { message?: string };
+                        }
+                      | undefined;
+                    const rowErrorMessage =
+                      rowErrors?.toolId?.message ??
+                      rowErrors?.planId?.message ??
+                      rowErrors?.seats?.message ??
+                      rowErrors?.monthlySpend?.message;
 
                     return (
-                      <article key={field.id} className="editorial-card p-4 md:p-5" data-tool-row>
+                      <article
+                        key={field.id}
+                        className={`editorial-card p-4 md:p-5 ${
+                          rowErrorMessage ? "border-brand-danger/45 bg-brand-danger/5" : ""
+                        }`}
+                        data-tool-row
+                      >
                         <div className="mb-3 flex items-center justify-between md:hidden">
                           <div className="flex items-center gap-2">
                             <SignalBadge>{meta.catLabel}</SignalBadge>
@@ -443,6 +503,7 @@ export function AuditWizard() {
                                 min={1}
                                 {...register(`tools.${index}.seats`, { valueAsNumber: true })}
                                 className="input-field text-xs"
+                                aria-invalid={Boolean(rowErrors?.seats)}
                               />
                             </div>
                             <div>
@@ -453,6 +514,7 @@ export function AuditWizard() {
                                 step="0.01"
                                 {...register(`tools.${index}.monthlySpend`, { valueAsNumber: true })}
                                 className="input-field text-xs"
+                                aria-invalid={Boolean(rowErrors?.monthlySpend)}
                               />
                             </div>
                           </div>
@@ -478,6 +540,7 @@ export function AuditWizard() {
                             min={1}
                             {...register(`tools.${index}.seats`, { valueAsNumber: true })}
                             className="input-field text-center text-xs"
+                            aria-invalid={Boolean(rowErrors?.seats)}
                           />
                           <input
                             type="number"
@@ -485,6 +548,7 @@ export function AuditWizard() {
                             step="0.01"
                             {...register(`tools.${index}.monthlySpend`, { valueAsNumber: true })}
                             className="input-field text-xs"
+                            aria-invalid={Boolean(rowErrors?.monthlySpend)}
                           />
                           <button
                             type="button"
@@ -506,10 +570,19 @@ export function AuditWizard() {
                             {underBudget && <SignalBadge tone="ok">Below list</SignalBadge>}
                           </div>
                         )}
+                        {rowErrorMessage && (
+                          <p className="mt-2 text-sm text-brand-danger">{String(rowErrorMessage)}</p>
+                        )}
                       </article>
                     );
                   })}
                 </div>
+
+                {!!errors.tools && (
+                  <p className="mt-3 text-sm text-brand-danger">
+                    One or more tool rows need fixes. Check highlighted rows.
+                  </p>
+                )}
 
                 <button
                   type="button"
@@ -524,7 +597,7 @@ export function AuditWizard() {
                   }
                   className="mt-4 flex w-full items-center justify-center rounded-2xl border border-dashed border-brand-borderStrong bg-brand-surface2/55 px-5 py-3 text-xs font-semibold uppercase tracking-[0.1em] text-brand-textSub transition hover:border-brand-accent hover:bg-brand-surface"
                 >
-                  + add tool
+                  + Add tool
                 </button>
               </section>
             )}
@@ -574,7 +647,7 @@ export function AuditWizard() {
                             onClick={() => setStep(2)}
                             className="pill-action pill-action-secondary !px-3 !py-1.5 !text-[0.56rem]"
                           >
-                            edit
+                            Edit
                           </button>
                         </div>
                       </article>
@@ -615,7 +688,7 @@ export function AuditWizard() {
                   disabled={step === 1 || isSubmitting}
                   className="pill-action pill-action-secondary min-w-[8rem] disabled:pointer-events-none disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent/45"
                 >
-                  back
+                  Back
                 </button>
 
                 {step < 3 ? (
@@ -624,7 +697,7 @@ export function AuditWizard() {
                     onClick={nextStep}
                     className="pill-action pill-action-primary min-w-[9rem] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent/45"
                   >
-                    continue
+                    Continue
                   </button>
                 ) : (
                   <button
@@ -633,18 +706,18 @@ export function AuditWizard() {
                     className="pill-action pill-action-primary min-w-[10rem] disabled:pointer-events-none disabled:opacity-65 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent/45"
                   >
                     {isSubmitting ? (
-                      <span className="inline-flex items-center gap-2">
-                        <span className="inline-block h-3.5 w-3.5 animate-spin rounded-full border-2 border-brand-surface2 border-t-brand-surface" />
-                        running
-                      </span>
-                    ) : (
-                      "run my audit"
+                        <span className="inline-flex items-center gap-2">
+                          <span className="inline-block h-3.5 w-3.5 animate-spin rounded-full border-2 border-brand-surface2 border-t-brand-surface" />
+                        Running audit...
+                        </span>
+                      ) : (
+                      "Run my audit"
                     )}
                   </button>
                 )}
               </div>
-              <p className="serif-body mt-3 text-xs">
-                Step {step} of 3. Keyboard navigation and visible focus states are enabled for all controls.
+              <p className="serif-body mt-3 text-xs" role="status" aria-live="polite">
+                Step {step} of 3. Draft autosaves in this browser.
               </p>
             </section>
           </form>

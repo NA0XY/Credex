@@ -32,25 +32,25 @@ export function StackScoreDisplay({ score }: StackScoreDisplayProps) {
     <FrameShell>
       <div className="border-b border-brand-border px-5 py-3">
         <div className="flex items-center justify-between gap-3">
-          <span className="kicker">Stack health score</span>
+          <span className="kicker !text-brand-text">Stack health score</span>
           <SignalBadge tone={gradeTone}>{score.total}/100 points</SignalBadge>
         </div>
       </div>
-      <div className="grid gap-4 p-5 md:grid-cols-[minmax(170px,210px)_1fr] md:p-6">
+      <div className="grid gap-3 p-4 md:grid-cols-[minmax(170px,205px)_1fr] md:p-5">
         <article
-          className="editorial-card flex flex-col items-center justify-center p-5 md:p-7"
+          className="editorial-card flex flex-col items-start justify-start p-4 md:p-5"
           style={{ background: style.bg, borderColor: style.border }}
         >
           <span
-            className="cond-display text-[4.6rem] leading-none md:text-[5.8rem]"
+            className="cond-display text-[3.9rem] leading-none md:text-[4.6rem]"
             style={{ color: style.text }}
           >
             {score.grade}
           </span>
-          <p className="kicker mt-2" style={{ color: style.text }}>
+          <p className="kicker mt-1" style={{ color: style.text }}>
             Grade
           </p>
-          <p className="kicker mt-1 text-center text-[0.6rem] text-brand-muted">
+          <p className="kicker mt-2 text-left text-[0.58rem] text-brand-muted">
             {score.headline}
           </p>
         </article>
@@ -59,7 +59,7 @@ export function StackScoreDisplay({ score }: StackScoreDisplayProps) {
           {breakdown.map((item) => {
             const ratio = item.value / item.max;
             return (
-              <div key={item.label} className="px-5 py-4">
+              <div key={item.label} className="px-4 py-3.5">
                 <div className="mb-2 flex items-center justify-between">
                   <span className="kicker text-[0.6rem]">{item.label}</span>
                   <span className="mono-value text-xs text-brand-textSub">
@@ -85,7 +85,7 @@ export function StackScoreDisplay({ score }: StackScoreDisplayProps) {
           })}
 
           <div className="grid grid-cols-2 divide-x divide-brand-border">
-            <div className="px-5 py-4">
+            <div className="px-4 py-3.5">
               <span className="kicker mb-2 block text-[0.6rem] text-brand-ok">
                 Strengths
               </span>
@@ -93,7 +93,7 @@ export function StackScoreDisplay({ score }: StackScoreDisplayProps) {
                 <p key={strength} className="serif-body text-xs">+ {strength}</p>
               ))}
             </div>
-            <div className="px-5 py-4">
+            <div className="px-4 py-3.5">
               <span className="kicker mb-2 block text-[0.6rem] text-brand-danger">
                 Issues
               </span>

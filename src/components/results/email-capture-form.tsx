@@ -14,6 +14,7 @@ export function EmailCaptureForm({ auditSlug }: EmailCaptureFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
+  const [emailDelivered, setEmailDelivered] = useState<boolean | null>(null);
 
   const submit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -36,7 +37,19 @@ export function EmailCaptureForm({ auditSlug }: EmailCaptureFormProps) {
         throw new Error("Unable to submit your email.");
       }
 
-      setStatus("Report sent. Check your inbox.");
+      const payload = (await response.json()) as {
+        success?: boolean;
+        emailSent?: boolean;
+        warning?: string;
+      };
+
+      if (payload.emailSent === false) {
+        setEmailDelivered(false);
+        setStatus(payload.warning ?? "Lead saved, but email delivery is delayed.");
+      } else {
+        setEmailDelivered(true);
+        setStatus("Report sent. Check your inbox.");
+      }
       setSubmitted(true);
     } catch {
       setStatus("Unable to submit right now. Please try again in a moment.");
@@ -49,19 +62,19 @@ export function EmailCaptureForm({ auditSlug }: EmailCaptureFormProps) {
     <FrameShell className="email-capture">
       <div className="border-b border-brand-border px-5 py-3">
         <div className="flex items-center justify-between gap-3">
-          <span className="kicker">Deliver report to inbox</span>
+          <span className="kicker !text-brand-text">Deliver report to inbox</span>
           <SignalBadge tone="neutral">Optional follow-up</SignalBadge>
         </div>
       </div>
 
       {!submitted ? (
-        <div className="px-5 py-6">
+        <div className="px-4 py-5 md:px-5">
           <p className="serif-body mb-5 text-sm">
             Get this report plus alerts when better options launch for your specific stack. Credex reaches out only for high-savings accounts, and only if you want.
           </p>
           <form onSubmit={submit} className="space-y-3">
             <label className="block">
-              <span className="kicker mb-1.5 block">Work email</span>
+              <span className="kicker mb-1.5 block">Work email (required)</span>
               <input required type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="your@company.com" className="input-field" />
             </label>
             <div className="grid gap-3 sm:grid-cols-2">
@@ -89,7 +102,7 @@ export function EmailCaptureForm({ auditSlug }: EmailCaptureFormProps) {
               )}
             </button>
             {status && !submitted && (
-              <p className="text-center text-sm text-brand-danger" style={{ fontFamily: "var(--font-serif)" }}>
+              <p className="text-center text-sm text-brand-danger" style={{ fontFamily: "var(--font-serif)" }} role="status" aria-live="polite">
                 {status}
               </p>
             )}
@@ -100,9 +113,17 @@ export function EmailCaptureForm({ auditSlug }: EmailCaptureFormProps) {
         </div>
       ) : (
         <div className="px-5 py-10 text-center">
-          <p className="mono-value text-3xl font-bold">Sent</p>
-          <p className="mt-2 text-sm text-brand-textSub" style={{ fontFamily: "var(--font-serif)" }}>
-            Check your inbox. The full report link is included.
+          <p className="mono-value text-3xl font-bold" role="status" aria-live="polite">
+            {emailDelivered ? "Sent" : "Saved"}
+          </p>
+          <p
+            className={`mt-2 text-sm ${emailDelivered ? "text-brand-textSub" : "text-brand-warning"}`}
+            style={{ fontFamily: "var(--font-serif)" }}
+          >
+            {status ??
+              (emailDelivered
+                ? "Check your inbox. The full report link is included."
+                : "Lead saved. Use share/copy in this page while we retry email delivery later.")}
           </p>
         </div>
       )}

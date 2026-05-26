@@ -82,7 +82,7 @@ export function SiteHeader({ links = [], rightSlot, compactLogo = false }: SiteH
 
   return (
     <header ref={rootRef} className="sticky top-3 z-50">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6">
+      <div className="mx-auto w-full max-w-[1380px] px-4 sm:px-6 lg:px-8">
         <div
           ref={shellRef}
           className="capsule-nav flex items-center justify-between gap-4 border border-brand-border bg-brand-surface/75 px-4 py-2.5 shadow-[0_20px_44px_-34px_rgba(15,23,42,0.22)] md:rounded-full"

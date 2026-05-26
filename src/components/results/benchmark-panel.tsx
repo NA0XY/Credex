@@ -20,17 +20,17 @@ export function BenchmarkPanel({ yourCpd, medianCpd, p75Cpd, cohortLabel, verdic
     <FrameShell>
       <div className="border-b border-brand-border px-5 py-3">
         <div className="flex items-center justify-between gap-3">
-          <span className="kicker">Benchmark - {cohortLabel}</span>
+          <span className="kicker !text-brand-text">Benchmark - {cohortLabel}</span>
           <SignalBadge tone={verdictTone}>{verdict}</SignalBadge>
         </div>
       </div>
-      <div className="px-5 py-6">
-        <p className="serif-body mb-6 text-sm">
+      <div className="px-4 py-5 md:px-5">
+        <p className="serif-body mb-4 text-sm">
           AI spend per developer per month, compared to {cohortLabel} companies
         </p>
 
-        <div className="space-y-4">
-          <EditorialCard className="p-4">
+        <div className="space-y-3.5">
+          <EditorialCard className="p-3.5 md:p-4">
             <div className="mb-1.5 flex items-center justify-between">
               <span className="kicker text-[0.6rem]">Your stack</span>
               <span className="mono-value text-sm font-bold">${yourCpd}/dev/mo</span>
@@ -73,7 +73,7 @@ export function BenchmarkPanel({ yourCpd, medianCpd, p75Cpd, cohortLabel, verdic
           </div>
         </div>
 
-        <div className="panel-raised mt-5 px-4 py-3">
+        <div className="panel-raised mt-4 px-4 py-3">
           <p className="serif-body text-xs text-brand-textSub">
             Benchmark verdict reflects spend per developer against this cohort.
           </p>

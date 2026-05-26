@@ -223,3 +223,20 @@ export async function createLead(input: LeadInput, auditId: string, highSavings:
   memoryLeadKeys.add(leadKey);
 }
 
+export async function updateLeadEmailSentStatus(
+  auditId: string,
+  email: string,
+  emailSent: boolean
+): Promise<void> {
+  const supabase = getSupabaseAdminClient();
+  if (!supabase) {
+    return;
+  }
+
+  await supabase
+    .from("leads")
+    .update({ email_sent: emailSent })
+    .eq("audit_id", auditId)
+    .eq("email", email);
+}
+

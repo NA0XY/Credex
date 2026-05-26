@@ -43,11 +43,11 @@ export function WhatIfSimulator({ tools, totalCurrentMonthly }: WhatIfSimulatorP
     <FrameShell>
       <div className="border-b border-brand-border px-5 py-3">
         <div className="flex items-center justify-between gap-3">
-          <span className="kicker">What-if simulator</span>
+          <span className="kicker !text-brand-text">What-if simulator</span>
           <SignalBadge tone="neutral">Client side model</SignalBadge>
         </div>
       </div>
-      <div className="px-5 py-5 md:px-6 md:py-6">
+      <div className="px-4 py-4 md:px-5 md:py-5">
         <p className="mb-5 text-sm text-brand-textSub" style={{ fontFamily: "var(--font-serif)" }}>
           Toggle recommendations to model your savings. Changes are calculated client-side with no API calls.
         </p>
@@ -68,7 +68,8 @@ export function WhatIfSimulator({ tools, totalCurrentMonthly }: WhatIfSimulatorP
                         : "rgba(241, 243, 246, 0.9)",
                       borderColor: isOn ? "var(--color-brand)" : "rgba(107, 114, 128, 0.35)",
                     }}
-                    aria-pressed={isOn}
+                    role="switch"
+                    aria-checked={isOn}
                     aria-label={`Toggle ${tool.toolName} recommendation`}
                   >
                     <span

@@ -25,13 +25,14 @@ export function ResultActions({ slug }: ResultActionsProps) {
   return (
     <div className="result-actions-bar flex flex-wrap items-center gap-2">
       {[
-        { label: status === "Share link copied." ? "COPIED OK" : "SHARE", onClick: copy },
-        { label: "SAVE PDF", onClick: () => window.print() },
+        { label: status === "Share link copied." ? "COPIED OK" : "COPY LINK", onClick: copy, ariaLabel: "Copy share link" },
+        { label: "SAVE PDF", onClick: () => window.print(), ariaLabel: "Save this report as PDF" },
       ].map((btn) => (
         <button
           key={btn.label}
           onClick={btn.onClick}
           className="pill-action pill-action-secondary px-4 py-2"
+          aria-label={btn.ariaLabel}
         >
           {btn.label}
         </button>
@@ -42,9 +43,13 @@ export function ResultActions({ slug }: ResultActionsProps) {
       >
         + NEW AUDIT
       </Link>
-      {status === "Unable to copy link." && (
-        <span className="kicker text-brand-danger">Clipboard blocked</span>
-      )}
+      <span
+        className={`kicker ${status === "Unable to copy link." ? "text-brand-danger" : "text-brand-textSub"}`}
+        role="status"
+        aria-live="polite"
+      >
+        {status ?? " "}
+      </span>
     </div>
   );
 }
