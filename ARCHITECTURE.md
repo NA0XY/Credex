@@ -2,15 +2,15 @@
 
 ```mermaid
 flowchart LR
-    A[User] --> B[Landing Page]
-    B --> C[Audit Form]
-    C --> D[/api/audit]
-    D --> E[(Supabase or In-Memory Fallback)]
-    D --> F[/api/summary]
-    F --> G[Groq API Optional]
-    E --> H[Results Page]
-    H --> I[/api/leads]
-    I --> J[Resend]
+    A["User"] --> B["Landing Page"]
+    B --> C["Audit Form"]
+    C --> D["API: /api/audit"]
+    D --> E["Supabase or In-Memory Fallback"]
+    D --> F["API: /api/summary"]
+    F --> G["Groq API (Optional)"]
+    E --> H["Results Page"]
+    H --> I["API: /api/leads"]
+    I --> J["Resend"]
 ```
 
 ## Data flow narrative

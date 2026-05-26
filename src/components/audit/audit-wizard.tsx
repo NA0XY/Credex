@@ -91,26 +91,39 @@ export function AuditWizard() {
   const [step, setStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  const initialDraft = useMemo(() => loadInitialDraft(), []);
+  const [draftLoaded, setDraftLoaded] = useState(false);
+  const [draftRestored, setDraftRestored] = useState(false);
 
   const form = useForm<AuditFormValues>({
     resolver: zodResolver(auditFormSchema),
-    defaultValues: initialDraft.values,
+    defaultValues,
     mode: "onChange",
   });
 
-  const { control, register, handleSubmit, trigger } = form;
+  const { control, register, handleSubmit, trigger, reset } = form;
 
   const fields = useFieldArray({ control, name: "tools" });
-  const watchedTools = useWatch({ control, name: "tools", defaultValue: initialDraft.values.tools });
+  const watchedTools = useWatch({ control, name: "tools", defaultValue: defaultValues.tools });
   const fullFormState = useWatch({ control });
   const teamSize = useWatch({ control, name: "teamSize" });
   const primaryUseCase = useWatch({ control, name: "primaryUseCase" });
 
   useEffect(() => {
+    const initialDraft = loadInitialDraft();
+    if (initialDraft.restored) {
+      reset(initialDraft.values);
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setDraftRestored(true);
+    }
+    setDraftLoaded(true);
+  }, [reset]);
+
+  useEffect(() => {
+    if (!draftLoaded) {
+      return;
+    }
     localStorage.setItem(STORAGE_KEY, JSON.stringify(fullFormState));
-  }, [fullFormState]);
+  }, [draftLoaded, fullFormState]);
 
   useEffect(() => {
     watchedTools.forEach((tool, index) => {
@@ -257,7 +270,7 @@ export function AuditWizard() {
             </div>
           </details>
 
-          {initialDraft.restored && (
+          {draftRestored && (
             <article className="editorial-card border-brand-accent/35 bg-brand-surface2/80 px-5 py-4">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div className="flex items-center gap-2">

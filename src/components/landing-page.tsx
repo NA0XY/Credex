@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
@@ -13,9 +13,9 @@ import {
 
 gsap.registerPlugin(ScrollTrigger, MotionPathPlugin);
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────
 // Inline CSS (previously LogoCarousel.css + TimelineSvg.css)
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────
 const LANDING_CSS = `
 .logo-carousel-container {
     width: 100%;
@@ -106,7 +106,7 @@ const LANDING_CSS = `
     text-shadow: 0 1px 3px rgba(0,0,0,0.6);
 }
 
-/* â”€â”€ Rounded Slide Button â”€â”€ */
+/* ── Rounded Slide Button ── */
 .slide-btn {
   position: relative;
   overflow: hidden;
@@ -157,9 +157,9 @@ const LANDING_CSS = `
 .slide-btn--outline-inv::before { background-color: rgba(30, 200, 160, 0.2); }
 `;
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────
 // TextGenerate animation
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────
 interface TextGenerateProps {
     children: React.ReactNode;
     className?: string;
@@ -207,9 +207,9 @@ function TextGenerate({ children, className = "", delay = 0, stagger = 0.05, dur
     return <span ref={containerRef} className={className}>{renderWords()}</span>;
 }
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────
 // CardGenerate animation
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────
 interface CardGenerateProps {
     children: React.ReactNode;
     className?: string;
@@ -252,9 +252,9 @@ function CardGenerate({ children, className = "", delay = 0, duration = 1.2, tri
     );
 }
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────
 // Hero
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────
 function Hero() {
         const containerRef = useRef<HTMLElement>(null);
 
@@ -298,7 +298,7 @@ function Hero() {
                     <div className="w-2 h-2 rounded-full bg-primary relative">
                         <div className="absolute inset-0 bg-primary rounded-full animate-ping opacity-75"></div>
                     </div>
-                    <span className="font-mono text-sm tracking-wide font-medium">FREE ï¿½ 2-MINUTE ï¿½ DATA-BACKED</span>
+                    <span className="font-mono text-sm tracking-wide font-medium">FREE - 2-MINUTE - DATA-BACKED</span>
                 </div>
 
                 <h1 className="hero-anim font-display text-[clamp(48px,6vw,80px)] font-bold tracking-[-0.03em] leading-[1.05] mb-6">
@@ -313,7 +313,7 @@ function Hero() {
                     <button onClick={() => { window.location.href = '/audit'; }} className="slide-btn slide-btn--dark flex items-center gap-2 px-8 py-4">
                         <Zap size={20} /> Run Audit
                     </button>
-                    <button className="slide-btn slide-btn--outline flex items-center gap-2 px-8 py-4">
+                    <button onClick={() => { window.location.href = '/results/demo'; }} className="slide-btn slide-btn--outline flex items-center gap-2 px-8 py-4">
                         <Play size={20} /> Watch Demo
                     </button>
                 </div>
@@ -343,9 +343,9 @@ function Hero() {
     );
 }
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────
 // LogoCarousel
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────
 const logos = [
     {
         name: 'ChatGPT Team',
@@ -474,15 +474,15 @@ function LogoCarousel() {
     );
 }
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────
 // TimelineSvg  (placed ABOVE Problem)
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────
+// ─────────────────────────────────────────────
 // TimelineSvg  (placed ABOVE Problem)
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────
+// ─────────────────────────────────────────────
 // TimelineSvg  (placed ABOVE Problem)
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────
 function TimelineSvg() {
     const containerRef = useRef<HTMLElement>(null);
     const sweepTailRef = useRef<HTMLDivElement>(null);
@@ -619,7 +619,7 @@ function TimelineSvg() {
                                     <span className="font-medium text-lg leading-snug"><TextGenerate delay={0.5}>Give every stakeholder one shared savings playbook</TextGenerate></span>
                                 </li>
                             </ul>
-                            <button className="bg-white text-black hover:bg-gray-100 transition-colors rounded-full px-7 py-3.5 font-semibold text-[15px] inline-flex items-center shadow-lg">
+                            <button onClick={() => { window.location.href = '/results/demo'; }} className="bg-white text-black hover:bg-gray-100 transition-colors rounded-full px-7 py-3.5 font-semibold text-[15px] inline-flex items-center shadow-lg">
                                 <TextGenerate delay={0.6}>See SpendLens methodology</TextGenerate>
                             </button>
                         </div>
@@ -649,7 +649,7 @@ function TimelineSvg() {
                                     <span className="font-medium text-lg leading-snug"><TextGenerate delay={0.5}>Export a share-ready report for budget approvals</TextGenerate></span>
                                 </li>
                             </ul>
-                            <button className="bg-[#151515] text-white hover:bg-black transition-colors rounded-full px-7 py-3.5 font-semibold text-[15px] inline-flex items-center shadow-lg relative z-20">
+                            <button onClick={() => { window.location.href = '/audit'; }} className="bg-[#151515] text-white hover:bg-black transition-colors rounded-full px-7 py-3.5 font-semibold text-[15px] inline-flex items-center shadow-lg relative z-20">
                                 <TextGenerate delay={0.6}>Generate your savings report</TextGenerate>
                             </button>
                             {/* Seamless Sweep Tail */}
@@ -683,9 +683,9 @@ function TimelineSvg() {
     );
 }
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────
 // Problem
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────
 const problems = [
     { icon: Clock, title: "AI Spend Creep Goes Unnoticed", desc: "Teams accumulate duplicate seats and mismatched plans month after month." },
     { icon: Shield, title: "No Shared Source of Truth", desc: "Finance, ops, and product often read different spend realities from scattered tooling dashboards." },
@@ -769,9 +769,9 @@ function Problem() {
     );
 }
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────
 // BentoGrid
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────
 const agents = [
     { name: "Stack Score", role: "Spend Quality Grading", color: "#8D5CF6", icon: Shield, desc: "Grades your stack A-F using overlap, plan-fit, seat efficiency, and cost-per-seat checks.", features: ["Overlap Detection", "Plan Fit Scoring", "Seat Efficiency"] },
     { name: "Benchmark Engine", role: "Peer Spend Benchmarking", color: "#38BDF8", icon: Zap, desc: "Compares your stack against similar teams to surface where spend is above median.", features: ["Cohort Baselines", "Cost Per Dev Delta", "Outlier Detection"] },
@@ -812,9 +812,9 @@ function BentoGrid() {
     );
 }
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────
 // HorizontalCarousel
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────
 const capabilities = [
     { icon: Cpu, title: "Deterministic Rules", desc: "Pricing logic is explicit, auditable, and consistent across every run." },
     { icon: Search, title: "Stack Mapping", desc: "Normalizes usage, seats, and plans from your full AI tooling mix." },
@@ -886,15 +886,15 @@ function HorizontalCarousel() {
     );
 }
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────
 // HowItWorks
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-// HowItWorks â€” Winding Road Timeline
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────
+// ─────────────────────────────────────────────
+// HowItWorks — Winding Road Timeline
+// ─────────────────────────────────────────────
 // SVG ViewBox: 0 0 700 1600
-// Node SVG coords â†’ CSS %:  left = x/700*100,  top = y/1600*100
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// Node SVG coords → CSS %:  left = x/700*100,  top = y/1600*100
+// ─────────────────────────────────────────────
 const HIW_ROAD_D = `
     M 200 40
     C 200 120 440 140 510 200
@@ -918,7 +918,7 @@ const HIW_NODES = [
     { xl: 72.86, yt: 85.00, side: 'right' as const },  // (510, 1360)
 ];
 
-// Timeline positions (0â€“10) at which each node should pop in
+// Timeline positions (0–10) at which each node should pop in
 const HIW_NODE_T = [1.4, 3.1, 4.8, 6.5, 8.2];
 
 function HowItWorks() {
@@ -1037,7 +1037,7 @@ function HowItWorks() {
             {/* Road + overlays container */}
             <div className="relative w-full max-w-[700px] mx-auto px-4 md:px-0">
 
-                {/* â”€â”€ START marker â”€â”€ */}
+                {/* ── START marker ── */}
                 <div
                     ref={startRef}
                     className="absolute z-30 flex flex-col items-center gap-1 pointer-events-none"
@@ -1058,7 +1058,7 @@ function HowItWorks() {
                     <span className="font-display font-bold text-[13px] tracking-[0.15em] text-[#FFFFFF]">START</span>
                 </div>
 
-                {/* â”€â”€ SVG Road â”€â”€ */}
+                {/* ── SVG Road ── */}
                 <svg
                     viewBox="0 0 700 1600"
                     className="w-full"
@@ -1087,13 +1087,13 @@ function HowItWorks() {
                         stroke="rgba(255,255,255,0.06)" strokeWidth="68"
                         strokeLinecap="round" strokeLinejoin="round" />
 
-                    {/* Centre dashes â€” static, appear with section */}
+                    {/* Centre dashes — static, appear with section */}
                     <path d={HIW_ROAD_D} fill="none"
                         stroke="rgba(255,255,255,0.45)" strokeWidth="4"
                         strokeDasharray="28 22" strokeLinecap="round" />
                 </svg>
 
-                {/* â”€â”€ Node circles â”€â”€ */}
+                {/* ── Node circles ── */}
                 {steps.map((step, i) => {
                     const p = HIW_NODES[i];
                     return (
@@ -1124,7 +1124,7 @@ function HowItWorks() {
                     );
                 })}
 
-                {/* â”€â”€ Text labels â”€â”€ */}
+                {/* ── Text labels ── */}
                 {steps.map((step, i) => {
                     const p = HIW_NODES[i];
                     const isRight = p.side === 'right';
@@ -1155,7 +1155,7 @@ function HowItWorks() {
                     );
                 })}
 
-                {/* â”€â”€ GOAL marker â”€â”€ */}
+                {/* ── GOAL marker ── */}
                 <div
                     ref={goalRef}
                     className="absolute z-30 flex flex-col items-center gap-1 pointer-events-none"
@@ -1173,9 +1173,9 @@ function HowItWorks() {
     );
 }
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────
 // TechStack
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────
 function TechStack() {
     const chips = [
         "Seat Overlap Detection", "Plan Fit Scoring", "Benchmark Delta",
@@ -1207,9 +1207,9 @@ function TechStack() {
     );
 }
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────
 // Stats
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────
 function Stats() {
     const sectionRef = useRef<HTMLElement>(null);
     const numsRef = useRef<(HTMLHeadingElement | null)[]>([]);
@@ -1271,9 +1271,9 @@ function Stats() {
     );
 }
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────
 // AnimatedFlagCTA
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────
 function AnimatedFlagCTA() {
     const sectionRef = useRef<HTMLElement>(null);
     const [isVisible, setIsVisible] = useState(false);
@@ -1305,7 +1305,7 @@ function AnimatedFlagCTA() {
                 </svg>
             </div>
             <div className="relative z-10 flex flex-col items-center max-w-[800px] w-full px-6 text-center mt-[220px]">
-                <button className="slide-btn slide-btn--dark px-8 py-3.5 text-[15px] shadow-lg mb-8">Start audit</button>
+                <button onClick={() => { window.location.href = '/audit'; }} className="slide-btn slide-btn--dark px-8 py-3.5 text-[15px] shadow-lg mb-8">Start audit</button>
                 <h2 className="font-display text-[clamp(40px,5vw,56px)] font-bold tracking-tight leading-[1.1] text-[#151515]">
                     <TextGenerate delay={0.2}>Turn spend data into action</TextGenerate>
                 </h2>
@@ -1314,9 +1314,9 @@ function AnimatedFlagCTA() {
     );
 }
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────
 // CTA / Footer
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────
 function CTA() {
         return (
         <footer className="bg-dark text-textInverse pt-[160px] pb-[80px] relative overflow-hidden">
@@ -1333,7 +1333,7 @@ function CTA() {
                 <TextGenerate delay={0.8}>
                     <div className="flex flex-col sm:flex-row gap-4">
                         <button onClick={() => { window.location.href = '/audit'; }} className="slide-btn slide-btn--primary px-10 py-5 text-lg">Run Free Audit</button>
-                        <button className="slide-btn slide-btn--outline-inv px-10 py-5 text-lg">View sample report</button>
+                        <button onClick={() => { window.location.href = '/results/demo'; }} className="slide-btn slide-btn--outline-inv px-10 py-5 text-lg">View sample report</button>
                     </div>
                 </TextGenerate>
             </div>
@@ -1344,36 +1344,58 @@ function CTA() {
                 </div>
                 <div className="flex flex-col gap-4">
                     <h4 className="font-bold text-textInverse">Product</h4>
-                    {['Stack Score', 'Recommendations', 'Benchmarks', 'Pricing', 'Methodology'].map(l => (
-                        <a key={l} href="#" className="text-textInverse/60 hover:text-primary transition-colors">{l}</a>
+                    {[
+                        { label: 'Stack Score', href: '/results/demo' },
+                        { label: 'Recommendations', href: '/results/demo' },
+                        { label: 'Benchmarks', href: '/results/demo' },
+                        { label: 'Pricing', href: '/audit' },
+                        { label: 'Methodology', href: '/results/demo' },
+                    ].map((item) => (
+                        <a key={item.label} href={item.href} className="text-textInverse/60 hover:text-primary transition-colors">{item.label}</a>
                     ))}
                 </div>
                 <div className="flex flex-col gap-4">
                     <h4 className="font-bold text-textInverse">Resources</h4>
-                    {['Methodology', 'Sample Report', 'Benchmarks', 'Status'].map(l => (
-                        <a key={l} href="#" className="text-textInverse/60 hover:text-primary transition-colors">{l}</a>
+                    {[
+                        { label: 'Methodology', href: '/results/demo' },
+                        { label: 'Sample Report', href: '/results/demo' },
+                        { label: 'Benchmarks', href: '/results/demo' },
+                        { label: 'Status', href: 'https://credex.rocks' },
+                    ].map((item) => (
+                        <a key={item.label} href={item.href} className="text-textInverse/60 hover:text-primary transition-colors">{item.label}</a>
                     ))}
                 </div>
                 <div className="flex flex-col gap-4">
                     <h4 className="font-bold text-textInverse">Company</h4>
-                    {['About Us', 'Careers', 'Contact', 'Security'].map(l => (
-                        <a key={l} href="#" className="text-textInverse/60 hover:text-primary transition-colors">{l}</a>
+                    {[
+                        { label: 'About Us', href: 'https://credex.rocks' },
+                        { label: 'Careers', href: 'https://credex.rocks' },
+                        { label: 'Contact', href: 'mailto:founders@credex.rocks' },
+                        { label: 'Security', href: 'https://credex.rocks' },
+                    ].map((item) => (
+                        <a key={item.label} href={item.href} className="text-textInverse/60 hover:text-primary transition-colors">{item.label}</a>
                     ))}
                 </div>
             </div>
             <div className="max-w-[1200px] w-full mx-auto px-8 pt-[80px] mt-[80px] border-t border-borderInv flex flex-col sm:flex-row justify-between items-center text-sm text-textInverse/40">
-                <p>© 2026 SpendLens. All rights reserved.</p>
+                <p>- 2026 SpendLens. All rights reserved.</p>
                 <div className="flex gap-6 mt-4 sm:mt-0">
-                    {['Privacy', 'Terms', 'Security'].map(l => <a key={l} href="#" className="hover:text-textInverse transition-colors">{l}</a>)}
+                    {[
+                        { label: 'Privacy', href: 'https://credex.rocks' },
+                        { label: 'Terms', href: 'https://credex.rocks' },
+                        { label: 'Security', href: 'https://credex.rocks' },
+                    ].map((item) => (
+                        <a key={item.label} href={item.href} className="hover:text-textInverse transition-colors">{item.label}</a>
+                    ))}
                 </div>
             </div>
         </footer>
     );
 }
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────
 // HomePage (main export)
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────
 export function LandingPage() {
     const [isScrolled, setIsScrolled] = useState(false);
 
@@ -1414,7 +1436,7 @@ export function LandingPage() {
                 </div>
             </header>
 
-            {/* Main Content â€” TimelineSvg is above Problem */}
+            {/* Main Content — TimelineSvg is above Problem */}
             <main className="flex-grow">
                 <Hero />
                 <LogoCarousel />
@@ -1432,6 +1454,7 @@ export function LandingPage() {
         </div>
     );
 }
+
 
 
 
