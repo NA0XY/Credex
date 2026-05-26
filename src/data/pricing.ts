@@ -26,7 +26,7 @@ export interface Tool {
   }>;
 }
 
-const lastVerified = "2026-05-21";
+const lastVerified = "2026-05-27";
 
 export const TOOLS: Tool[] = [
   {
@@ -77,7 +77,7 @@ export const TOOLS: Tool[] = [
     id: "github-copilot",
     name: "GitHub Copilot",
     category: "coding",
-    officialPricingUrl: "https://github.com/features/copilot#pricing",
+    officialPricingUrl: "https://github.com/features/copilot/plans",
     lastVerified,
     recentChanges: [
       { date: "2025-12", note: "Individual plan now includes code review features" },
@@ -113,7 +113,7 @@ export const TOOLS: Tool[] = [
     id: "claude",
     name: "Claude (Anthropic)",
     category: "chat",
-    officialPricingUrl: "https://www.anthropic.com/pricing",
+    officialPricingUrl: "https://claude.com/pricing",
     lastVerified,
     recentChanges: [
       { date: "2026-02", note: "Max plan ($100/mo) introduced; Pro usage limits unchanged" },
@@ -211,7 +211,7 @@ export const TOOLS: Tool[] = [
     id: "anthropic-api",
     name: "Anthropic API",
     category: "api",
-    officialPricingUrl: "https://www.anthropic.com/pricing#api",
+    officialPricingUrl: "https://platform.claude.com/docs/en/about-claude/pricing",
     lastVerified,
     plans: [
       {
@@ -278,7 +278,7 @@ export const TOOLS: Tool[] = [
     id: "windsurf",
     name: "Windsurf (Codeium)",
     category: "coding",
-    officialPricingUrl: "https://codeium.com/windsurf/pricing",
+    officialPricingUrl: "https://windsurf.com/pricing",
     lastVerified,
     plans: [
       {
