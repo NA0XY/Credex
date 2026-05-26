@@ -1,66 +1,61 @@
-# Credex
+# Credex SpendLens
 
-SpendLens is a production-ready AI spend audit tool for startup teams. It audits paid AI tooling usage (Cursor, Copilot, Claude, ChatGPT, APIs, and more), identifies overlap and over-seating, and surfaces concrete monthly/annual savings opportunities.
+SpendLens is a deterministic AI tooling spend auditor for startup operators (founders, engineering managers, and finance leads). Users complete a short guided audit and get a defensible report showing overlap, over-seating, and concrete monthly/annual savings opportunities. It is built for teams that need actionable cost decisions quickly without procurement-heavy software.
 
-Built for founders, finance leads, and engineering managers, the app is designed to show value before lead capture: users complete an audit first, then optionally save/share their report.
+## Screenshots
 
-## Stack
+### Landing
+![Landing](./public/screenshots/landing.png)
 
-- Next.js App Router + TypeScript
-- Tailwind CSS + shadcn/ui
-- Supabase Postgres (with local in-memory fallback)
-- Groq API (optional, fallback summary supported)
-- Resend (lead follow-up emails)
-- Vitest + GitHub Actions CI
+### Audit Wizard
+![Audit](./public/screenshots/audit.png)
 
-## Quick start
+### Results Report
+![Results](./public/screenshots/results.png)
 
-1. Install dependencies:
+## Quick Start
+
+### Install
 
 ```bash
 npm install
 ```
 
-2. Create environment file from template:
+### Run locally
 
 ```bash
 cp .env.example .env.local
-```
-
-3. Run dev server:
-
-```bash
 npm run dev
 ```
 
-4. Open key routes:
+Open:
+- `http://localhost:3000`
+- `http://localhost:3000/audit`
+- `http://localhost:3000/results/demo`
 
-- `http://localhost:3000` (landing)
-- `http://localhost:3000/audit` (multi-step audit form)
-- `http://localhost:3000/results/demo` (demo report)
+### Deploy (Vercel)
 
-## Screenshots / Recording
+```bash
+npm i -g vercel
+vercel
+vercel --prod
+```
 
-- Capture checklist:
-- Landing hero + method timeline
-- Audit wizard flow (team, tools, review)
-- Results report with recommendation breakdown
-- Optional 30-second Loom walkthrough
+Set required environment variables in Vercel project settings from `.env.example` before production deploy.
 
-## Decisions (5 key trade-offs)
+## Decisions (5 Trade-offs)
 
-1. Deterministic audit math over AI-generated recommendations.
-2. AI only for summary copy with hard fallback.
-3. Email gate after value display.
-4. Next.js App Router with route handlers.
-5. Supabase + in-memory fallback.
+1. **Deterministic engine over AI-generated decisions**: recommendation math must be explainable and testable.
+2. **Async AI summary with fallback**: report delivery should never block on model latency/failure.
+3. **Post-value lead capture**: users see audit value first, then optional email capture.
+4. **Supabase with in-memory fallback**: enables fast local iteration without hard blocking on DB availability.
+5. **Single product flow over multi-tool complexity**: constrained input model improved completion rate and reduced UX friction.
 
 ## Deployed URL
 
-- Local preview: http://localhost:3000
-- Production deployment: not configured in this repository snapshot.
+- Add your live URL after deploy (for final submission), for example: `https://<your-project>.vercel.app`
 
-## Quality checks
+## Quality Checks
 
 ```bash
 npm run lint
@@ -69,9 +64,8 @@ npx tsc --noEmit
 npm run build
 ```
 
-## Repo notes
+## Repo Notes
 
-- SQL schema is in `supabase/schema.sql`.
-- Assignment documentation artifacts are at repo root (`ARCHITECTURE.md`, `DEVLOG.md`, `PRICING_DATA.md`, etc.).
-- `GROQ_API_KEY` is optional; fallback summaries are generated when absent.
-
+- Pricing catalog and vendor links: `src/data/pricing.ts` + `PRICING_DATA.md`
+- Architecture and data flow: `ARCHITECTURE.md`
+- Daily execution log: `DEVLOG.md`
