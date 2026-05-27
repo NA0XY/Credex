@@ -22,7 +22,7 @@ A user enters team context and tool spend inputs in the multi-step audit form. T
 - Route handlers make API + UI composition straightforward.
 - Server components support SEO-friendly metadata and sharable result pages.
 - File-based routing keeps landing, form, results, and API endpoints clean.
-- Vercel deployment path is simple and well-supported.
+- OpenNext lets the same App Router code deploy to Cloudflare Workers for the submitted production URL.
 
 ## Why Supabase
 

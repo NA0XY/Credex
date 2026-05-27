@@ -16,6 +16,12 @@ npm run test
   - Validates high-savings `credexRelevant` classification
   - Detects over-seating recommendations
   - Confirms output schema shape
+  - Confirms benchmark P75 is engine-provided, not derived in the UI
+  - Verifies structured `OpportunityV1` payloads for actionable recommendations
+  - Verifies unknown tools produce low-confidence, zero-savings output
+  - Guards duplicate-overlap recommendations from double counting
+  - Verifies legacy mode strips opportunity payloads for rollback compatibility
+  - Verifies v2-lite mode keeps opportunity payloads by default
 
 ## CI checks
 
