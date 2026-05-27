@@ -15,18 +15,25 @@ type GroqChatCompletionResponse = {
 
 export function generateFallbackSummary(result: AuditResult, input: AuditInput): string {
   const topTool = [...result.tools].sort(
-    (a, b) => b.bestRecommendation.monthlySavings - a.bestRecommendation.monthlySavings
+    (a, b) =>
+      (b.bestRecommendation.opportunity?.monthlySavings ?? b.bestRecommendation.monthlySavings) -
+      (a.bestRecommendation.opportunity?.monthlySavings ?? a.bestRecommendation.monthlySavings)
   )[0];
 
   if (!topTool) {
     return `Your ${input.teamSize}-person team is currently well-optimized for ${input.primaryUseCase} workflows. Re-run this audit quarterly as vendor pricing changes.`;
   }
 
+  const topMonthlySavings = topTool.bestRecommendation.opportunity?.monthlySavings ?? topTool.bestRecommendation.monthlySavings;
+  const assumptions = topTool.bestRecommendation.opportunity?.assumptions?.[0];
+
   return `Your team is currently spending $${result.totalCurrentMonthlyCost}/month across ${result.tools.length} AI tool${
     result.tools.length > 1 ? "s" : ""
-  }. The audit identified $${result.totalMonthlySavings}/month ($${result.totalAnnualSavings}/year) in potential savings. The biggest opportunity is ${
+  }. The audit identified $${result.totalMonthlySavings}/month ($${result.totalAnnualSavings}/year) in potential savings. The highest-impact move is on ${
     topTool.toolName
-  }: ${topTool.bestRecommendation.reason} Next step this week: validate current seats and plan tier for this tool against active user count. ${
+  }, with about $${topMonthlySavings}/month in savings: ${topTool.bestRecommendation.reason} Next step this week: validate active seats and required governance features before applying this change.${
+    assumptions ? ` Assumption check: ${assumptions}.` : ""
+  } ${
     result.credexRelevant
       ? "For teams at your spend level, sourcing through AI credit providers like Credex can unlock additional 20-40% savings on top of these optimizations."
       : "Your stack looks reasonably optimized, so re-auditing after pricing changes is the best next step."

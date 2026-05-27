@@ -11,7 +11,15 @@ function topSavingsLines(tools: ToolAuditResult[], limit = 3): string {
     .slice(0, limit)
     .map((tool) => {
       const rec = tool.bestRecommendation;
-      return `- ${tool.toolName}: ${rec.reason} (saves $${rec.monthlySavings}/mo, confidence ${rec.confidence})`;
+      const monthly = rec.opportunity?.monthlySavings ?? rec.monthlySavings;
+      const formula = rec.opportunity?.formula ? ` | formula: ${rec.opportunity.formula}` : "";
+      const assumptions = rec.opportunity?.assumptions?.length
+        ? ` | assumptions: ${rec.opportunity.assumptions.join("; ")}`
+        : "";
+      const confidenceReasons = rec.confidenceReasons?.length
+        ? ` | confidence reasons: ${rec.confidenceReasons.join("; ")}`
+        : "";
+      return `- ${tool.toolName}: ${rec.reason} (saves $${monthly}/mo, confidence ${rec.confidence})${formula}${assumptions}${confidenceReasons}`;
     })
     .join("\n");
 }
@@ -29,6 +37,7 @@ HARD REQUIREMENTS:
 - Keep tone direct and non-hype. No emojis, no fluff.
 - Do not mention model internals or "AI generated".
 - Mention Credex only when savings > $500/mo, and at most one short clause.
+- If confidence is medium/low, include one caveat sentence grounded in assumptions.
 - Output plain text only.
 
 TEAM CONTEXT:

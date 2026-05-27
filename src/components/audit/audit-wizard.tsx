@@ -723,8 +723,8 @@ export function AuditWizard() {
           </form>
         </div>
 
-        <aside className="hidden lg:block">
-          <div className="frame-shell sticky top-28 p-5">
+        <aside className="hidden lg:block lg:sticky lg:top-28 lg:self-start">
+          <div className="frame-shell p-5">
             <p className="kicker">Live context</p>
             <div className="mt-4 space-y-3">
               <MetricTile label="Step" value={`0${step} / 03`} />

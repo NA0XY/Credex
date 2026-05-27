@@ -16,7 +16,13 @@ function truncateReason(reason: string): string {
 
 export function WhatIfSimulator({ tools, totalCurrentMonthly }: WhatIfSimulatorProps) {
   const actionableTools = useMemo(
-    () => tools.filter((tool) => tool.bestRecommendation.type !== "ok" && tool.bestRecommendation.monthlySavings > 0),
+    () =>
+      tools.filter((tool) => {
+        const rec = tool.bestRecommendation;
+        const monthly = rec.opportunity?.monthlySavings ?? rec.monthlySavings;
+        const actionable = rec.opportunity?.action ? rec.opportunity.action !== "none" : rec.type !== "ok";
+        return actionable && monthly > 0;
+      }),
     [tools]
   );
   const [accepted, setAccepted] = useState<Set<string>>(new Set());
@@ -31,7 +37,10 @@ export function WhatIfSimulator({ tools, totalCurrentMonthly }: WhatIfSimulatorP
   };
 
   const simulatedSavings = useMemo(
-    () => actionableTools.filter((tool) => accepted.has(tool.toolId)).reduce((sum, tool) => sum + tool.bestRecommendation.monthlySavings, 0),
+    () =>
+      actionableTools
+        .filter((tool) => accepted.has(tool.toolId))
+        .reduce((sum, tool) => sum + (tool.bestRecommendation.opportunity?.monthlySavings ?? tool.bestRecommendation.monthlySavings), 0),
     [accepted, actionableTools]
   );
 
@@ -99,7 +108,9 @@ export function WhatIfSimulator({ tools, totalCurrentMonthly }: WhatIfSimulatorP
                     className="mono-value text-sm font-bold tabular-nums"
                     style={{ color: isOn ? "var(--color-brand)" : "var(--color-ink-soft)" }}
                   >
-                    {isOn ? `-${formatCurrency(tool.bestRecommendation.monthlySavings)}/mo` : `+${formatCurrency(tool.bestRecommendation.monthlySavings)}/mo`}
+                    {isOn
+                      ? `-${formatCurrency(tool.bestRecommendation.opportunity?.monthlySavings ?? tool.bestRecommendation.monthlySavings)}/mo`
+                      : `+${formatCurrency(tool.bestRecommendation.opportunity?.monthlySavings ?? tool.bestRecommendation.monthlySavings)}/mo`}
                   </p>
                 </div>
               </div>

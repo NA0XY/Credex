@@ -26,6 +26,8 @@ export interface Recommendation {
   confidence: "high" | "medium" | "low";
   negotiationTip?: string;
   priceChangeAlert?: string;
+  confidenceReasons?: string[];
+  opportunity?: OpportunityV1;
 }
 
 export interface ToolAuditResult {
@@ -42,9 +44,31 @@ export interface ToolAuditResult {
 export interface BenchmarkAuditComparison {
   yourCpdPerMonth: number;
   medianCpdPerMonth: number;
+  p75CpdPerMonth?: number;
   cohortLabel: string;
   verdict: string;
   percentile: string;
+}
+
+export interface OpportunityV1 {
+  id: string;
+  ruleId: string;
+  action: "downgrade" | "switch" | "righsize" | "consolidate" | "credits" | "none";
+  monthlySavings: number;
+  annualSavings: number;
+  projectedMonthlyCost?: number;
+  formula?: string;
+  inputsUsed: Array<{ key: string; value: string | number }>;
+  assumptions: string[];
+  confidenceTier: "high" | "medium" | "low";
+  confidenceReasons: string[];
+}
+
+export interface EngineMeta {
+  engineMode?: "legacy" | "shadow" | "v2lite";
+  engineVersion?: string;
+  rulesetVersion?: string;
+  generatedAtIso?: string;
 }
 
 export interface AuditResult {
@@ -57,6 +81,7 @@ export interface AuditResult {
   generatedAt: string;
   stackScore?: StackScore;
   benchmarkComparison?: BenchmarkAuditComparison;
+  engineMeta?: EngineMeta;
 }
 
 export interface CompletedAuditResult extends AuditResult {

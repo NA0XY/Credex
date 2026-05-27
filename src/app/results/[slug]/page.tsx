@@ -308,7 +308,10 @@ export default async function ResultPage({ params }: ResultPageProps) {
               <BenchmarkPanel
                 yourCpd={result.benchmarkComparison.yourCpdPerMonth}
                 medianCpd={result.benchmarkComparison.medianCpdPerMonth}
-                p75Cpd={result.benchmarkComparison.medianCpdPerMonth * 1.55}
+                p75Cpd={
+                  result.benchmarkComparison.p75CpdPerMonth ??
+                  result.benchmarkComparison.medianCpdPerMonth
+                }
                 cohortLabel={result.benchmarkComparison.cohortLabel}
                 verdict={result.benchmarkComparison.verdict}
               />

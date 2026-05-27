@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 
 export default function AuditPage() {
   return (
-    <div className="bg-brand-stage relative min-h-screen overflow-x-clip">
+    <div className="bg-brand-stage relative min-h-screen">
       <div className="pointer-events-none fixed inset-0">
         <Image
           src="/assets/editorial/bg-haze-plate.svg"
