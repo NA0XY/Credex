@@ -1,0 +1,24 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "credex",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2026-05-27",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "account_id": "4b3c42cbe4014e70e2999c3b33cd680a",
+  "workers_dev": true,
+  "preview_urls": true,
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "services": [
+    {
+      "binding": "WORKER_SELF_REFERENCE",
+      "service": "credex"
+    }
+  ],
+  "observability": {
+    "enabled": true
+  },
+  "routes": []
+}

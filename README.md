@@ -33,15 +33,13 @@ Open:
 - `http://localhost:3000/audit`
 - `http://localhost:3000/results/demo`
 
-### Deploy (Vercel)
+### Deploy (Cloudflare)
 
 ```bash
-npm i -g vercel
-vercel
-vercel --prod
+npm run deploy:cloudflare
 ```
 
-Set required environment variables in Vercel project settings from `.env.example` before production deploy.
+Set required environment variables in Cloudflare dashboard or Wrangler secrets from `.env.example` before production traffic.
 
 ## Decisions (5 Trade-offs)
 
@@ -53,7 +51,7 @@ Set required environment variables in Vercel project settings from `.env.example
 
 ## Deployed URL
 
-- Add your live URL after deploy (for final submission), for example: `https://<your-project>.vercel.app`
+- https://credex.harshsinghal.workers.dev
 
 ## Quality Checks
 
